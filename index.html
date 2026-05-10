@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Switch Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sarabun:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0d0f12;
+    --surface: #141720;
+    --card: #1a1e2a;
+    --border: #252b3b;
+    --accent: #00e5a0;
+    --accent2: #4d9fff;
+    --text: #e8ecf4;
+    --muted: #6b7694;
+    --on-color: #00e5a0;
+    --off-color: #3a3f52;
+    --warn: #ffaa44;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .last-update {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .refresh-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: all .2s;
+  }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  main { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .switch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .switch-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .3s;
+  }
+
+  .switch-card.on {
+    border-color: var(--accent);
+  }
+
+  .switch-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--off-color);
+    transition: background .3s;
+  }
+
+  .switch-card.on::before {
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .sw-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 0.75rem;
+  }
+
+  .sw-state {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--off-color);
+    transition: color .3s;
+    letter-spacing: 1px;
+  }
+
+  .switch-card.on .sw-state {
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(0,229,160,0.4);
+  }
+
+  .sw-icon {
+    position: absolute;
+    right: 1.25rem;
+    top: 1.25rem;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--off-color);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .3s;
+  }
+
+  .switch-card.on .sw-icon {
+    background: rgba(0,229,160,0.15);
+  }
+
+  .sw-icon svg { width: 18px; height: 18px; }
+
+  .chart-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .chart-tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .tab {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: all .2s;
+  }
+
+  .tab.active { border-color: var(--accent); color: var(--accent); }
+
+  canvas { max-height: 260px; }
+
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .log-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+
+  .log-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid rgba(37,43,59,0.5);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .log-table tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .badge-on { background: rgba(0,229,160,0.12); color: var(--accent); }
+  .badge-off { background: var(--off-color); color: var(--muted); }
+
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  .error-msg {
+    background: rgba(255,100,100,0.1);
+    border: 1px solid rgba(255,100,100,0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    color: #ff6464;
+    font-size: 13px;
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  .config-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .config-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .url-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    min-width: 200px;
+  }
+
+  .url-input:focus { outline: none; border-color: var(--accent); }
+
+  .save-btn {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .interval-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  @media (max-width: 600px) {
+    main { padding: 1rem; }
+    header { padding: 1rem; }
+    .switch-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡ SwitchLog</div>
+  <div class="header-right">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="last-update" id="lastUpdate">—</div>
+    <button class="refresh-btn" onclick="fetchAll()">↻ Refresh</button>
+  </div>
+</header>
+
+<main>
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="config-section">
+    <span class="config-label">Web App URL:</span>
+    <input class="url-input" type="text" id="urlInput" placeholder="https://script.google.com/macros/s/.../exec" />
+    <select class="interval-select" id="intervalSelect">
+      <option value="30000">Auto: 30s</option>
+      <option value="60000">Auto: 60s</option>
+      <option value="0">Manual only</option>
+    </select>
+    <button class="save-btn" onclick="saveConfig()">บันทึก</button>
+  </div>
+
+  <div class="section-label">สถานะปัจจุบัน</div>
+  <div class="switch-grid" id="switchGrid">
+    <div class="loading">กำลังโหลด...</div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-header">
+      <div class="chart-title">ประวัติสถานะ</div>
+      <div class="chart-tabs">
+        <button class="tab active" onclick="setChartMode('all')">ทั้งหมด</button>
+        <button class="tab" onclick="setChartMode('sw1')">SW1</button>
+        <button class="tab" onclick="setChartMode('sw2')">SW2</button>
+        <button class="tab" onclick="setChartMode('sw3')">SW3</button>
+        <button class="tab" onclick="setChartMode('sw4')">SW4</button>
+      </div>
+    </div>
+    <canvas id="historyChart"></canvas>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-header">
+      <div class="chart-title">Log ล่าสุด</div>
+    </div>
+    <div id="logTableWrap">
+      <div class="loading">กำลังโหลด...</div>
+    </div>
+  </div>
+</main>
+
+<script>
+const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw9OF0VE6xTsH2qyKqGbsScNx6vVbJoQ9mWuG69SrEdaTIr4cuzxkQe8d024YqhQkAI/exec";
+
+let webAppURL = localStorage.getItem('switchDashURL') || DEFAULT_URL;
+let autoInterval = parseInt(localStorage.getItem('switchDashInterval') || '30000');
+let historyData = [];
+let chartMode = 'all';
+let chart = null;
+let timer = null;
+
+document.getElementById('urlInput').value = webAppURL;
+document.getElementById('intervalSelect').value = autoInterval;
+
+function saveConfig() {
+  webAppURL = document.getElementById('urlInput').value.trim();
+  autoInterval = parseInt(document.getElementById('intervalSelect').value);
+  localStorage.setItem('switchDashURL', webAppURL);
+  localStorage.setItem('switchDashInterval', autoInterval);
+  startTimer();
+  fetchAll();
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.style.display = msg ? 'block' : 'none';
+  el.textContent = msg;
+}
+
+async function fetchLatest() {
+  const res = await fetch(webAppURL + '?sts=latest');
+  const text = await res.text();
+  if (!text.startsWith('OK')) throw new Error(text);
+  const parts = text.split(',');
+  return { sw1: parts[1], sw2: parts[2], sw3: parts[3], sw4: parts[4] };
+}
+
+function renderSwitches(data) {
+  const grid = document.getElementById('switchGrid');
+  const swNames = ['SW1','SW2','SW3','SW4'];
+  const vals = [data.sw1, data.sw2, data.sw3, data.sw4];
+  grid.innerHTML = swNames.map((name, i) => {
+    const on = vals[i] === 'On';
+    return `<div class="switch-card ${on ? 'on' : ''}">
+      <div class="sw-label">${name}</div>
+      <div class="sw-state">${on ? 'ON' : 'OFF'}</div>
+      <div class="sw-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="${on ? '#00e5a0' : '#6b7694'}" stroke-width="2">
+          <circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="12"/>
+        </svg>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addHistory(data) {
+  const now = new Date();
+  historyData.push({
+    time: now,
+    label: now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+    sw1: data.sw1 === 'On' ? 1 : 0,
+    sw2: data.sw2 === 'On' ? 1 : 0,
+    sw3: data.sw3 === 'On' ? 1 : 0,
+    sw4: data.sw4 === 'On' ? 1 : 0,
+  });
+  if (historyData.length > 60) historyData.shift();
+  renderChart();
+  renderLog();
+}
+
+function setChartMode(mode) {
+  chartMode = mode;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  renderChart();
+}
+
+function renderChart() {
+  const labels = historyData.map(d => d.label);
+  const colors = ['#00e5a0','#4d9fff','#ffaa44','#ff6b9d'];
+  const swKeys = ['sw1','sw2','sw3','sw4'];
+  const swLabels = ['Switch 1','Switch 2','Switch 3','Switch 4'];
+
+  let datasets;
+  if (chartMode === 'all') {
+    datasets = swKeys.map((k,i) => ({
+      label: swLabels[i],
+      data: historyData.map(d => d[k]),
+      borderColor: colors[i],
+      backgroundColor: colors[i] + '18',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 3,
+      borderWidth: 1.5,
+    }));
+  } else {
+    const i = parseInt(chartMode.replace('sw','')) - 1;
+    datasets = [{
+      label: swLabels[i],
+      data: historyData.map(d => d[swKeys[i]]),
+      borderColor: colors[i],
+      backgroundColor: colors[i] + '22',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 3,
+      borderWidth: 2,
+    }];
+  }
+
+  if (chart) {
+    chart.data.labels = labels;
+    chart.data.datasets = datasets;
+    chart.update();
+    return;
+  }
+
+  const ctx = document.getElementById('historyChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      animation: false,
+      scales: {
+        x: { ticks: { color: '#6b7694', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { color: '#1e2435' } },
+        y: { min: -0.1, max: 1.1, ticks: { color: '#6b7694', callback: v => v === 1 ? 'ON' : v === 0 ? 'OFF' : '', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { color: '#1e2435' } }
+      },
+      plugins: {
+        legend: { labels: { color: '#6b7694', font: { family: 'IBM Plex Mono', size: 11 }, boxWidth: 12 } },
+        tooltip: {
+          backgroundColor: '#141720',
+          borderColor: '#252b3b',
+          borderWidth: 1,
+          titleColor: '#e8ecf4',
+          bodyColor: '#6b7694',
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw === 1 ? 'ON' : 'OFF'}` }
+        }
+      }
+    }
+  });
+}
+
+function renderLog() {
+  const wrap = document.getElementById('logTableWrap');
+  const rows = [...historyData].reverse().slice(0, 15);
+  if (!rows.length) { wrap.innerHTML = '<div class="loading">ยังไม่มีข้อมูล</div>'; return; }
+  const badge = (v) => v ? `<span class="badge badge-on">ON</span>` : `<span class="badge badge-off">OFF</span>`;
+  wrap.innerHTML = `<table class="log-table">
+    <thead><tr><th>เวลา</th><th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th></tr></thead>
+    <tbody>${rows.map(r => `<tr>
+      <td>${r.label}</td>
+      <td>${badge(r.sw1)}</td>
+      <td>${badge(r.sw2)}</td>
+      <td>${badge(r.sw3)}</td>
+      <td>${badge(r.sw4)}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+async function fetchAll() {
+  try {
+    showError('');
+    document.getElementById('statusDot').style.background = '#ffaa44';
+    const data = await fetchLatest();
+    renderSwitches(data);
+    addHistory(data);
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('th-TH');
+    document.getElementById('statusDot').style.background = '#00e5a0';
+    document.getElementById('statusDot').style.boxShadow = '0 0 8px #00e5a0';
+  } catch(e) {
+    showError('⚠ ไม่สามารถเชื่อมต่อ: ' + e.message);
+    document.getElementById('statusDot').style.background = '#ff6464';
+    document.getElementById('statusDot').style.boxShadow = '0 0 8px #ff6464';
+  }
+}
+
+function startTimer() {
+  if (timer) clearInterval(timer);
+  if (autoInterval > 0) timer = setInterval(fetchAll, autoInterval);
+}
+
+fetchAll();
+startTimer();
+</script>
+</body>
+</html>
