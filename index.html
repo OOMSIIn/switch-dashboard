@@ -68,6 +68,11 @@
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
   .status-txt{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
 
+  /* ✅ MAC pill ใน header */
+  .mac-pill{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);padding:4px 12px;border-radius:20px;}
+  .mac-pill-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
+  .mac-pill-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:.5px;}
+
   .theme-btn{background:none;border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
   .theme-btn:hover{border-color:var(--accent);color:var(--accent);}
   .refresh-btn{background:var(--accent);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:500;transition:background .2s;}
@@ -139,8 +144,16 @@
   .badge-off{background:var(--tag-off-bg);color:var(--tag-off-txt);}
   .change-badge{background:var(--accent-soft);color:var(--accent);padding:2px 6px;border-radius:4px;font-size:10px;margin-right:2px;}
 
+  /* ✅ MAC cell ใน log table */
+  .mac-cell{font-size:10px;color:var(--muted);letter-spacing:.3px;}
+
   .loading{text-align:center;padding:3rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
-  @media(max-width:600px){main{padding:1rem;}header{padding:.875rem 1rem;}.switch-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:600px){
+    main{padding:1rem;}
+    header{padding:.875rem 1rem;}
+    .switch-grid{grid-template-columns:1fr 1fr;}
+    .mac-pill{display:none;} /* ซ่อนบนมือถือเพราะ header แคบ */
+  }
 </style>
 </head>
 <body>
@@ -148,6 +161,11 @@
 <header>
   <div class="logo">⚡ Switch<span>Log</span></div>
   <div class="header-right">
+    <!-- ✅ MAC Address pill -->
+    <div class="mac-pill">
+      <span class="mac-pill-label">MAC</span>
+      <span class="mac-pill-val" id="headerMac">—</span>
+    </div>
     <div class="status-pill">
       <div class="status-dot" id="statusDot"></div>
       <span class="status-txt" id="lastUpdate">—</span>
@@ -288,12 +306,13 @@ function getChartColors() {
   };
 }
 
+// ✅ fetchLatest — รับ MAC จาก response (format: OK,mac,sw1,sw2,sw3,sw4)
 async function fetchLatest() {
   const res = await fetch(webAppURL + '?sts=latest');
   const text = await res.text();
   if (!text.startsWith('OK')) throw new Error(text);
   const p = text.split(',');
-  return {sw1:p[1],sw2:p[2],sw3:p[3],sw4:p[4]};
+  return { mac:p[1], sw1:p[2], sw2:p[3], sw3:p[4], sw4:p[5] };
 }
 
 async function fetchHistory() {
@@ -505,6 +524,7 @@ function renderDailyChart() {
 
 function clearLogFilter(){document.getElementById('logFilterDate').value='';renderLog();}
 
+// ✅ renderLog — เพิ่มคอลัมน์ MAC
 function renderLog() {
   const wrap=document.getElementById('logTableWrap');
   const filterDate=document.getElementById('logFilterDate').value;
@@ -523,7 +543,10 @@ function renderLog() {
   const allRaw=[...allHistory];
 
   wrap.innerHTML=`<table class="log-table">
-    <thead><tr><th>วันที่</th><th>เวลา</th><th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th><th>เปลี่ยน</th></tr></thead>
+    <thead><tr>
+      <th>วันที่</th><th>เวลา</th><th>MAC</th>
+      <th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th><th>เปลี่ยน</th>
+    </tr></thead>
     <tbody>${rows.map(r=>{
       const d=new Date(r.t);
       const idx=allRaw.findIndex(x=>x.t===r.t);
@@ -533,6 +556,7 @@ function renderLog() {
       return `<tr>
         <td>${d.toLocaleDateString('th-TH')}</td>
         <td>${d.toLocaleTimeString('th-TH')}</td>
+        <td class="mac-cell">${r.mac||'—'}</td>
         <td>${badge(r.s1)}</td><td>${badge(r.s2)}</td><td>${badge(r.s3)}</td><td>${badge(r.s4)}</td>
         <td>${changed.map(c=>`<span class="change-badge">${c}↑</span>`).join('')}</td>
       </tr>`;
@@ -553,6 +577,8 @@ async function fetchAll() {
     renderDailyChart();
     renderLog();
     document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('th-TH');
+    // ✅ อัปเดต MAC ใน header
+    document.getElementById('headerMac').textContent = latest.mac || '—';
     setStatus('ok');
   } catch(e) {
     showError('⚠ ไม่สามารถเชื่อมต่อ: '+e.message);
