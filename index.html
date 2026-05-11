@@ -6,218 +6,246 @@
 <title>Switch Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sarabun:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sarabun:wght@300;400;500&display=swap');
 
-  [data-theme="light"] {
-    --bg:#f5f4f0; --surface:#ffffff;
-    --border:#e0ddd7; --border2:#ccc9c2;
-    --accent:#f47b20; --accent-soft:#fff0e6; --accent-dark:#c95e0a;
-    --text:#2a2925; --text2:#5a5750; --muted:#9a9690;
-    --on:#f47b20; --off:#c8c5be;
-    --tag-on-bg:#fff0e6; --tag-on-txt:#c95e0a;
-    --tag-off-bg:#eeede9; --tag-off-txt:#9a9690;
-    --shadow:0 1px 4px rgba(0,0,0,.07);
-    --overlay:rgba(0,0,0,.35);
-  }
-  [data-theme="dark"] {
-    --bg:#141210; --surface:#1e1b18;
-    --border:#332e28; --border2:#4a4338;
-    --accent:#f47b20; --accent-soft:#2a1e10; --accent-dark:#ff9a4d;
-    --text:#f0ece6; --text2:#b0aa9f; --muted:#6e6860;
-    --on:#f47b20; --off:#3a3530;
-    --tag-on-bg:#2a1e10; --tag-on-txt:#f47b20;
-    --tag-off-bg:#2a2520; --tag-off-txt:#6e6860;
-    --shadow:0 1px 4px rgba(0,0,0,.3);
-    --overlay:rgba(0,0,0,.6);
-  }
+[data-theme="light"]{
+  --bg:#f5f4f0;--surface:#fff;--border:#e0ddd7;--border2:#ccc9c2;
+  --accent:#f47b20;--accent-s:#fff0e6;--accent-d:#c95e0a;
+  --text:#2a2925;--text2:#5a5750;--muted:#9a9690;
+  --off:#c8c5be;--tag-on-bg:#fff0e6;--tag-on:#c95e0a;
+  --tag-off-bg:#eeede9;--tag-off:#9a9690;
+  --shadow:0 1px 4px rgba(0,0,0,.07);--overlay:rgba(0,0,0,.4);
+}
+[data-theme="dark"]{
+  --bg:#141210;--surface:#1e1b18;--border:#332e28;--border2:#4a4338;
+  --accent:#f47b20;--accent-s:#2a1e10;--accent-d:#ff9a4d;
+  --text:#f0ece6;--text2:#b0aa9f;--muted:#6e6860;
+  --off:#3a3530;--tag-on-bg:#2a1e10;--tag-on:#f47b20;
+  --tag-off-bg:#2a2520;--tag-off:#6e6860;
+  --shadow:0 1px 4px rgba(0,0,0,.3);--overlay:rgba(0,0,0,.65);
+}
 
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;font-weight:300;min-height:100vh;transition:background .3s,color .3s;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;font-weight:300;min-height:100vh;transition:background .3s,color .3s;}
 
-  /* Header */
-  header{background:var(--surface);border-bottom:1px solid var(--border);padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
-  .logo{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:2px;font-weight:500;}
-  .logo span{color:var(--text2);}
-  .header-right{display:flex;align-items:center;gap:1rem;}
-  .status-pill{display:flex;align-items:center;gap:6px;background:var(--accent-soft);border:1px solid var(--border);padding:4px 12px;border-radius:20px;}
-  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-  .status-txt{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
-  .theme-btn{background:none;border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-  .theme-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .refresh-btn{background:var(--accent);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:500;transition:background .2s;}
-  .refresh-btn:hover{background:var(--accent-dark);}
+/* ── Header ── */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.logo{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:2px;font-weight:500;}
+.logo span{color:var(--text2);}
+.hdr-right{display:flex;align-items:center;gap:.75rem;}
+.status-pill{display:flex;align-items:center;gap:6px;background:var(--accent-s);border:1px solid var(--border);padding:4px 12px;border-radius:20px;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.status-txt{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
+.icon-btn{background:none;border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+.refresh-btn{background:var(--accent);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:500;transition:background .2s;}
+.refresh-btn:hover{background:var(--accent-d);}
 
-  /* Main */
-  main{padding:2rem;max-width:1100px;margin:0 auto;}
-  .section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:.875rem;}
-  .error-msg{background:#fff0ee;border:1px solid #fcc;border-radius:8px;padding:.875rem 1rem;color:#c0392b;font-size:13px;margin-bottom:1rem;display:none;}
-  [data-theme="dark"] .error-msg{background:#2a1515;border-color:#4a2020;color:#ff8080;}
+/* ── Main ── */
+main{padding:2rem;max-width:1160px;margin:0 auto;}
+.sec-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:.875rem;margin-top:2rem;}
+.sec-label:first-child{margin-top:0;}
+.err{background:#fff0ee;border:1px solid #fcc;border-radius:8px;padding:.875rem 1rem;color:#c0392b;font-size:13px;margin-bottom:1rem;display:none;}
+[data-theme="dark"] .err{background:#2a1515;border-color:#4a2020;color:#ff8080;}
 
-  /* Config */
-  .config-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;box-shadow:var(--shadow);}
-  .config-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
-  .url-input{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:200px;transition:border .2s;}
-  .url-input:focus{outline:none;border-color:var(--accent);}
-  .interval-select{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;}
-  .save-btn{background:var(--accent);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;}
-  .save-btn:hover{background:var(--accent-dark);}
+/* ── Config ── */
+.cfg-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;box-shadow:var(--shadow);}
+.cfg-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
+.url-inp{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:180px;}
+.url-inp:focus{outline:none;border-color:var(--accent);}
+.sel{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;}
+.save-btn{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;}
+.save-btn:hover{background:var(--accent-d);}
 
-  /* Switch grid */
-  .switch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-bottom:2rem;}
-  .switch-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;cursor:pointer;transition:border-color .3s,box-shadow .3s,transform .15s;box-shadow:var(--shadow);position:relative;}
-  .switch-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1);}
-  .switch-card.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)22,var(--shadow);}
-  .sw-top{display:flex;align-items:flex-start;justify-content:space-between;}
-  .sw-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:.5rem;}
-  .sw-state{font-size:30px;font-weight:500;color:var(--off);transition:color .3s;}
-  .switch-card.on .sw-state{color:var(--accent);}
-  .sw-icon{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:background .3s;}
-  .switch-card.on .sw-icon{background:var(--accent);border-color:var(--accent);}
-  .sw-icon svg{width:20px;height:20px;}
-  .sw-bar{height:3px;border-radius:2px;background:var(--border);margin:1rem 0 .875rem;overflow:hidden;}
-  .sw-bar-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .5s;}
-  .sw-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .sw-stat-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
-  .sw-stat-val{font-size:13px;font-weight:500;color:var(--text);}
-  /* info hint */
-  .sw-info-hint{position:absolute;bottom:.75rem;right:.875rem;font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+/* ── SW stat cards (big 4) ── */
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;}
+.sw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .15s;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.sw-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.12);}
+.sw-card.on{border-color:var(--col)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--col) 20%,transparent),var(--shadow)!important;}
 
-  /* Stats */
-  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem;}
-  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;box-shadow:var(--shadow);}
-  .stat-sw-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;margin-bottom:.5rem;}
-  .stat-num{font-size:30px;font-weight:500;font-family:'IBM Plex Mono',monospace;line-height:1;}
-  .stat-unit{font-size:13px;color:var(--muted);margin-left:2px;}
-  .stat-desc{font-size:12px;color:var(--text2);margin-top:.5rem;}
-  .stat-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-top:.375rem;}
-  .stat-row span{color:var(--text);font-weight:500;}
+.sw-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;}
+.sw-id{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;font-weight:500;}
+.sw-lbl{font-size:12px;color:var(--muted);margin-top:2px;}
+.sw-icon-wrap{width:40px;height:40px;border-radius:11px;background:var(--accent-s);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .25s;}
+.sw-card.on .sw-icon-wrap{background:var(--col);border-color:var(--col);}
+.sw-icon-wrap svg{width:20px;height:20px;}
 
-  /* Chart */
-  .chart-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);}
-  .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem;}
-  .chart-title{font-size:14px;font-weight:500;color:var(--text);}
-  .chart-tabs{display:flex;gap:4px;flex-wrap:wrap;}
-  .tab{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .2s;}
-  .tab:hover{border-color:var(--accent);color:var(--accent);}
-  .tab.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:500;}
-  canvas{max-height:260px;}
-  .date-filter{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;}
-  .date-input{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;font-family:'IBM Plex Mono',monospace;}
-  .date-input:focus{outline:none;border-color:var(--accent);}
+.sw-state{font-size:32px;font-weight:500;color:var(--off);letter-spacing:1px;margin-bottom:1rem;transition:color .25s;}
+.sw-card.on .sw-state{color:var(--col);}
 
-  /* Log table */
-  .log-table{width:100%;border-collapse:collapse;font-size:13px;}
-  .log-table th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);text-transform:uppercase;}
-  .log-table td{padding:.6rem .75rem;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);}
-  .log-table tr:last-child td{border-bottom:none;}
-  .log-table tr:hover td{background:var(--accent-soft);}
-  .badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;}
-  .badge-on{background:var(--tag-on-bg);color:var(--tag-on-txt);}
-  .badge-off{background:var(--tag-off-bg);color:var(--tag-off-txt);}
-  .change-badge{background:var(--accent-soft);color:var(--accent);padding:2px 6px;border-radius:4px;font-size:10px;margin-right:2px;}
-  .mac-cell{font-size:10px;color:var(--muted);}
+/* progress bar */
+.sw-bar{height:3px;border-radius:2px;background:var(--border);margin-bottom:1rem;overflow:hidden;}
+.sw-bar-fill{height:100%;border-radius:2px;transition:width .6s;}
 
-  .loading{text-align:center;padding:3rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
+/* stat grid inside card */
+.sw-stats{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;}
+.stat-cell{}
+.stat-cell-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
+.stat-cell-val{font-size:13px;font-weight:500;color:var(--text);}
+.stat-cell-val.hi{color:var(--col);}
 
-  /* ── Device Info Modal ── */
-  .modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
-  .modal-overlay.open{opacity:1;pointer-events:all;}
-  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,.2);transform:translateY(10px);transition:transform .2s;}
-  .modal-overlay.open .modal{transform:translateY(0);}
-  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
-  .modal-title{font-size:16px;font-weight:500;color:var(--text);}
-  .modal-sw-badge{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
-  .modal-close{background:none;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;line-height:1;transition:all .2s;}
-  .modal-close:hover{border-color:var(--accent);color:var(--accent);}
+/* MAC rows inside card */
+.sw-mac-area{margin-top:1rem;padding-top:.875rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.375rem;}
+.mac-row{display:flex;align-items:center;gap:.5rem;}
+.mac-type-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:4px;font-weight:500;flex-shrink:0;}
+.mac-type-read{background:#e3f2fd;color:#1565c0;}
+[data-theme="dark"] .mac-type-read{background:#0d2a45;color:#64b5f6;}
+.mac-type-write{background:#e8f5e9;color:#2e7d32;}
+[data-theme="dark"] .mac-type-write{background:#0d3318;color:#66bb6a;}
+.mac-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:.3px;}
+.mac-val.empty{color:var(--muted);font-style:italic;}
 
-  /* MAC info rows */
-  .mac-info-row{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:.75rem;}
-  .mac-info-type{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:.375rem;text-transform:uppercase;}
-  .mac-info-val{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--text);font-weight:500;letter-spacing:.5px;}
-  .mac-info-val.empty{color:var(--muted);font-size:12px;font-weight:400;}
-  .mac-type-read .mac-info-type{color:#2196f3;}
-  .mac-type-write .mac-info-type{color:#4caf50;}
+.sw-hint{position:absolute;bottom:.625rem;right:.875rem;font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
 
-  /* Write MAC input in modal */
-  .mac-edit-row{display:flex;gap:.5rem;margin-top:.5rem;}
-  .mac-edit-input{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;transition:border .2s;}
-  .mac-edit-input:focus{outline:none;border-color:var(--accent);}
-  .mac-edit-btn{background:var(--accent);color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;white-space:nowrap;}
-  .mac-edit-btn:hover{background:var(--accent-dark);}
-  .mac-saved-note{font-size:11px;color:#4caf50;font-family:'IBM Plex Mono',monospace;margin-top:.375rem;display:none;}
+/* ── Charts ── */
+.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);}
+.chart-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem;}
+.chart-title{font-size:14px;font-weight:500;color:var(--text);}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;}
+.tab{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 11px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .2s;}
+.tab:hover{border-color:var(--accent);color:var(--accent);}
+.tab.active{background:var(--accent-s);border-color:var(--accent);color:var(--accent);font-weight:500;}
+canvas{max-height:260px;}
+.date-row{display:flex;align-items:center;gap:.625rem;flex-wrap:wrap;}
+.date-inp{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:6px;font-size:12px;font-family:'IBM Plex Mono',monospace;}
+.date-inp:focus{outline:none;border-color:var(--accent);}
 
-  /* Label input */
-  .label-row{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);}
-  .label-row label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:.375rem;}
-  .label-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;font-family:'Sarabun',sans-serif;transition:border .2s;}
-  .label-input:focus{outline:none;border-color:var(--accent);}
+/* ── Log table ── */
+.log-table{width:100%;border-collapse:collapse;font-size:12px;}
+.log-table th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);text-transform:uppercase;white-space:nowrap;}
+.log-table td{padding:.55rem .75rem;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
+.log-table tr:last-child td{border-bottom:none;}
+.log-table tr:hover td{background:var(--accent-s);}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;}
+.badge-on{background:var(--tag-on-bg);color:var(--tag-on);}
+.badge-off{background:var(--tag-off-bg);color:var(--tag-off);}
+.chg-badge{background:var(--accent-s);color:var(--accent);padding:2px 5px;border-radius:3px;font-size:10px;margin-right:2px;}
+.mac-sm{font-size:10px;color:var(--muted);}
 
-  @media(max-width:600px){
-    main{padding:1rem;}
-    header{padding:.875rem 1rem;}
-    .switch-grid{grid-template-columns:1fr 1fr;}
-  }
+.loading{text-align:center;padding:3rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.75rem;width:100%;max-width:480px;box-shadow:0 12px 48px rgba(0,0,0,.2);transform:translateY(12px);transition:transform .2s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.modal-title{font-size:16px;font-weight:500;}
+.modal-sw-pill{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
+.modal-close{background:none;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px;transition:all .2s;}
+.modal-close:hover{border-color:var(--accent);color:var(--accent);}
+
+.info-block{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.875rem 1.125rem;margin-bottom:.625rem;}
+.info-block-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.375rem;}
+.info-block-val{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:500;letter-spacing:.4px;color:var(--text);}
+.info-block-val.empty{color:var(--muted);font-size:12px;font-weight:400;}
+.edit-row{display:flex;gap:.5rem;margin-top:.5rem;}
+.edit-inp{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.edit-inp:focus{outline:none;border-color:var(--accent);}
+.edit-btn{background:var(--accent);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;white-space:nowrap;}
+.edit-btn:hover{background:var(--accent-d);}
+.saved-note{font-size:11px;color:#4caf50;font-family:'IBM Plex Mono',monospace;margin-top:.375rem;display:none;}
+
+.divider{border:none;border-top:1px solid var(--border);margin:.875rem 0;}
+.lbl-wrap label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:.375rem;}
+.lbl-inp{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;font-family:'Sarabun',sans-serif;}
+.lbl-inp:focus{outline:none;border-color:var(--accent);}
+.modal-footer{display:flex;justify-content:flex-end;margin-top:.75rem;}
+
+/* stat summary section */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;}
+.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem;box-shadow:var(--shadow);}
+.sum-sw{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;margin-bottom:.375rem;font-weight:500;}
+.sum-num{font-size:28px;font-weight:500;font-family:'IBM Plex Mono',monospace;line-height:1.1;}
+.sum-unit{font-size:12px;color:var(--muted);}
+.sum-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-top:.3rem;}
+.sum-row span{color:var(--text);font-weight:500;}
+
+@media(max-width:600px){
+  main{padding:1rem;}
+  header{padding:.875rem 1rem;}
+  .sw-grid{grid-template-columns:1fr 1fr;}
+  .sw-mac-area{display:none;}
+}
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">⚡ Switch<span>Log</span></div>
-  <div class="header-right">
+  <div class="hdr-right">
     <div class="status-pill">
       <div class="status-dot" id="statusDot"></div>
       <span class="status-txt" id="lastUpdate">—</span>
     </div>
-    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
     <button class="refresh-btn" onclick="fetchAll()">↻ Refresh</button>
   </div>
 </header>
 
 <main>
-  <div class="error-msg" id="errorMsg"></div>
+  <div class="err" id="errMsg"></div>
 
-  <div class="config-section">
-    <span class="config-label">Web App URL:</span>
-    <input class="url-input" id="urlInput" placeholder="https://script.google.com/macros/s/.../exec"/>
-    <select class="interval-select" id="intervalSelect">
-      <option value="30000">Auto: 30s</option>
-      <option value="60000">Auto: 60s</option>
-      <option value="0">Manual only</option>
+  <!-- Config -->
+  <div class="cfg-bar">
+    <span class="cfg-label">Web App URL :</span>
+    <input class="url-inp" id="urlInp" placeholder="https://script.google.com/macros/s/.../exec"/>
+    <select class="sel" id="intSel">
+      <option value="30000">Auto 30s</option>
+      <option value="60000">Auto 60s</option>
+      <option value="0">Manual</option>
     </select>
     <button class="save-btn" onclick="saveConfig()">บันทึก</button>
   </div>
 
-  <div class="section-label">สถานะปัจจุบัน <span style="color:var(--muted);font-size:9px;letter-spacing:1px;">— คลิกเพื่อดู Device Info</span></div>
-  <div class="switch-grid" id="switchGrid"><div class="loading">กำลังโหลด...</div></div>
+  <!-- SW Cards -->
+  <div class="sec-label">สถานะปัจจุบัน &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— คลิกการ์ดเพื่อดู / แก้ไข Device Info</span></div>
+  <div class="sw-grid" id="swGrid"><div class="loading">กำลังโหลด...</div></div>
 
-  <div class="section-label">สถิติรวม</div>
-  <div class="stats-grid" id="statsGrid"><div class="loading">กำลังโหลด...</div></div>
+  <!-- Summary stats -->
+  <div class="sec-label">สถิติสรุป แยกต่อ SW</div>
+  <div class="summary-grid" id="sumGrid"><div class="loading">กำลังโหลด...</div></div>
 
-  <div class="chart-section">
-    <div class="chart-header">
+  <!-- Uptime % chart -->
+  <div class="chart-box">
+    <div class="chart-hdr">
+      <div class="chart-title">% เวลาเปิด แต่ละ SW</div>
+      <div class="tabs" id="uptimeTabs">
+        <button class="tab active" onclick="setUptimeRange('all',this)">ทั้งหมด</button>
+        <button class="tab" onclick="setUptimeRange('7',this)">7 วัน</button>
+        <button class="tab" onclick="setUptimeRange('30',this)">30 วัน</button>
+      </div>
+    </div>
+    <canvas id="uptimeChart" style="max-height:180px;"></canvas>
+  </div>
+
+  <!-- History line chart -->
+  <div class="chart-box">
+    <div class="chart-hdr">
       <div class="chart-title">ประวัติสถานะ</div>
       <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
-        <div class="date-filter">
-          <input type="date" class="date-input" id="filterDate"/>
-          <button class="tab" onclick="clearDateFilter()">ล้าง</button>
+        <div class="date-row">
+          <input type="date" class="date-inp" id="filterDate"/>
+          <button class="tab" onclick="clearDate()">ล้าง</button>
         </div>
-        <div class="chart-tabs" id="histTabs">
-          <button class="tab active" onclick="setChartMode('all',this)">All</button>
-          <button class="tab" onclick="setChartMode('sw1',this)">SW1</button>
-          <button class="tab" onclick="setChartMode('sw2',this)">SW2</button>
-          <button class="tab" onclick="setChartMode('sw3',this)">SW3</button>
-          <button class="tab" onclick="setChartMode('sw4',this)">SW4</button>
+        <div class="tabs" id="histTabs">
+          <button class="tab active" onclick="setHistMode('all',this)">All</button>
+          <button class="tab" onclick="setHistMode('sw1',this)">SW1</button>
+          <button class="tab" onclick="setHistMode('sw2',this)">SW2</button>
+          <button class="tab" onclick="setHistMode('sw3',this)">SW3</button>
+          <button class="tab" onclick="setHistMode('sw4',this)">SW4</button>
         </div>
       </div>
     </div>
-    <canvas id="historyChart"></canvas>
+    <canvas id="histChart"></canvas>
   </div>
 
-  <div class="chart-section">
-    <div class="chart-header">
+  <!-- Daily toggle bar chart -->
+  <div class="chart-box">
+    <div class="chart-hdr">
       <div class="chart-title">จำนวนครั้ง Off→On ต่อวัน</div>
-      <div class="chart-tabs" id="dailyTabs">
+      <div class="tabs" id="dailyTabs">
         <button class="tab active" onclick="setDailyMode('all',this)">All</button>
         <button class="tab" onclick="setDailyMode('sw1',this)">SW1</button>
         <button class="tab" onclick="setDailyMode('sw2',this)">SW2</button>
@@ -228,84 +256,102 @@
     <canvas id="dailyChart"></canvas>
   </div>
 
-  <div class="chart-section">
-    <div class="chart-header">
+  <!-- Log table -->
+  <div class="chart-box">
+    <div class="chart-hdr">
       <div class="chart-title">Log ย้อนหลัง</div>
-      <div class="date-filter">
-        <input type="date" class="date-input" id="logFilterDate"/>
-        <button class="tab" onclick="clearLogFilter()">ล้าง</button>
+      <div class="date-row">
+        <input type="date" class="date-inp" id="logDate"/>
+        <button class="tab" onclick="clearLogDate()">ล้าง</button>
       </div>
     </div>
-    <div id="logTableWrap"><div class="loading">กำลังโหลด...</div></div>
+    <div id="logWrap"><div class="loading">กำลังโหลด...</div></div>
   </div>
 </main>
 
-<!-- ── Device Info Modal ── -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+<!-- Modal: Device Info -->
+<div class="modal-overlay" id="modalOv" onclick="closeModalBg(event)">
   <div class="modal">
-    <div class="modal-header">
-      <div style="display:flex;align-items:center;gap:.75rem;">
-        <div class="modal-title">Device Info</div>
-        <div class="modal-sw-badge" id="modalSwBadge"></div>
+    <div class="modal-hdr">
+      <div style="display:flex;align-items:center;gap:.625rem;">
+        <span class="modal-title" id="modalTitle">Device Info</span>
+        <span class="modal-sw-pill" id="modalPill"></span>
       </div>
-      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
 
-    <!-- Read MAC (อัตโนมัติจาก Sheets) -->
-    <div class="mac-info-row mac-type-read">
-      <div class="mac-info-type">📡 Read Board (MAC จาก Sheets)</div>
-      <div class="mac-info-val" id="modalReadMac">—</div>
+    <!-- Read MAC -->
+    <div class="info-block">
+      <div class="info-block-label" style="color:#1565c0;">📡 Read Board — MAC</div>
+      <div class="info-block-val" id="mReadMac">—</div>
     </div>
 
-    <!-- Write MAC (กรอกเอง) -->
-    <div class="mac-info-row mac-type-write">
-      <div class="mac-info-type">💡 Write Board (กรอกเอง)</div>
-      <div class="mac-info-val" id="modalWriteMacDisplay">—</div>
-      <div class="mac-edit-row">
-        <input class="mac-edit-input" id="modalWriteMacInput" placeholder="AA:BB:CC:DD:EE:FF"/>
-        <button class="mac-edit-btn" onclick="saveWriteMac()">บันทึก</button>
+    <!-- Write MAC -->
+    <div class="info-block">
+      <div class="info-block-label" style="color:#2e7d32;">💡 Write Board — MAC</div>
+      <div class="info-block-val" id="mWriteMacDisp">—</div>
+      <div class="edit-row">
+        <input class="edit-inp" id="mWriteMacInp" placeholder="AA:BB:CC:DD:EE:FF"/>
+        <button class="edit-btn" onclick="saveWriteMac()">บันทึก</button>
       </div>
-      <div class="mac-saved-note" id="macSavedNote">✓ บันทึกแล้ว</div>
+      <div class="saved-note" id="savedNote">✓ บันทึกแล้ว</div>
     </div>
 
-    <!-- Label / ชื่อตั้งเอง -->
-    <div class="label-row">
+    <hr class="divider"/>
+
+    <!-- Label -->
+    <div class="lbl-wrap">
       <label>ชื่อ / Location</label>
-      <input class="label-input" id="modalLabelInput" placeholder="เช่น ห้องนอน, โรงรถ..."/>
-      <div style="display:flex;justify-content:flex-end;margin-top:.5rem;">
-        <button class="mac-edit-btn" onclick="saveLabel()">บันทึกชื่อ</button>
-      </div>
+      <input class="lbl-inp" id="mLblInp" placeholder="เช่น ห้องนอน, โรงรถ..."/>
+    </div>
+    <div class="modal-footer">
+      <button class="edit-btn" onclick="saveLabel()">บันทึกชื่อ</button>
     </div>
   </div>
 </div>
 
 <script>
+// ═══════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════
 const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw9OF0VE6xTsH2qyKqGbsScNx6vVbJoQ9mWuG69SrEdaTIr4cuzxkQe8d024YqhQkAI/exec";
-let webAppURL    = localStorage.getItem('switchDashURL') || DEFAULT_URL;
-let autoInterval = parseInt(localStorage.getItem('switchDashInterval') || '30000');
-let allHistory   = [];
-let chartMode    = 'all';
-let dailyMode    = 'all';
-let histChart    = null;
-let dailyChart   = null;
+let webAppURL    = localStorage.getItem('dashURL') || DEFAULT_URL;
+let autoInterval = parseInt(localStorage.getItem('dashInt') || '30000');
 let timer        = null;
 
-// swReadMac[i] = MAC ล่าสุดที่ส่ง SW i+1 (ดึงจาก history อัตโนมัติ)
-let swReadMac = ['','','',''];
+document.getElementById('urlInp').value  = webAppURL;
+document.getElementById('intSel').value  = autoInterval;
 
-// deviceMap เก็บใน localStorage: { sw1: { writeMac, label }, ... }
-function loadDeviceMap() {
-  try { return JSON.parse(localStorage.getItem('deviceMap') || '{}'); } catch{ return {}; }
+function saveConfig(){
+  webAppURL    = document.getElementById('urlInp').value.trim();
+  autoInterval = parseInt(document.getElementById('intSel').value);
+  localStorage.setItem('dashURL', webAppURL);
+  localStorage.setItem('dashInt', autoInterval);
+  startTimer(); fetchAll();
 }
-function saveDeviceMap(map) {
-  localStorage.setItem('deviceMap', JSON.stringify(map));
-}
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let allHistory  = [];   // [{t, mac_read, mac_write, s1..s4}]
+let deviceList  = [];   // [{mac_read, mac_write, label}] from ?sts=devices
+let localMap    = {};   // localStorage override: {sw1:{writeMac,label},...}
 
 const SW_COLORS = ['#f47b20','#2196f3','#4caf50','#e91e63'];
 const SW_NAMES  = ['SW1','SW2','SW3','SW4'];
+const SW_KEYS   = ['s1','s2','s3','s4'];
 
-// ── Theme ──
-const savedTheme = localStorage.getItem('switchDashTheme') || 'light';
+let histMode    = 'all';
+let dailyMode   = 'all';
+let uptimeRange = 'all';
+let histChartObj  = null;
+let dailyChartObj = null;
+let uptimeChartObj= null;
+
+// ═══════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════
+const savedTheme = localStorage.getItem('dashTheme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
 document.getElementById('themeBtn').textContent = savedTheme==='dark'?'☀️':'🌙';
 
@@ -313,360 +359,491 @@ function toggleTheme(){
   const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
   document.documentElement.setAttribute('data-theme',next);
   document.getElementById('themeBtn').textContent = next==='dark'?'☀️':'🌙';
-  localStorage.setItem('switchDashTheme',next);
-  if(histChart){histChart.destroy();histChart=null;}
-  if(dailyChart){dailyChart.destroy();dailyChart=null;}
-  if(allHistory.length){renderHistChart();renderDailyChart();}
+  localStorage.setItem('dashTheme',next);
+  destroyCharts(); renderCharts();
 }
 
-document.getElementById('urlInput').value       = webAppURL;
-document.getElementById('intervalSelect').value = autoInterval;
-document.getElementById('filterDate').addEventListener('change',renderHistChart);
-document.getElementById('logFilterDate').addEventListener('change',renderLog);
-
-function saveConfig(){
-  webAppURL    = document.getElementById('urlInput').value.trim();
-  autoInterval = parseInt(document.getElementById('intervalSelect').value);
-  localStorage.setItem('switchDashURL',webAppURL);
-  localStorage.setItem('switchDashInterval',autoInterval);
-  startTimer(); fetchAll();
-}
-function showError(msg){const el=document.getElementById('errorMsg');el.style.display=msg?'block':'none';el.textContent=msg;}
-function setStatus(s){document.getElementById('statusDot').style.background={ok:'#f47b20',loading:'#f4c020',error:'#e74c3c'}[s];}
-function getChartColors(){
-  const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  return{grid:dark?'#2a2520':'#eeede9',text:dark?'#6e6860':'#9a9690',
-    tooltip_bg:dark?'#1e1b18':'#fff',tooltip_border:dark?'#332e28':'#e0ddd7',
-    tooltip_title:dark?'#f0ece6':'#2a2925',tooltip_body:dark?'#6e6860':'#9a9690'};
+function destroyCharts(){
+  if(histChartObj){histChartObj.destroy();histChartObj=null;}
+  if(dailyChartObj){dailyChartObj.destroy();dailyChartObj=null;}
+  if(uptimeChartObj){uptimeChartObj.destroy();uptimeChartObj=null;}
 }
 
-// ── ดึง Read MAC ล่าสุดของแต่ละ SW จาก history ──
-// logic: หา MAC ที่ปรากฏบ่อยสุดใน 50 rows ล่าสุด (most recent sender)
-function inferReadMacs(history) {
-  const recent = history.slice(-200);
-  const macs   = ['','','',''];
-  // นับ MAC ที่ส่งข้อมูลและ SW ที่เกี่ยวข้อง
-  // เนื่องจาก 1 Read board ส่งครบ 4 SW ในแถวเดียว
-  // เราหา MAC ล่าสุดที่มีข้อมูล SW แต่ละช่อง ≠ ""
-  // แต่จริงๆ 1 board = 1 ชุด SW → ใช้ MAC ล่าสุดต่อชุด
-  // ในที่นี้เก็บ MAC ล่าสุดที่ส่งข้อมูล (row ล่าสุด)
-  // ถ้า SW แต่ละตัวมาจาก board คนละตัว ต้องแยกด้วย MAC
-  // → หา MAC ที่ส่งข้อมูล SW[i] บ่อยที่สุดใน recent rows
-  const swKeys = ['s1','s2','s3','s4'];
-  swKeys.forEach((k,i)=>{
-    const freq = {};
-    recent.forEach(r=>{
-      if(r.mac && r[k]!==undefined){
-        freq[r.mac] = (freq[r.mac]||0)+1;
-      }
-    });
-    const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
-    macs[i] = sorted.length ? sorted[0][0] : '';
+function cc(){
+  const dark = document.documentElement.getAttribute('data-theme')==='dark';
+  return{
+    grid:dark?'#2a2520':'#eeede9', text:dark?'#6e6860':'#9a9690',
+    tbg:dark?'#1e1b18':'#fff', tborder:dark?'#332e28':'#e0ddd7',
+    ttitle:dark?'#f0ece6':'#2a2925', tbody:dark?'#6e6860':'#9a9690'
+  };
+}
+
+// ═══════════════════════════════════════════════
+//  LOCAL MAP (Write MAC override + label)
+// ═══════════════════════════════════════════════
+function loadLocalMap(){ try{return JSON.parse(localStorage.getItem('devMap')||'{}')}catch{return{}} }
+function saveLocalMap(m){ localStorage.setItem('devMap',JSON.stringify(m)); }
+
+// ── รวม DeviceMap จาก GAS + localMap: localMap ชนะถ้ามี ──
+function getDeviceInfo(swIdx){
+  // หา mac_write จาก history — นับว่า mac_write ไหนส่งข้อมูล SW[swIdx] มากที่สุด
+  const freq = {};
+  allHistory.slice(-300).forEach(r=>{
+    const mw = r.mac_write||'';
+    if(mw && (r[SW_KEYS[swIdx]]==='On'||r[SW_KEYS[swIdx]]==='Off')){
+      freq[mw]=(freq[mw]||0)+1;
+    }
   });
-  return macs;
+  const topWrite = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
+
+  // หา mac_read ที่ paired กับ topWrite จาก deviceList
+  const paired = deviceList.find(d=>d.mac_write===topWrite)||{};
+  const macRead  = paired.mac_read||'';
+  const gasLabel = paired.label||'';
+
+  // localMap override
+  const lm = loadLocalMap()['sw'+(swIdx+1)]||{};
+  const writeMac = lm.writeMac || topWrite;
+  const label    = lm.label    || gasLabel;
+
+  return { macRead, macWrite: writeMac, label };
 }
 
-// ── Modal ──
-let modalSwIndex = -1;
-
-function openModal(swIndex) {
-  modalSwIndex = swIndex;
-  const map    = loadDeviceMap();
-  const key    = 'sw'+(swIndex+1);
-  const entry  = map[key] || {};
-  const col    = SW_COLORS[swIndex];
-
-  // SW badge
-  const badge = document.getElementById('modalSwBadge');
-  badge.textContent = SW_NAMES[swIndex];
-  badge.style.background = col+'22';
-  badge.style.color = col;
-  badge.style.border = '1px solid '+col;
-
-  // label ถ้ามี
-  const label = entry.label || '';
-  document.querySelector('.modal-title').textContent = label ? label : 'Device Info';
-
-  // Read MAC
-  const readMac = swReadMac[swIndex] || '—';
-  document.getElementById('modalReadMac').textContent = readMac;
-  document.getElementById('modalReadMac').className   = 'mac-info-val' + (readMac==='—'?' empty':'');
-
-  // Write MAC
-  const writeMac = entry.writeMac || '';
-  document.getElementById('modalWriteMacDisplay').textContent = writeMac || '—';
-  document.getElementById('modalWriteMacDisplay').className   = 'mac-info-val' + (writeMac?'':' empty');
-  document.getElementById('modalWriteMacInput').value = writeMac;
-  document.getElementById('macSavedNote').style.display = 'none';
-
-  // Label input
-  document.getElementById('modalLabelInput').value = label;
-
-  document.getElementById('modalOverlay').classList.add('open');
-}
-
-function closeModal(e){
-  if(e.target===document.getElementById('modalOverlay')) closeModalBtn();
-}
-function closeModalBtn(){
-  document.getElementById('modalOverlay').classList.remove('open');
-}
-
-function saveWriteMac(){
-  const val = document.getElementById('modalWriteMacInput').value.trim().toUpperCase();
-  const map = loadDeviceMap();
-  const key = 'sw'+(modalSwIndex+1);
-  if(!map[key]) map[key]={};
-  map[key].writeMac = val;
-  saveDeviceMap(map);
-  document.getElementById('modalWriteMacDisplay').textContent = val || '—';
-  document.getElementById('modalWriteMacDisplay').className   = 'mac-info-val'+(val?'':' empty');
-  const note = document.getElementById('macSavedNote');
-  note.style.display='block';
-  setTimeout(()=>note.style.display='none',2000);
-  renderSwitchCards(); // อัปเดต card hint
-}
-
-function saveLabel(){
-  const val = document.getElementById('modalLabelInput').value.trim();
-  const map = loadDeviceMap();
-  const key = 'sw'+(modalSwIndex+1);
-  if(!map[key]) map[key]={};
-  map[key].label = val;
-  saveDeviceMap(map);
-  document.querySelector('.modal-title').textContent = val || 'Device Info';
-  renderSwitchCards();
-}
-
-// ── Fetch ──
+// ═══════════════════════════════════════════════
+//  FETCH
+// ═══════════════════════════════════════════════
 async function fetchHistory(){
-  const res=await fetch(webAppURL+'?sts=history');
-  const text=await res.text();
-  if(text.startsWith('ERROR')) throw new Error(text);
-  return JSON.parse(text);
+  const r = await fetch(webAppURL+'?sts=history');
+  const t = await r.text();
+  if(t.startsWith('ERROR')) throw new Error(t);
+  return JSON.parse(t);
 }
 
-// ── Calc ──
+async function fetchDevices(){
+  try{
+    const r = await fetch(webAppURL+'?sts=devices');
+    const t = await r.text();
+    return JSON.parse(t);
+  }catch{ return []; }
+}
+
+// ═══════════════════════════════════════════════
+//  CALC
+// ═══════════════════════════════════════════════
+function filterDays(rows,days){
+  if(days==='all') return rows;
+  const cut = Date.now()-parseInt(days)*86400000;
+  return rows.filter(r=>r.t>=cut);
+}
+
 function calcStats(rows){
-  const swKeys=['s1','s2','s3','s4'];
-  const stats=swKeys.map(()=>({onCount:0,totalRows:0,toggles:0,onPct:0,maxOnDay:'—',maxOnDayCount:0}));
-  const prev=['','','',''];
-  const dayToggle=[{},{},{},{}];
-  rows.forEach(r=>{
-    const dayKey=new Date(r.t).toLocaleDateString('th-TH');
-    swKeys.forEach((k,i)=>{
-      stats[i].totalRows++;
-      if(r[k]==='On') stats[i].onCount++;
-      if(prev[i]==='Off'&&r[k]==='On'){
-        stats[i].toggles++;
-        dayToggle[i][dayKey]=(dayToggle[i][dayKey]||0)+1;
-      }
-      prev[i]=r[k];
+  return SW_KEYS.map((k,i)=>{
+    if(!rows.length) return {pct:0,toggles:0,todayToggles:0,todayPct:0,maxDay:'—',maxDayCnt:0};
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayRows = rows.filter(r=>{ const d=new Date(r.t);d.setHours(0,0,0,0);return d.getTime()===today.getTime(); });
+
+    let toggles=0, prev='', dayMap={};
+    let todayToggle=0, todayPrev='';
+    rows.forEach(r=>{
+      const day = new Date(r.t).toLocaleDateString('th-TH');
+      if(prev==='Off'&&r[k]==='On'){ toggles++; dayMap[day]=(dayMap[day]||0)+1; }
+      prev=r[k];
     });
+    todayRows.forEach(r=>{ if(todayPrev==='Off'&&r[k]==='On') todayToggle++; todayPrev=r[k]; });
+
+    const onCount = rows.filter(r=>r[k]==='On').length;
+    const pct     = Math.round(onCount/rows.length*100);
+    const todayOn = todayRows.filter(r=>r[k]==='On').length;
+    const todayPct= todayRows.length?Math.round(todayOn/todayRows.length*100):0;
+
+    let maxDay='—',maxDayCnt=0;
+    Object.entries(dayMap).forEach(([d,c])=>{ if(c>maxDayCnt){maxDayCnt=c;maxDay=d;} });
+    return{pct,toggles,todayToggles:todayToggle,todayPct,maxDay,maxDayCnt};
   });
-  stats.forEach((s,i)=>{
-    s.onPct=s.totalRows>0?Math.round(s.onCount/s.totalRows*100):0;
-    Object.entries(dayToggle[i]).forEach(([day,cnt])=>{if(cnt>s.maxOnDayCount){s.maxOnDayCount=cnt;s.maxOnDay=day;}});
-  });
-  return stats;
 }
 
 function calcDailyToggle(rows){
-  const swKeys=['s1','s2','s3','s4'];
   const prev=['','','',''];
   const days={};
   rows.forEach(r=>{
-    const dayKey=new Date(r.t).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit'});
-    if(!days[dayKey])days[dayKey]={sw1:0,sw2:0,sw3:0,sw4:0};
-    swKeys.forEach((k,i)=>{
-      if(prev[i]==='Off'&&r[k]==='On')days[dayKey]['sw'+(i+1)]++;
-      prev[i]=r[k];
-    });
+    const dk = new Date(r.t).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit'});
+    if(!days[dk]) days[dk]={sw1:0,sw2:0,sw3:0,sw4:0};
+    SW_KEYS.forEach((k,i)=>{ if(prev[i]==='Off'&&r[k]==='On') days[dk]['sw'+(i+1)]++; prev[i]=r[k]; });
   });
   return days;
 }
 
-// ── Render Switch Cards ──
-function getLatestState(){
-  if(!allHistory.length) return {sw1:'Off',sw2:'Off',sw3:'Off',sw4:'Off'};
+// ═══════════════════════════════════════════════
+//  RENDER — SW CARDS
+// ═══════════════════════════════════════════════
+function getLatest(){
+  if(!allHistory.length) return{s1:'Off',s2:'Off',s3:'Off',s4:'Off'};
   const r=allHistory[allHistory.length-1];
-  return {sw1:r.s1||'Off',sw2:r.s2||'Off',sw3:r.s3||'Off',sw4:r.s4||'Off'};
+  return{s1:r.s1||'Off',s2:r.s2||'Off',s3:r.s3||'Off',s4:r.s4||'Off'};
 }
 
-function renderSwitchCards(){
-  const data  = getLatestState();
-  const stats = calcStats(allHistory);
-  const map   = loadDeviceMap();
-  const vals  = [data.sw1,data.sw2,data.sw3,data.sw4];
+function renderCards(){
+  const latest = getLatest();
+  const stats  = calcStats(allHistory);
+  const vals   = [latest.s1,latest.s2,latest.s3,latest.s4];
 
-  document.getElementById('switchGrid').innerHTML = SW_NAMES.map((name,i)=>{
-    const on         = vals[i]==='On';
-    const s          = stats[i];
-    const pct        = s.onPct;
-    const col        = SW_COLORS[i];
-    const iconStroke = on?'#ffffff':'var(--muted)';
-    const onStyle    = on?`border-color:${col};box-shadow:0 0 0 1px ${col}33,var(--shadow);`:'';
-    const stateColor = on?col:'var(--off)';
-    const iconBg     = on?`background:${col};border-color:${col};`:'';
-    const entry      = map['sw'+(i+1)]||{};
-    const label      = entry.label||'';
-    const writeMac   = entry.writeMac||'';
-    const readMac    = swReadMac[i]||'';
-    // hint ใต้การ์ด
-    const hint = (readMac||writeMac) ? '📡+💡 configured' : 'คลิกเพื่อตั้งค่า device';
+  document.getElementById('swGrid').innerHTML = SW_NAMES.map((name,i)=>{
+    const on   = vals[i]==='On';
+    const s    = stats[i];
+    const col  = SW_COLORS[i];
+    const dev  = getDeviceInfo(i);
+    const hint = (dev.macRead||dev.macWrite)?'📡 + 💡 configured':'คลิกเพื่อตั้งค่า';
 
-    return `<div class="switch-card ${on?'on':''}" style="${onStyle}" onclick="openModal(${i})">
-      <div class="sw-top">
+    const readMacEl  = dev.macRead
+      ? `<span class="mac-val">${dev.macRead}</span>`
+      : `<span class="mac-val empty">ยังไม่มีข้อมูล</span>`;
+    const writeMacEl = dev.macWrite
+      ? `<span class="mac-val">${dev.macWrite}</span>`
+      : `<span class="mac-val empty">ยังไม่ได้กรอก</span>`;
+
+    return `
+    <div class="sw-card ${on?'on':''}"
+         style="--col:${col};"
+         onclick="openModal(${i})">
+      <div class="sw-head">
         <div>
-          <div class="sw-label" style="color:${col};">${name}${label?` · <span style="color:var(--muted);letter-spacing:0;">${label}</span>`:''}</div>
-          <div class="sw-state" style="color:${stateColor};">${on?'ON':'OFF'}</div>
+          <div class="sw-id" style="color:${col};">${name}${dev.label?` <span style="color:var(--muted);font-weight:400;letter-spacing:0;">· ${dev.label}</span>`:''}
+          </div>
         </div>
-        <div class="sw-icon" style="${iconBg}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="${iconStroke}" stroke-width="2">
+        <div class="sw-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="${on?'#fff':'var(--muted)'}" stroke-width="2">
             <circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="12"/>
           </svg>
         </div>
       </div>
-      <div class="sw-bar"><div class="sw-bar-fill" style="width:${pct}%;background:${col};"></div></div>
-      <div class="sw-stats">
-        <div><div class="sw-stat-label">% เวลาเปิด</div><div class="sw-stat-val">${pct}%</div></div>
-        <div><div class="sw-stat-label">เปิดทั้งหมด</div><div class="sw-stat-val">${s.toggles} ครั้ง</div></div>
-        <div><div class="sw-stat-label">สูงสุด/วัน</div><div class="sw-stat-val">${s.maxOnDayCount} ครั้ง</div></div>
-        <div><div class="sw-stat-label">วันที่สูงสุด</div><div class="sw-stat-val" style="font-size:11px;">${s.maxOnDay}</div></div>
+
+      <div class="sw-state">${on?'ON':'OFF'}</div>
+
+      <div class="sw-bar">
+        <div class="sw-bar-fill" style="width:${s.pct}%;background:${col};"></div>
       </div>
-      <div class="sw-info-hint">${hint}</div>
+
+      <div class="sw-stats">
+        <div class="stat-cell">
+          <div class="stat-cell-label">% เวลาเปิด (รวม)</div>
+          <div class="stat-cell-val">${s.pct}%</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">เปิดทั้งหมด</div>
+          <div class="stat-cell-val">${s.toggles} ครั้ง</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">วันนี้เปิด</div>
+          <div class="stat-cell-val hi" style="color:${col};">${s.todayToggles} ครั้ง</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">วันนี้ % เปิด</div>
+          <div class="stat-cell-val hi" style="color:${col};">${s.todayPct}%</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">สูงสุด/วัน</div>
+          <div class="stat-cell-val">${s.maxDayCnt} ครั้ง</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">วันที่สูงสุด</div>
+          <div class="stat-cell-val" style="font-size:11px;">${s.maxDay}</div>
+        </div>
+      </div>
+
+      <!-- MAC info ใต้การ์ด -->
+      <div class="sw-mac-area">
+        <div class="mac-row">
+          <span class="mac-type-badge mac-type-read">READ</span>
+          ${readMacEl}
+        </div>
+        <div class="mac-row">
+          <span class="mac-type-badge mac-type-write">WRITE</span>
+          ${writeMacEl}
+        </div>
+      </div>
+
+      <div class="sw-hint">${hint}</div>
     </div>`;
   }).join('');
 }
 
-function renderStatsGrid(stats){
-  document.getElementById('statsGrid').innerHTML=stats.map((s,i)=>{
-    const col=SW_COLORS[i];
-    return `<div class="stat-card" style="border-top:3px solid ${col};">
-      <div class="stat-sw-label" style="color:${col};">${SW_NAMES[i]}</div>
-      <div><span class="stat-num" style="color:${col};">${s.onPct}</span><span class="stat-unit">%</span></div>
-      <div class="stat-desc">เวลาที่เปิดทั้งหมด</div>
-      <div class="stat-row">เปิดทั้งหมด <span>${s.toggles} ครั้ง</span></div>
-      <div class="stat-row">สูงสุด/วัน <span>${s.maxOnDayCount} ครั้ง</span></div>
-      <div class="stat-row">วันที่สูงสุด <span style="font-size:11px;">${s.maxOnDay}</span></div>
+// ═══════════════════════════════════════════════
+//  RENDER — SUMMARY GRID
+// ═══════════════════════════════════════════════
+function renderSummary(){
+  const stats = calcStats(allHistory);
+  document.getElementById('sumGrid').innerHTML = SW_NAMES.map((name,i)=>{
+    const s   = stats[i];
+    const col = SW_COLORS[i];
+    return `
+    <div class="sum-card" style="border-top:3px solid ${col};">
+      <div class="sum-sw" style="color:${col};">${name}</div>
+      <div><span class="sum-num" style="color:${col};">${s.pct}</span><span class="sum-unit"> %</span></div>
+      <div class="sum-row">เปิดรวม <span>${s.toggles} ครั้ง</span></div>
+      <div class="sum-row">วันนี้เปิด <span style="color:${col};">${s.todayToggles} ครั้ง</span></div>
+      <div class="sum-row">วันนี้ % <span style="color:${col};">${s.todayPct}%</span></div>
+      <div class="sum-row">สูงสุด/วัน <span>${s.maxDayCnt} ครั้ง</span></div>
+      <div class="sum-row" style="font-size:10px;">วันสูงสุด <span style="font-size:10px;">${s.maxDay}</span></div>
     </div>`;
   }).join('');
 }
 
-function setChartMode(mode,btn){
-  chartMode=mode;
+// ═══════════════════════════════════════════════
+//  CHARTS
+// ═══════════════════════════════════════════════
+function setUptimeRange(r,btn){
+  uptimeRange=r;
+  document.querySelectorAll('#uptimeTabs .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if(uptimeChartObj){uptimeChartObj.destroy();uptimeChartObj=null;}
+  renderUptimeChart();
+}
+
+function renderUptimeChart(){
+  const c    = cc();
+  const rows = filterDays(allHistory, uptimeRange);
+  const pcts = SW_KEYS.map(k=>rows.length?Math.round(rows.filter(r=>r[k]==='On').length/rows.length*100):0);
+  const cfg = {
+    type:'bar',
+    data:{labels:SW_NAMES,datasets:[{
+      label:'% เวลาเปิด', data:pcts,
+      backgroundColor:SW_COLORS.map(x=>x+'bb'),
+      borderColor:SW_COLORS, borderWidth:1.5, borderRadius:6
+    }]},
+    options:{responsive:true,animation:false,indexAxis:'y',
+      scales:{
+        x:{min:0,max:100,ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},callback:v=>v+'%'},grid:{color:c.grid}},
+        y:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:11}},grid:{display:false}}
+      },
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:c.tbg,borderColor:c.tborder,borderWidth:1,titleColor:c.ttitle,bodyColor:c.tbody,
+          callbacks:{label:ctx=>` ${ctx.raw}% เวลาเปิด`}}}
+    }
+  };
+  if(uptimeChartObj){uptimeChartObj.destroy();}
+  uptimeChartObj = new Chart(document.getElementById('uptimeChart').getContext('2d'),cfg);
+}
+
+function setHistMode(m,btn){
+  histMode=m;
   document.querySelectorAll('#histTabs .tab').forEach(t=>t.classList.remove('active'));
-  if(btn)btn.classList.add('active');
+  btn.classList.add('active');
+  if(histChartObj){histChartObj.destroy();histChartObj=null;}
   renderHistChart();
 }
-function clearDateFilter(){document.getElementById('filterDate').value='';renderHistChart();}
+
+function clearDate(){ document.getElementById('filterDate').value=''; renderHistChart(); }
 
 function renderHistChart(){
-  const c=getChartColors();
-  const fd=document.getElementById('filterDate').value;
-  let rows=allHistory;
-  if(fd){const d=new Date(fd);rows=rows.filter(r=>{const x=new Date(r.t);return x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth()&&x.getDate()===d.getDate();});}
-  const labels=rows.map(r=>new Date(r.t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}));
-  const swKeys=['s1','s2','s3','s4'];
-  const swLabels=['Switch 1','Switch 2','Switch 3','Switch 4'];
+  const c  = cc();
+  const fd = document.getElementById('filterDate').value;
+  let rows = allHistory;
+  if(fd){ const d=new Date(fd); rows=rows.filter(r=>{const x=new Date(r.t);return x.toDateString()===d.toDateString();}); }
+  const labels = rows.map(r=>new Date(r.t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}));
   let datasets;
-  if(chartMode==='all'){
-    datasets=swKeys.map((k,i)=>({label:swLabels[i],data:rows.map(r=>r[k]==='On'?1:0),borderColor:SW_COLORS[i],backgroundColor:SW_COLORS[i]+'22',fill:true,tension:.3,pointRadius:2,borderWidth:1.5}));
+  if(histMode==='all'){
+    datasets=SW_KEYS.map((k,i)=>({
+      label:SW_NAMES[i], data:rows.map(r=>r[k]==='On'?1:0),
+      borderColor:SW_COLORS[i], backgroundColor:SW_COLORS[i]+'22',
+      fill:true, tension:.3, pointRadius:2, borderWidth:1.5
+    }));
   } else {
-    const i=parseInt(chartMode.replace('sw',''))-1;
-    datasets=[{label:swLabels[i],data:rows.map(r=>r[swKeys[i]]==='On'?1:0),borderColor:SW_COLORS[i],backgroundColor:SW_COLORS[i]+'33',fill:true,tension:.3,pointRadius:2,borderWidth:2}];
+    const i=parseInt(histMode.replace('sw',''))-1;
+    datasets=[{
+      label:SW_NAMES[i], data:rows.map(r=>r[SW_KEYS[i]]==='On'?1:0),
+      borderColor:SW_COLORS[i], backgroundColor:SW_COLORS[i]+'33',
+      fill:true, tension:.3, pointRadius:2, borderWidth:2
+    }];
   }
   const cfg={type:'line',data:{labels,datasets},options:{responsive:true,animation:false,
-    scales:{x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},maxTicksLimit:12},grid:{color:c.grid}},
-      y:{min:-.1,max:1.1,ticks:{color:c.text,callback:v=>v===1?'ON':v===0?'OFF':'',font:{family:'IBM Plex Mono',size:10}},grid:{color:c.grid}}},
+    scales:{
+      x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},maxTicksLimit:12},grid:{color:c.grid}},
+      y:{min:-.1,max:1.1,ticks:{color:c.text,callback:v=>v===1?'ON':v===0?'OFF':'',font:{family:'IBM Plex Mono',size:10}},grid:{color:c.grid}}
+    },
     plugins:{legend:{labels:{color:c.text,font:{family:'IBM Plex Mono',size:11},boxWidth:12}},
-      tooltip:{backgroundColor:c.tooltip_bg,borderColor:c.tooltip_border,borderWidth:1,titleColor:c.tooltip_title,bodyColor:c.tooltip_body,
+      tooltip:{backgroundColor:c.tbg,borderColor:c.tborder,borderWidth:1,titleColor:c.ttitle,bodyColor:c.tbody,
         callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.raw===1?'ON':'OFF'}`}}}}};
-  if(histChart){histChart.data.labels=labels;histChart.data.datasets=datasets;histChart.update();}
-  else{histChart=new Chart(document.getElementById('historyChart').getContext('2d'),cfg);}
+  if(histChartObj){histChartObj.destroy();}
+  histChartObj=new Chart(document.getElementById('histChart').getContext('2d'),cfg);
 }
 
-function setDailyMode(mode,btn){
-  dailyMode=mode;
+function setDailyMode(m,btn){
+  dailyMode=m;
   document.querySelectorAll('#dailyTabs .tab').forEach(t=>t.classList.remove('active'));
-  if(btn)btn.classList.add('active');
+  btn.classList.add('active');
+  if(dailyChartObj){dailyChartObj.destroy();dailyChartObj=null;}
   renderDailyChart();
 }
 
 function renderDailyChart(){
-  const c=getChartColors();
-  const days=calcDailyToggle(allHistory);
-  const labels=Object.keys(days);
-  const swNames=['sw1','sw2','sw3','sw4'];
-  const swLabels=['SW1','SW2','SW3','SW4'];
+  const c    = cc();
+  const days = calcDailyToggle(allHistory);
+  const lbls = Object.keys(days);
   let datasets;
   if(dailyMode==='all'){
-    datasets=swNames.map((k,i)=>({label:swLabels[i],data:labels.map(d=>days[d][k]),backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4}));
+    datasets=SW_NAMES.map((name,i)=>({
+      label:name, data:lbls.map(d=>days[d]['sw'+(i+1)]),
+      backgroundColor:SW_COLORS[i]+'99', borderColor:SW_COLORS[i], borderWidth:1, borderRadius:4
+    }));
   } else {
     const i=parseInt(dailyMode.replace('sw',''))-1;
-    datasets=[{label:swLabels[i],data:labels.map(d=>days[d][swNames[i]]),backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4}];
+    datasets=[{label:SW_NAMES[i],data:lbls.map(d=>days[d]['sw'+(i+1)]),
+      backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4}];
   }
-  const cfg={type:'bar',data:{labels,datasets},options:{responsive:true,animation:false,
+  const cfg={type:'bar',data:{labels:lbls,datasets},options:{responsive:true,animation:false,
     scales:{x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10}},grid:{color:c.grid}},
       y:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},stepSize:1},grid:{color:c.grid}}},
     plugins:{legend:{labels:{color:c.text,font:{family:'IBM Plex Mono',size:11},boxWidth:12}},
-      tooltip:{backgroundColor:c.tooltip_bg,borderColor:c.tooltip_border,borderWidth:1,titleColor:c.tooltip_title,bodyColor:c.tooltip_body}}}};
-  if(dailyChart){dailyChart.data.labels=labels;dailyChart.data.datasets=datasets;dailyChart.update();}
-  else{dailyChart=new Chart(document.getElementById('dailyChart').getContext('2d'),cfg);}
+      tooltip:{backgroundColor:c.tbg,borderColor:c.tborder,borderWidth:1,titleColor:c.ttitle,bodyColor:c.tbody}}}};
+  if(dailyChartObj){dailyChartObj.destroy();}
+  dailyChartObj=new Chart(document.getElementById('dailyChart').getContext('2d'),cfg);
 }
 
-function clearLogFilter(){document.getElementById('logFilterDate').value='';renderLog();}
+// ═══════════════════════════════════════════════
+//  LOG TABLE
+// ═══════════════════════════════════════════════
+function clearLogDate(){ document.getElementById('logDate').value=''; renderLog(); }
 
 function renderLog(){
-  const wrap=document.getElementById('logTableWrap');
-  const fd=document.getElementById('logFilterDate').value;
-  let rows=[...allHistory].reverse();
-  if(fd){const d=new Date(fd);rows=rows.filter(r=>{const x=new Date(r.t);return x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth()&&x.getDate()===d.getDate();});}
-  else{rows=rows.slice(0,30);}
-  if(!rows.length){wrap.innerHTML='<div class="loading">ไม่มีข้อมูล</div>';return;}
-  const badge=v=>v==='On'?`<span class="badge badge-on">ON</span>`:`<span class="badge badge-off">OFF</span>`;
-  const allRaw=[...allHistory];
+  const wrap = document.getElementById('logWrap');
+  const fd   = document.getElementById('logDate').value;
+  let rows   = [...allHistory].reverse();
+  if(fd){ const d=new Date(fd); rows=rows.filter(r=>new Date(r.t).toDateString()===d.toDateString()); }
+  else   { rows=rows.slice(0,40); }
+  if(!rows.length){ wrap.innerHTML='<div class="loading">ไม่มีข้อมูล</div>'; return; }
+
+  const badge = v=>v==='On'
+    ?`<span class="badge badge-on">ON</span>`
+    :`<span class="badge badge-off">OFF</span>`;
+
+  const all = [...allHistory];
   wrap.innerHTML=`<table class="log-table">
-    <thead><tr><th>วันที่</th><th>เวลา</th><th>MAC (Read)</th><th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th><th>เปลี่ยน</th></tr></thead>
+    <thead><tr>
+      <th>วันที่</th><th>เวลา</th>
+      <th>MAC Write</th><th>MAC Read</th>
+      <th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th><th>เปลี่ยน</th>
+    </tr></thead>
     <tbody>${rows.map(r=>{
-      const d=new Date(r.t);
-      const idx=allRaw.findIndex(x=>x.t===r.t);
-      const prev=idx>0?allRaw[idx-1]:null;
-      const changed=[];
-      if(prev)['s1','s2','s3','s4'].forEach((k,i)=>{if(prev[k]!==r[k]&&r[k]==='On')changed.push('SW'+(i+1));});
+      const d   = new Date(r.t);
+      const idx = all.findIndex(x=>x.t===r.t);
+      const prv = idx>0?all[idx-1]:null;
+      const chg = [];
+      if(prv) SW_KEYS.forEach((k,i)=>{ if(prv[k]!==r[k]&&r[k]==='On') chg.push(SW_NAMES[i]); });
       return `<tr>
         <td>${d.toLocaleDateString('th-TH')}</td>
         <td>${d.toLocaleTimeString('th-TH')}</td>
-        <td class="mac-cell">${r.mac||'—'}</td>
+        <td class="mac-sm">${r.mac_write||'—'}</td>
+        <td class="mac-sm">${r.mac_read||'—'}</td>
         <td>${badge(r.s1)}</td><td>${badge(r.s2)}</td><td>${badge(r.s3)}</td><td>${badge(r.s4)}</td>
-        <td>${changed.map(c=>`<span class="change-badge">${c}↑</span>`).join('')}</td>
+        <td>${chg.map(c=>`<span class="chg-badge">${c}↑</span>`).join('')}</td>
       </tr>`;
-    }).join('')}</tbody></table>`;
+    }).join('')}</tbody>
+  </table>`;
 }
 
-// ── Main ──
+// ═══════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════
+let modalIdx = -1;
+
+function openModal(i){
+  modalIdx = i;
+  const col = SW_COLORS[i];
+  const dev = getDeviceInfo(i);
+  const lm  = loadLocalMap()['sw'+(i+1)]||{};
+
+  document.getElementById('modalTitle').textContent = lm.label||dev.label||'Device Info';
+  const pill = document.getElementById('modalPill');
+  pill.textContent = SW_NAMES[i];
+  pill.style.cssText = `background:${col}22;color:${col};border:1px solid ${col};`;
+
+  // Read MAC
+  const rm = document.getElementById('mReadMac');
+  rm.textContent  = dev.macRead||'ยังไม่มีข้อมูลใน Sheets';
+  rm.className    = 'info-block-val'+(dev.macRead?'':' empty');
+
+  // Write MAC
+  const wm = document.getElementById('mWriteMacDisp');
+  wm.textContent = dev.macWrite||'ยังไม่ได้กรอก';
+  wm.className   = 'info-block-val'+(dev.macWrite?'':' empty');
+  document.getElementById('mWriteMacInp').value = dev.macWrite;
+  document.getElementById('savedNote').style.display='none';
+
+  // Label
+  document.getElementById('mLblInp').value = lm.label||dev.label||'';
+
+  document.getElementById('modalOv').classList.add('open');
+}
+
+function closeModal(){ document.getElementById('modalOv').classList.remove('open'); }
+function closeModalBg(e){ if(e.target===document.getElementById('modalOv')) closeModal(); }
+
+function saveWriteMac(){
+  const val = document.getElementById('mWriteMacInp').value.trim().toUpperCase();
+  const map = loadLocalMap();
+  const key = 'sw'+(modalIdx+1);
+  if(!map[key]) map[key]={};
+  map[key].writeMac = val;
+  saveLocalMap(map);
+  document.getElementById('mWriteMacDisp').textContent = val||'ยังไม่ได้กรอก';
+  document.getElementById('mWriteMacDisp').className   = 'info-block-val'+(val?'':' empty');
+  const note = document.getElementById('savedNote');
+  note.style.display='block';
+  setTimeout(()=>note.style.display='none',2000);
+  renderCards();
+}
+
+function saveLabel(){
+  const val = document.getElementById('mLblInp').value.trim();
+  const map = loadLocalMap();
+  const key = 'sw'+(modalIdx+1);
+  if(!map[key]) map[key]={};
+  map[key].label = val;
+  saveLocalMap(map);
+  document.getElementById('modalTitle').textContent = val||'Device Info';
+  renderCards();
+}
+
+// ═══════════════════════════════════════════════
+//  UTIL
+// ═══════════════════════════════════════════════
+function showErr(msg){ const e=document.getElementById('errMsg'); e.style.display=msg?'block':'none'; e.textContent=msg; }
+function setStatus(s){ document.getElementById('statusDot').style.background={ok:'#f47b20',loading:'#f4c020',error:'#e74c3c'}[s]; }
+
+document.getElementById('filterDate').addEventListener('change', renderHistChart);
+document.getElementById('logDate').addEventListener('change', renderLog);
+
+function renderCharts(){
+  renderUptimeChart();
+  renderHistChart();
+  renderDailyChart();
+}
+
+// ═══════════════════════════════════════════════
+//  MAIN FETCH
+// ═══════════════════════════════════════════════
 async function fetchAll(){
   try{
-    showError(''); setStatus('loading');
-    allHistory = await fetchHistory();
-    swReadMac  = inferReadMacs(allHistory);  // ดึง Read MAC อัตโนมัติ
-    const stats = calcStats(allHistory);
-    renderSwitchCards();
-    renderStatsGrid(stats);
-    if(histChart){histChart.destroy();histChart=null;}
-    if(dailyChart){dailyChart.destroy();dailyChart=null;}
-    renderHistChart(); renderDailyChart(); renderLog();
-    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('th-TH');
+    showErr(''); setStatus('loading');
+    const [history, devices] = await Promise.all([fetchHistory(), fetchDevices()]);
+    allHistory = history;
+    deviceList = devices;
+    renderCards();
+    renderSummary();
+    destroyCharts();
+    renderCharts();
+    renderLog();
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('th-TH');
     setStatus('ok');
-  } catch(e){
-    showError('⚠ ไม่สามารถเชื่อมต่อ: '+e.message);
+  }catch(e){
+    showErr('⚠ ไม่สามารถเชื่อมต่อ: '+e.message);
     setStatus('error');
   }
 }
 
 function startTimer(){
-  if(timer)clearInterval(timer);
-  if(autoInterval>0)timer=setInterval(fetchAll,autoInterval);
+  if(timer) clearInterval(timer);
+  if(autoInterval>0) timer=setInterval(fetchAll,autoInterval);
 }
 
 fetchAll();
