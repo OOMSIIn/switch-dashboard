@@ -9,83 +9,53 @@
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sarabun:wght@300;400;500&display=swap');
 
   [data-theme="light"] {
-    --bg:#f5f4f0;
-    --surface:#ffffff;
-    --card:#ffffff;
-    --border:#e0ddd7;
-    --border2:#ccc9c2;
-    --accent:#f47b20;
-    --accent-soft:#fff0e6;
-    --accent-dark:#c95e0a;
-    --text:#2a2925;
-    --text2:#5a5750;
-    --muted:#9a9690;
-    --on:#f47b20;
-    --off:#c8c5be;
-    --tag-on-bg:#fff0e6;
-    --tag-on-txt:#c95e0a;
-    --tag-off-bg:#eeede9;
-    --tag-off-txt:#9a9690;
-    --chart-grid:#eeede9;
-    --chart-text:#9a9690;
+    --bg:#f5f4f0; --surface:#ffffff;
+    --border:#e0ddd7; --border2:#ccc9c2;
+    --accent:#f47b20; --accent-soft:#fff0e6; --accent-dark:#c95e0a;
+    --text:#2a2925; --text2:#5a5750; --muted:#9a9690;
+    --on:#f47b20; --off:#c8c5be;
+    --tag-on-bg:#fff0e6; --tag-on-txt:#c95e0a;
+    --tag-off-bg:#eeede9; --tag-off-txt:#9a9690;
     --shadow:0 1px 4px rgba(0,0,0,.07);
+    --overlay:rgba(0,0,0,.35);
   }
-
   [data-theme="dark"] {
-    --bg:#141210;
-    --surface:#1e1b18;
-    --card:#252118;
-    --border:#332e28;
-    --border2:#4a4338;
-    --accent:#f47b20;
-    --accent-soft:#2a1e10;
-    --accent-dark:#ff9a4d;
-    --text:#f0ece6;
-    --text2:#b0aa9f;
-    --muted:#6e6860;
-    --on:#f47b20;
-    --off:#3a3530;
-    --tag-on-bg:#2a1e10;
-    --tag-on-txt:#f47b20;
-    --tag-off-bg:#2a2520;
-    --tag-off-txt:#6e6860;
-    --chart-grid:#2a2520;
-    --chart-text:#6e6860;
+    --bg:#141210; --surface:#1e1b18;
+    --border:#332e28; --border2:#4a4338;
+    --accent:#f47b20; --accent-soft:#2a1e10; --accent-dark:#ff9a4d;
+    --text:#f0ece6; --text2:#b0aa9f; --muted:#6e6860;
+    --on:#f47b20; --off:#3a3530;
+    --tag-on-bg:#2a1e10; --tag-on-txt:#f47b20;
+    --tag-off-bg:#2a2520; --tag-off-txt:#6e6860;
     --shadow:0 1px 4px rgba(0,0,0,.3);
+    --overlay:rgba(0,0,0,.6);
   }
 
   *{box-sizing:border-box;margin:0;padding:0;}
-  html{transition:background .3s,color .3s;}
   body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;font-weight:300;min-height:100vh;transition:background .3s,color .3s;}
 
-  /* ── Header ── */
+  /* Header */
   header{background:var(--surface);border-bottom:1px solid var(--border);padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
   .logo{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:2px;font-weight:500;}
   .logo span{color:var(--text2);}
-  .header-right{display:flex;align-items:center;gap:1.25rem;}
+  .header-right{display:flex;align-items:center;gap:1rem;}
   .status-pill{display:flex;align-items:center;gap:6px;background:var(--accent-soft);border:1px solid var(--border);padding:4px 12px;border-radius:20px;}
   .status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
   .status-txt{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
-
-  /* ✅ MAC pill ใน header */
-  .mac-pill{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);padding:4px 12px;border-radius:20px;}
-  .mac-pill-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
-  .mac-pill-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:.5px;}
-
   .theme-btn{background:none;border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
   .theme-btn:hover{border-color:var(--accent);color:var(--accent);}
   .refresh-btn{background:var(--accent);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:500;transition:background .2s;}
   .refresh-btn:hover{background:var(--accent-dark);}
 
-  /* ── Main ── */
+  /* Main */
   main{padding:2rem;max-width:1100px;margin:0 auto;}
   .section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:.875rem;}
   .error-msg{background:#fff0ee;border:1px solid #fcc;border-radius:8px;padding:.875rem 1rem;color:#c0392b;font-size:13px;margin-bottom:1rem;display:none;}
   [data-theme="dark"] .error-msg{background:#2a1515;border-color:#4a2020;color:#ff8080;}
 
-  /* ── Config ── */
-  .config-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;box-shadow:var(--shadow);}
+  /* Config */
+  .config-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;box-shadow:var(--shadow);}
   .config-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
   .url-input{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:200px;transition:border .2s;}
   .url-input:focus{outline:none;border-color:var(--accent);}
@@ -93,13 +63,14 @@
   .save-btn{background:var(--accent);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;}
   .save-btn:hover{background:var(--accent-dark);}
 
-  /* ── Switch cards ── */
-  .switch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;}
-  .switch-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s;box-shadow:var(--shadow);}
+  /* Switch grid */
+  .switch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-bottom:2rem;}
+  .switch-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;cursor:pointer;transition:border-color .3s,box-shadow .3s,transform .15s;box-shadow:var(--shadow);position:relative;}
+  .switch-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1);}
   .switch-card.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)22,var(--shadow);}
   .sw-top{display:flex;align-items:flex-start;justify-content:space-between;}
   .sw-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:.5rem;}
-  .sw-state{font-size:30px;font-weight:500;color:var(--off);transition:color .3s;letter-spacing:1px;}
+  .sw-state{font-size:30px;font-weight:500;color:var(--off);transition:color .3s;}
   .switch-card.on .sw-state{color:var(--accent);}
   .sw-icon{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:background .3s;}
   .switch-card.on .sw-icon{background:var(--accent);border-color:var(--accent);}
@@ -109,18 +80,20 @@
   .sw-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
   .sw-stat-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
   .sw-stat-val{font-size:13px;font-weight:500;color:var(--text);}
+  /* info hint */
+  .sw-info-hint{position:absolute;bottom:.75rem;right:.875rem;font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
 
-  /* ── Stats overview ── */
+  /* Stats */
   .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;box-shadow:var(--shadow);}
-  .stat-sw-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--accent);margin-bottom:.5rem;}
-  .stat-num{font-size:30px;font-weight:500;color:var(--accent);font-family:'IBM Plex Mono',monospace;line-height:1;}
+  .stat-sw-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;margin-bottom:.5rem;}
+  .stat-num{font-size:30px;font-weight:500;font-family:'IBM Plex Mono',monospace;line-height:1;}
   .stat-unit{font-size:13px;color:var(--muted);margin-left:2px;}
   .stat-desc{font-size:12px;color:var(--text2);margin-top:.5rem;}
   .stat-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-top:.375rem;}
   .stat-row span{color:var(--text);font-weight:500;}
 
-  /* ── Chart sections ── */
+  /* Chart */
   .chart-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);}
   .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem;}
   .chart-title{font-size:14px;font-weight:500;color:var(--text);}
@@ -133,7 +106,7 @@
   .date-input{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;font-family:'IBM Plex Mono',monospace;}
   .date-input:focus{outline:none;border-color:var(--accent);}
 
-  /* ── Log table ── */
+  /* Log table */
   .log-table{width:100%;border-collapse:collapse;font-size:13px;}
   .log-table th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);text-transform:uppercase;}
   .log-table td{padding:.6rem .75rem;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);}
@@ -143,16 +116,47 @@
   .badge-on{background:var(--tag-on-bg);color:var(--tag-on-txt);}
   .badge-off{background:var(--tag-off-bg);color:var(--tag-off-txt);}
   .change-badge{background:var(--accent-soft);color:var(--accent);padding:2px 6px;border-radius:4px;font-size:10px;margin-right:2px;}
-
-  /* ✅ MAC cell ใน log table */
-  .mac-cell{font-size:10px;color:var(--muted);letter-spacing:.3px;}
+  .mac-cell{font-size:10px;color:var(--muted);}
 
   .loading{text-align:center;padding:3rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
+
+  /* ── Device Info Modal ── */
+  .modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,.2);transform:translateY(10px);transition:transform .2s;}
+  .modal-overlay.open .modal{transform:translateY(0);}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+  .modal-title{font-size:16px;font-weight:500;color:var(--text);}
+  .modal-sw-badge{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
+  .modal-close{background:none;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;line-height:1;transition:all .2s;}
+  .modal-close:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* MAC info rows */
+  .mac-info-row{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:.75rem;}
+  .mac-info-type{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:.375rem;text-transform:uppercase;}
+  .mac-info-val{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--text);font-weight:500;letter-spacing:.5px;}
+  .mac-info-val.empty{color:var(--muted);font-size:12px;font-weight:400;}
+  .mac-type-read .mac-info-type{color:#2196f3;}
+  .mac-type-write .mac-info-type{color:#4caf50;}
+
+  /* Write MAC input in modal */
+  .mac-edit-row{display:flex;gap:.5rem;margin-top:.5rem;}
+  .mac-edit-input{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;transition:border .2s;}
+  .mac-edit-input:focus{outline:none;border-color:var(--accent);}
+  .mac-edit-btn{background:var(--accent);color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;white-space:nowrap;}
+  .mac-edit-btn:hover{background:var(--accent-dark);}
+  .mac-saved-note{font-size:11px;color:#4caf50;font-family:'IBM Plex Mono',monospace;margin-top:.375rem;display:none;}
+
+  /* Label input */
+  .label-row{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);}
+  .label-row label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:.375rem;}
+  .label-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;font-family:'Sarabun',sans-serif;transition:border .2s;}
+  .label-input:focus{outline:none;border-color:var(--accent);}
+
   @media(max-width:600px){
     main{padding:1rem;}
     header{padding:.875rem 1rem;}
     .switch-grid{grid-template-columns:1fr 1fr;}
-    .mac-pill{display:none;} /* ซ่อนบนมือถือเพราะ header แคบ */
   }
 </style>
 </head>
@@ -161,16 +165,11 @@
 <header>
   <div class="logo">⚡ Switch<span>Log</span></div>
   <div class="header-right">
-    <!-- ✅ MAC Address pill -->
-    <div class="mac-pill">
-      <span class="mac-pill-label">MAC</span>
-      <span class="mac-pill-val" id="headerMac">—</span>
-    </div>
     <div class="status-pill">
       <div class="status-dot" id="statusDot"></div>
       <span class="status-txt" id="lastUpdate">—</span>
     </div>
-    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="เปลี่ยนธีม">🌙</button>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
     <button class="refresh-btn" onclick="fetchAll()">↻ Refresh</button>
   </div>
 </header>
@@ -180,7 +179,7 @@
 
   <div class="config-section">
     <span class="config-label">Web App URL:</span>
-    <input class="url-input" type="text" id="urlInput" placeholder="https://script.google.com/macros/s/.../exec"/>
+    <input class="url-input" id="urlInput" placeholder="https://script.google.com/macros/s/.../exec"/>
     <select class="interval-select" id="intervalSelect">
       <option value="30000">Auto: 30s</option>
       <option value="60000">Auto: 60s</option>
@@ -189,7 +188,7 @@
     <button class="save-btn" onclick="saveConfig()">บันทึก</button>
   </div>
 
-  <div class="section-label">สถานะปัจจุบัน</div>
+  <div class="section-label">สถานะปัจจุบัน <span style="color:var(--muted);font-size:9px;letter-spacing:1px;">— คลิกเพื่อดู Device Info</span></div>
   <div class="switch-grid" id="switchGrid"><div class="loading">กำลังโหลด...</div></div>
 
   <div class="section-label">สถิติรวม</div>
@@ -241,146 +240,285 @@
   </div>
 </main>
 
+<!-- ── Device Info Modal ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div class="modal-title">Device Info</div>
+        <div class="modal-sw-badge" id="modalSwBadge"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    </div>
+
+    <!-- Read MAC (อัตโนมัติจาก Sheets) -->
+    <div class="mac-info-row mac-type-read">
+      <div class="mac-info-type">📡 Read Board (MAC จาก Sheets)</div>
+      <div class="mac-info-val" id="modalReadMac">—</div>
+    </div>
+
+    <!-- Write MAC (กรอกเอง) -->
+    <div class="mac-info-row mac-type-write">
+      <div class="mac-info-type">💡 Write Board (กรอกเอง)</div>
+      <div class="mac-info-val" id="modalWriteMacDisplay">—</div>
+      <div class="mac-edit-row">
+        <input class="mac-edit-input" id="modalWriteMacInput" placeholder="AA:BB:CC:DD:EE:FF"/>
+        <button class="mac-edit-btn" onclick="saveWriteMac()">บันทึก</button>
+      </div>
+      <div class="mac-saved-note" id="macSavedNote">✓ บันทึกแล้ว</div>
+    </div>
+
+    <!-- Label / ชื่อตั้งเอง -->
+    <div class="label-row">
+      <label>ชื่อ / Location</label>
+      <input class="label-input" id="modalLabelInput" placeholder="เช่น ห้องนอน, โรงรถ..."/>
+      <div style="display:flex;justify-content:flex-end;margin-top:.5rem;">
+        <button class="mac-edit-btn" onclick="saveLabel()">บันทึกชื่อ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw9OF0VE6xTsH2qyKqGbsScNx6vVbJoQ9mWuG69SrEdaTIr4cuzxkQe8d024YqhQkAI/exec";
-let webAppURL = localStorage.getItem('switchDashURL') || DEFAULT_URL;
+let webAppURL    = localStorage.getItem('switchDashURL') || DEFAULT_URL;
 let autoInterval = parseInt(localStorage.getItem('switchDashInterval') || '30000');
-let allHistory = [];
-let chartMode = 'all';
-let dailyMode = 'all';
-let histChart = null;
-let dailyChart = null;
-let timer = null;
+let allHistory   = [];
+let chartMode    = 'all';
+let dailyMode    = 'all';
+let histChart    = null;
+let dailyChart   = null;
+let timer        = null;
+
+// swReadMac[i] = MAC ล่าสุดที่ส่ง SW i+1 (ดึงจาก history อัตโนมัติ)
+let swReadMac = ['','','',''];
+
+// deviceMap เก็บใน localStorage: { sw1: { writeMac, label }, ... }
+function loadDeviceMap() {
+  try { return JSON.parse(localStorage.getItem('deviceMap') || '{}'); } catch{ return {}; }
+}
+function saveDeviceMap(map) {
+  localStorage.setItem('deviceMap', JSON.stringify(map));
+}
+
+const SW_COLORS = ['#f47b20','#2196f3','#4caf50','#e91e63'];
+const SW_NAMES  = ['SW1','SW2','SW3','SW4'];
 
 // ── Theme ──
 const savedTheme = localStorage.getItem('switchDashTheme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
-document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+document.getElementById('themeBtn').textContent = savedTheme==='dark'?'☀️':'🌙';
 
-function toggleTheme() {
-  const cur = document.documentElement.getAttribute('data-theme');
-  const next = cur === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
-  localStorage.setItem('switchDashTheme', next);
-  if (histChart) { histChart.destroy(); histChart = null; }
-  if (dailyChart) { dailyChart.destroy(); dailyChart = null; }
-  if (allHistory.length) { renderHistChart(); renderDailyChart(); }
+function toggleTheme(){
+  const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  document.getElementById('themeBtn').textContent = next==='dark'?'☀️':'🌙';
+  localStorage.setItem('switchDashTheme',next);
+  if(histChart){histChart.destroy();histChart=null;}
+  if(dailyChart){dailyChart.destroy();dailyChart=null;}
+  if(allHistory.length){renderHistChart();renderDailyChart();}
 }
 
-document.getElementById('urlInput').value = webAppURL;
+document.getElementById('urlInput').value       = webAppURL;
 document.getElementById('intervalSelect').value = autoInterval;
-document.getElementById('filterDate').addEventListener('change', renderHistChart);
-document.getElementById('logFilterDate').addEventListener('change', renderLog);
+document.getElementById('filterDate').addEventListener('change',renderHistChart);
+document.getElementById('logFilterDate').addEventListener('change',renderLog);
 
-function saveConfig() {
-  webAppURL = document.getElementById('urlInput').value.trim();
+function saveConfig(){
+  webAppURL    = document.getElementById('urlInput').value.trim();
   autoInterval = parseInt(document.getElementById('intervalSelect').value);
-  localStorage.setItem('switchDashURL', webAppURL);
-  localStorage.setItem('switchDashInterval', autoInterval);
-  startTimer();
-  fetchAll();
+  localStorage.setItem('switchDashURL',webAppURL);
+  localStorage.setItem('switchDashInterval',autoInterval);
+  startTimer(); fetchAll();
+}
+function showError(msg){const el=document.getElementById('errorMsg');el.style.display=msg?'block':'none';el.textContent=msg;}
+function setStatus(s){document.getElementById('statusDot').style.background={ok:'#f47b20',loading:'#f4c020',error:'#e74c3c'}[s];}
+function getChartColors(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  return{grid:dark?'#2a2520':'#eeede9',text:dark?'#6e6860':'#9a9690',
+    tooltip_bg:dark?'#1e1b18':'#fff',tooltip_border:dark?'#332e28':'#e0ddd7',
+    tooltip_title:dark?'#f0ece6':'#2a2925',tooltip_body:dark?'#6e6860':'#9a9690'};
 }
 
-function showError(msg) {
-  const el = document.getElementById('errorMsg');
-  el.style.display = msg ? 'block' : 'none';
-  el.textContent = msg;
+// ── ดึง Read MAC ล่าสุดของแต่ละ SW จาก history ──
+// logic: หา MAC ที่ปรากฏบ่อยสุดใน 50 rows ล่าสุด (most recent sender)
+function inferReadMacs(history) {
+  const recent = history.slice(-200);
+  const macs   = ['','','',''];
+  // นับ MAC ที่ส่งข้อมูลและ SW ที่เกี่ยวข้อง
+  // เนื่องจาก 1 Read board ส่งครบ 4 SW ในแถวเดียว
+  // เราหา MAC ล่าสุดที่มีข้อมูล SW แต่ละช่อง ≠ ""
+  // แต่จริงๆ 1 board = 1 ชุด SW → ใช้ MAC ล่าสุดต่อชุด
+  // ในที่นี้เก็บ MAC ล่าสุดที่ส่งข้อมูล (row ล่าสุด)
+  // ถ้า SW แต่ละตัวมาจาก board คนละตัว ต้องแยกด้วย MAC
+  // → หา MAC ที่ส่งข้อมูล SW[i] บ่อยที่สุดใน recent rows
+  const swKeys = ['s1','s2','s3','s4'];
+  swKeys.forEach((k,i)=>{
+    const freq = {};
+    recent.forEach(r=>{
+      if(r.mac && r[k]!==undefined){
+        freq[r.mac] = (freq[r.mac]||0)+1;
+      }
+    });
+    const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+    macs[i] = sorted.length ? sorted[0][0] : '';
+  });
+  return macs;
 }
 
-function setStatus(state) {
-  const dot = document.getElementById('statusDot');
-  const colors = {ok:'#f47b20', loading:'#f4c020', error:'#e74c3c'};
-  dot.style.background = colors[state];
+// ── Modal ──
+let modalSwIndex = -1;
+
+function openModal(swIndex) {
+  modalSwIndex = swIndex;
+  const map    = loadDeviceMap();
+  const key    = 'sw'+(swIndex+1);
+  const entry  = map[key] || {};
+  const col    = SW_COLORS[swIndex];
+
+  // SW badge
+  const badge = document.getElementById('modalSwBadge');
+  badge.textContent = SW_NAMES[swIndex];
+  badge.style.background = col+'22';
+  badge.style.color = col;
+  badge.style.border = '1px solid '+col;
+
+  // label ถ้ามี
+  const label = entry.label || '';
+  document.querySelector('.modal-title').textContent = label ? label : 'Device Info';
+
+  // Read MAC
+  const readMac = swReadMac[swIndex] || '—';
+  document.getElementById('modalReadMac').textContent = readMac;
+  document.getElementById('modalReadMac').className   = 'mac-info-val' + (readMac==='—'?' empty':'');
+
+  // Write MAC
+  const writeMac = entry.writeMac || '';
+  document.getElementById('modalWriteMacDisplay').textContent = writeMac || '—';
+  document.getElementById('modalWriteMacDisplay').className   = 'mac-info-val' + (writeMac?'':' empty');
+  document.getElementById('modalWriteMacInput').value = writeMac;
+  document.getElementById('macSavedNote').style.display = 'none';
+
+  // Label input
+  document.getElementById('modalLabelInput').value = label;
+
+  document.getElementById('modalOverlay').classList.add('open');
 }
 
-function getChartColors() {
-  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  return {
-    grid: dark ? '#2a2520' : '#eeede9',
-    text: dark ? '#6e6860' : '#9a9690',
-    tooltip_bg: dark ? '#1e1b18' : '#ffffff',
-    tooltip_border: dark ? '#332e28' : '#e0ddd7',
-    tooltip_title: dark ? '#f0ece6' : '#2a2925',
-    tooltip_body: dark ? '#6e6860' : '#9a9690',
-  };
+function closeModal(e){
+  if(e.target===document.getElementById('modalOverlay')) closeModalBtn();
+}
+function closeModalBtn(){
+  document.getElementById('modalOverlay').classList.remove('open');
 }
 
-// ✅ fetchLatest — รับ MAC จาก response (format: OK,mac,sw1,sw2,sw3,sw4)
-async function fetchLatest() {
-  const res = await fetch(webAppURL + '?sts=latest');
-  const text = await res.text();
-  if (!text.startsWith('OK')) throw new Error(text);
-  const p = text.split(',');
-  return { mac:p[1], sw1:p[2], sw2:p[3], sw3:p[4], sw4:p[5] };
+function saveWriteMac(){
+  const val = document.getElementById('modalWriteMacInput').value.trim().toUpperCase();
+  const map = loadDeviceMap();
+  const key = 'sw'+(modalSwIndex+1);
+  if(!map[key]) map[key]={};
+  map[key].writeMac = val;
+  saveDeviceMap(map);
+  document.getElementById('modalWriteMacDisplay').textContent = val || '—';
+  document.getElementById('modalWriteMacDisplay').className   = 'mac-info-val'+(val?'':' empty');
+  const note = document.getElementById('macSavedNote');
+  note.style.display='block';
+  setTimeout(()=>note.style.display='none',2000);
+  renderSwitchCards(); // อัปเดต card hint
 }
 
-async function fetchHistory() {
-  const res = await fetch(webAppURL + '?sts=history');
-  const text = await res.text();
-  if (text.startsWith('ERROR')) throw new Error(text);
+function saveLabel(){
+  const val = document.getElementById('modalLabelInput').value.trim();
+  const map = loadDeviceMap();
+  const key = 'sw'+(modalSwIndex+1);
+  if(!map[key]) map[key]={};
+  map[key].label = val;
+  saveDeviceMap(map);
+  document.querySelector('.modal-title').textContent = val || 'Device Info';
+  renderSwitchCards();
+}
+
+// ── Fetch ──
+async function fetchHistory(){
+  const res=await fetch(webAppURL+'?sts=history');
+  const text=await res.text();
+  if(text.startsWith('ERROR')) throw new Error(text);
   return JSON.parse(text);
 }
 
-function calcStats(rows) {
-  const swKeys = ['s1','s2','s3','s4'];
-  const stats = swKeys.map(() => ({onCount:0,totalRows:0,toggles:0,onPct:0,maxOnDay:'—',maxOnDayCount:0}));
-  const prev = ['','','',''];
-  const dayToggle = [{},{},{},{}];
-
-  rows.forEach(r => {
-    const dayKey = new Date(r.t).toLocaleDateString('th-TH');
-    swKeys.forEach((k,i) => {
+// ── Calc ──
+function calcStats(rows){
+  const swKeys=['s1','s2','s3','s4'];
+  const stats=swKeys.map(()=>({onCount:0,totalRows:0,toggles:0,onPct:0,maxOnDay:'—',maxOnDayCount:0}));
+  const prev=['','','',''];
+  const dayToggle=[{},{},{},{}];
+  rows.forEach(r=>{
+    const dayKey=new Date(r.t).toLocaleDateString('th-TH');
+    swKeys.forEach((k,i)=>{
       stats[i].totalRows++;
-      if (r[k]==='On') stats[i].onCount++;
-      if (prev[i]==='Off' && r[k]==='On') {
+      if(r[k]==='On') stats[i].onCount++;
+      if(prev[i]==='Off'&&r[k]==='On'){
         stats[i].toggles++;
-        dayToggle[i][dayKey] = (dayToggle[i][dayKey]||0)+1;
+        dayToggle[i][dayKey]=(dayToggle[i][dayKey]||0)+1;
       }
-      prev[i] = r[k];
+      prev[i]=r[k];
     });
   });
-
-  stats.forEach((s,i) => {
-    s.onPct = s.totalRows>0 ? Math.round(s.onCount/s.totalRows*100) : 0;
-    Object.entries(dayToggle[i]).forEach(([day,cnt]) => {
-      if (cnt>s.maxOnDayCount) { s.maxOnDayCount=cnt; s.maxOnDay=day; }
-    });
+  stats.forEach((s,i)=>{
+    s.onPct=s.totalRows>0?Math.round(s.onCount/s.totalRows*100):0;
+    Object.entries(dayToggle[i]).forEach(([day,cnt])=>{if(cnt>s.maxOnDayCount){s.maxOnDayCount=cnt;s.maxOnDay=day;}});
   });
   return stats;
 }
 
-function calcDailyToggle(rows) {
-  const swKeys = ['s1','s2','s3','s4'];
-  const prev = ['','','',''];
-  const days = {};
-  rows.forEach(r => {
-    const dayKey = new Date(r.t).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit'});
-    if (!days[dayKey]) days[dayKey]={sw1:0,sw2:0,sw3:0,sw4:0};
-    swKeys.forEach((k,i) => {
-      if (prev[i]==='Off' && r[k]==='On') days[dayKey]['sw'+(i+1)]++;
+function calcDailyToggle(rows){
+  const swKeys=['s1','s2','s3','s4'];
+  const prev=['','','',''];
+  const days={};
+  rows.forEach(r=>{
+    const dayKey=new Date(r.t).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit'});
+    if(!days[dayKey])days[dayKey]={sw1:0,sw2:0,sw3:0,sw4:0};
+    swKeys.forEach((k,i)=>{
+      if(prev[i]==='Off'&&r[k]==='On')days[dayKey]['sw'+(i+1)]++;
       prev[i]=r[k];
     });
   });
   return days;
 }
 
-function renderSwitches(data, stats) {
-  const swNames = ['SW1','SW2','SW3','SW4'];
-  const vals = [data.sw1,data.sw2,data.sw3,data.sw4];
-  document.getElementById('switchGrid').innerHTML = swNames.map((name,i) => {
-    const on = vals[i]==='On';
-    const s = stats?stats[i]:null;
-    const pct = s?s.onPct:0;
-    const col = SW_COLORS[i];
-    const iconStroke = on ? '#ffffff' : 'var(--muted)';
-    const onStyle = on ? `border-color:${col};box-shadow:0 0 0 1px ${col}33,var(--shadow);` : '';
-    const stateColor = on ? col : 'var(--off)';
-    const iconBg = on ? `background:${col};border-color:${col};` : '';
-    return `<div class="switch-card ${on?'on':''}" style="${onStyle}">
+// ── Render Switch Cards ──
+function getLatestState(){
+  if(!allHistory.length) return {sw1:'Off',sw2:'Off',sw3:'Off',sw4:'Off'};
+  const r=allHistory[allHistory.length-1];
+  return {sw1:r.s1||'Off',sw2:r.s2||'Off',sw3:r.s3||'Off',sw4:r.s4||'Off'};
+}
+
+function renderSwitchCards(){
+  const data  = getLatestState();
+  const stats = calcStats(allHistory);
+  const map   = loadDeviceMap();
+  const vals  = [data.sw1,data.sw2,data.sw3,data.sw4];
+
+  document.getElementById('switchGrid').innerHTML = SW_NAMES.map((name,i)=>{
+    const on         = vals[i]==='On';
+    const s          = stats[i];
+    const pct        = s.onPct;
+    const col        = SW_COLORS[i];
+    const iconStroke = on?'#ffffff':'var(--muted)';
+    const onStyle    = on?`border-color:${col};box-shadow:0 0 0 1px ${col}33,var(--shadow);`:'';
+    const stateColor = on?col:'var(--off)';
+    const iconBg     = on?`background:${col};border-color:${col};`:'';
+    const entry      = map['sw'+(i+1)]||{};
+    const label      = entry.label||'';
+    const writeMac   = entry.writeMac||'';
+    const readMac    = swReadMac[i]||'';
+    // hint ใต้การ์ด
+    const hint = (readMac||writeMac) ? '📡+💡 configured' : 'คลิกเพื่อตั้งค่า device';
+
+    return `<div class="switch-card ${on?'on':''}" style="${onStyle}" onclick="openModal(${i})">
       <div class="sw-top">
         <div>
-          <div class="sw-label" style="color:${col};">${name}</div>
+          <div class="sw-label" style="color:${col};">${name}${label?` · <span style="color:var(--muted);letter-spacing:0;">${label}</span>`:''}</div>
           <div class="sw-state" style="color:${stateColor};">${on?'ON':'OFF'}</div>
         </div>
         <div class="sw-icon" style="${iconBg}">
@@ -389,25 +527,23 @@ function renderSwitches(data, stats) {
           </svg>
         </div>
       </div>
-      ${s?`<div class="sw-bar"><div class="sw-bar-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="sw-bar"><div class="sw-bar-fill" style="width:${pct}%;background:${col};"></div></div>
       <div class="sw-stats">
         <div><div class="sw-stat-label">% เวลาเปิด</div><div class="sw-stat-val">${pct}%</div></div>
         <div><div class="sw-stat-label">เปิดทั้งหมด</div><div class="sw-stat-val">${s.toggles} ครั้ง</div></div>
         <div><div class="sw-stat-label">สูงสุด/วัน</div><div class="sw-stat-val">${s.maxOnDayCount} ครั้ง</div></div>
         <div><div class="sw-stat-label">วันที่สูงสุด</div><div class="sw-stat-val" style="font-size:11px;">${s.maxOnDay}</div></div>
-      </div>`:''}
+      </div>
+      <div class="sw-info-hint">${hint}</div>
     </div>`;
   }).join('');
 }
 
-function renderStatsGrid(stats) {
-  if (!stats) return;
-  const swNames = ['SW1','SW2','SW3','SW4'];
-  document.getElementById('statsGrid').innerHTML = stats.map((s,i) => {
-    const col = SW_COLORS[i];
-    return `
-    <div class="stat-card" style="border-top:3px solid ${col};">
-      <div class="stat-sw-label" style="color:${col};">${swNames[i]}</div>
+function renderStatsGrid(stats){
+  document.getElementById('statsGrid').innerHTML=stats.map((s,i)=>{
+    const col=SW_COLORS[i];
+    return `<div class="stat-card" style="border-top:3px solid ${col};">
+      <div class="stat-sw-label" style="color:${col};">${SW_NAMES[i]}</div>
       <div><span class="stat-num" style="color:${col};">${s.onPct}</span><span class="stat-unit">%</span></div>
       <div class="stat-desc">เวลาที่เปิดทั้งหมด</div>
       <div class="stat-row">เปิดทั้งหมด <span>${s.toggles} ครั้ง</span></div>
@@ -417,142 +553,87 @@ function renderStatsGrid(stats) {
   }).join('');
 }
 
-const SW_COLORS = ['#f47b20','#2196f3','#4caf50','#e91e63'];
-
-function setChartMode(mode, btn) {
-  chartMode = mode;
+function setChartMode(mode,btn){
+  chartMode=mode;
   document.querySelectorAll('#histTabs .tab').forEach(t=>t.classList.remove('active'));
-  if(btn) btn.classList.add('active');
+  if(btn)btn.classList.add('active');
   renderHistChart();
 }
+function clearDateFilter(){document.getElementById('filterDate').value='';renderHistChart();}
 
-function clearDateFilter() {
-  document.getElementById('filterDate').value='';
-  renderHistChart();
-}
-
-function renderHistChart() {
-  const c = getChartColors();
-  const filterDate = document.getElementById('filterDate').value;
-  let rows = allHistory;
-  if (filterDate) {
-    const fd = new Date(filterDate);
-    rows = rows.filter(r=>{
-      const d=new Date(r.t);
-      return d.getFullYear()===fd.getFullYear()&&d.getMonth()===fd.getMonth()&&d.getDate()===fd.getDate();
-    });
-  }
-
-  const labels = rows.map(r=>new Date(r.t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}));
-  const swKeys = ['s1','s2','s3','s4'];
-  const swLabels = ['Switch 1','Switch 2','Switch 3','Switch 4'];
-
+function renderHistChart(){
+  const c=getChartColors();
+  const fd=document.getElementById('filterDate').value;
+  let rows=allHistory;
+  if(fd){const d=new Date(fd);rows=rows.filter(r=>{const x=new Date(r.t);return x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth()&&x.getDate()===d.getDate();});}
+  const labels=rows.map(r=>new Date(r.t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}));
+  const swKeys=['s1','s2','s3','s4'];
+  const swLabels=['Switch 1','Switch 2','Switch 3','Switch 4'];
   let datasets;
-  if (chartMode==='all') {
-    datasets = swKeys.map((k,i)=>({
-      label:swLabels[i],data:rows.map(r=>r[k]==='On'?1:0),
-      borderColor:SW_COLORS[i],backgroundColor:SW_COLORS[i]+'22',fill:true,tension:.3,pointRadius:2,borderWidth:1.5
-    }));
+  if(chartMode==='all'){
+    datasets=swKeys.map((k,i)=>({label:swLabels[i],data:rows.map(r=>r[k]==='On'?1:0),borderColor:SW_COLORS[i],backgroundColor:SW_COLORS[i]+'22',fill:true,tension:.3,pointRadius:2,borderWidth:1.5}));
   } else {
     const i=parseInt(chartMode.replace('sw',''))-1;
-    datasets=[{
-      label:swLabels[i],data:rows.map(r=>r[swKeys[i]]==='On'?1:0),
-      borderColor:SW_COLORS[i],backgroundColor:SW_COLORS[i]+'33',fill:true,tension:.3,pointRadius:2,borderWidth:2
-    }];
+    datasets=[{label:swLabels[i],data:rows.map(r=>r[swKeys[i]]==='On'?1:0),borderColor:SW_COLORS[i],backgroundColor:SW_COLORS[i]+'33',fill:true,tension:.3,pointRadius:2,borderWidth:2}];
   }
-
-  const cfg={type:'line',data:{labels,datasets},options:{
-    responsive:true,animation:false,
-    scales:{
-      x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},maxTicksLimit:12},grid:{color:c.grid}},
-      y:{min:-.1,max:1.1,ticks:{color:c.text,callback:v=>v===1?'ON':v===0?'OFF':'',font:{family:'IBM Plex Mono',size:10}},grid:{color:c.grid}}
-    },
-    plugins:{
-      legend:{labels:{color:c.text,font:{family:'IBM Plex Mono',size:11},boxWidth:12}},
+  const cfg={type:'line',data:{labels,datasets},options:{responsive:true,animation:false,
+    scales:{x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},maxTicksLimit:12},grid:{color:c.grid}},
+      y:{min:-.1,max:1.1,ticks:{color:c.text,callback:v=>v===1?'ON':v===0?'OFF':'',font:{family:'IBM Plex Mono',size:10}},grid:{color:c.grid}}},
+    plugins:{legend:{labels:{color:c.text,font:{family:'IBM Plex Mono',size:11},boxWidth:12}},
       tooltip:{backgroundColor:c.tooltip_bg,borderColor:c.tooltip_border,borderWidth:1,titleColor:c.tooltip_title,bodyColor:c.tooltip_body,
-        callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.raw===1?'ON':'OFF'}`}}
-    }
-  }};
-
+        callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.raw===1?'ON':'OFF'}`}}}}};
   if(histChart){histChart.data.labels=labels;histChart.data.datasets=datasets;histChart.update();}
   else{histChart=new Chart(document.getElementById('historyChart').getContext('2d'),cfg);}
 }
 
-function setDailyMode(mode,btn) {
+function setDailyMode(mode,btn){
   dailyMode=mode;
   document.querySelectorAll('#dailyTabs .tab').forEach(t=>t.classList.remove('active'));
-  if(btn) btn.classList.add('active');
+  if(btn)btn.classList.add('active');
   renderDailyChart();
 }
 
-function renderDailyChart() {
+function renderDailyChart(){
   const c=getChartColors();
   const days=calcDailyToggle(allHistory);
   const labels=Object.keys(days);
   const swNames=['sw1','sw2','sw3','sw4'];
   const swLabels=['SW1','SW2','SW3','SW4'];
-
   let datasets;
   if(dailyMode==='all'){
-    datasets=swNames.map((k,i)=>({
-      label:swLabels[i],data:labels.map(d=>days[d][k]),
-      backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4
-    }));
+    datasets=swNames.map((k,i)=>({label:swLabels[i],data:labels.map(d=>days[d][k]),backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4}));
   } else {
     const i=parseInt(dailyMode.replace('sw',''))-1;
-    datasets=[{
-      label:swLabels[i],data:labels.map(d=>days[d][swNames[i]]),
-      backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4
-    }];
+    datasets=[{label:swLabels[i],data:labels.map(d=>days[d][swNames[i]]),backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4}];
   }
-
-  const cfg={type:'bar',data:{labels,datasets},options:{
-    responsive:true,animation:false,
-    scales:{
-      x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10}},grid:{color:c.grid}},
-      y:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},stepSize:1},grid:{color:c.grid}}
-    },
-    plugins:{
-      legend:{labels:{color:c.text,font:{family:'IBM Plex Mono',size:11},boxWidth:12}},
-      tooltip:{backgroundColor:c.tooltip_bg,borderColor:c.tooltip_border,borderWidth:1,titleColor:c.tooltip_title,bodyColor:c.tooltip_body}
-    }
-  }};
-
+  const cfg={type:'bar',data:{labels,datasets},options:{responsive:true,animation:false,
+    scales:{x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10}},grid:{color:c.grid}},
+      y:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},stepSize:1},grid:{color:c.grid}}},
+    plugins:{legend:{labels:{color:c.text,font:{family:'IBM Plex Mono',size:11},boxWidth:12}},
+      tooltip:{backgroundColor:c.tooltip_bg,borderColor:c.tooltip_border,borderWidth:1,titleColor:c.tooltip_title,bodyColor:c.tooltip_body}}}};
   if(dailyChart){dailyChart.data.labels=labels;dailyChart.data.datasets=datasets;dailyChart.update();}
   else{dailyChart=new Chart(document.getElementById('dailyChart').getContext('2d'),cfg);}
 }
 
 function clearLogFilter(){document.getElementById('logFilterDate').value='';renderLog();}
 
-// ✅ renderLog — เพิ่มคอลัมน์ MAC
-function renderLog() {
+function renderLog(){
   const wrap=document.getElementById('logTableWrap');
-  const filterDate=document.getElementById('logFilterDate').value;
+  const fd=document.getElementById('logFilterDate').value;
   let rows=[...allHistory].reverse();
-  if(filterDate){
-    const fd=new Date(filterDate);
-    rows=rows.filter(r=>{
-      const d=new Date(r.t);
-      return d.getFullYear()===fd.getFullYear()&&d.getMonth()===fd.getMonth()&&d.getDate()===fd.getDate();
-    });
-  } else { rows=rows.slice(0,30); }
-
+  if(fd){const d=new Date(fd);rows=rows.filter(r=>{const x=new Date(r.t);return x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth()&&x.getDate()===d.getDate();});}
+  else{rows=rows.slice(0,30);}
   if(!rows.length){wrap.innerHTML='<div class="loading">ไม่มีข้อมูล</div>';return;}
-
   const badge=v=>v==='On'?`<span class="badge badge-on">ON</span>`:`<span class="badge badge-off">OFF</span>`;
   const allRaw=[...allHistory];
-
   wrap.innerHTML=`<table class="log-table">
-    <thead><tr>
-      <th>วันที่</th><th>เวลา</th><th>MAC</th>
-      <th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th><th>เปลี่ยน</th>
-    </tr></thead>
+    <thead><tr><th>วันที่</th><th>เวลา</th><th>MAC (Read)</th><th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th><th>เปลี่ยน</th></tr></thead>
     <tbody>${rows.map(r=>{
       const d=new Date(r.t);
       const idx=allRaw.findIndex(x=>x.t===r.t);
       const prev=idx>0?allRaw[idx-1]:null;
       const changed=[];
-      if(prev) ['s1','s2','s3','s4'].forEach((k,i)=>{if(prev[k]!==r[k]&&r[k]==='On')changed.push('SW'+(i+1));});
+      if(prev)['s1','s2','s3','s4'].forEach((k,i)=>{if(prev[k]!==r[k]&&r[k]==='On')changed.push('SW'+(i+1));});
       return `<tr>
         <td>${d.toLocaleDateString('th-TH')}</td>
         <td>${d.toLocaleTimeString('th-TH')}</td>
@@ -560,35 +641,32 @@ function renderLog() {
         <td>${badge(r.s1)}</td><td>${badge(r.s2)}</td><td>${badge(r.s3)}</td><td>${badge(r.s4)}</td>
         <td>${changed.map(c=>`<span class="change-badge">${c}↑</span>`).join('')}</td>
       </tr>`;
-    }).join('')}</tbody>
-  </table>`;
+    }).join('')}</tbody></table>`;
 }
 
-async function fetchAll() {
-  try {
-    showError('');
-    setStatus('loading');
-    const [latest,history]=await Promise.all([fetchLatest(),fetchHistory()]);
-    allHistory=history;
-    const stats=calcStats(history);
-    renderSwitches(latest,stats);
+// ── Main ──
+async function fetchAll(){
+  try{
+    showError(''); setStatus('loading');
+    allHistory = await fetchHistory();
+    swReadMac  = inferReadMacs(allHistory);  // ดึง Read MAC อัตโนมัติ
+    const stats = calcStats(allHistory);
+    renderSwitchCards();
     renderStatsGrid(stats);
-    renderHistChart();
-    renderDailyChart();
-    renderLog();
+    if(histChart){histChart.destroy();histChart=null;}
+    if(dailyChart){dailyChart.destroy();dailyChart=null;}
+    renderHistChart(); renderDailyChart(); renderLog();
     document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('th-TH');
-    // ✅ อัปเดต MAC ใน header
-    document.getElementById('headerMac').textContent = latest.mac || '—';
     setStatus('ok');
-  } catch(e) {
+  } catch(e){
     showError('⚠ ไม่สามารถเชื่อมต่อ: '+e.message);
     setStatus('error');
   }
 }
 
 function startTimer(){
-  if(timer) clearInterval(timer);
-  if(autoInterval>0) timer=setInterval(fetchAll,autoInterval);
+  if(timer)clearInterval(timer);
+  if(autoInterval>0)timer=setInterval(fetchAll,autoInterval);
 }
 
 fetchAll();
