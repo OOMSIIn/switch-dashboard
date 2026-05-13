@@ -2,7 +2,7 @@
 <html lang="th" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Switch Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -26,174 +26,147 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
-html{overflow-x:hidden;}
-body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;font-weight:300;min-height:100vh;transition:background .3s,color .3s;overflow-x:hidden;width:100%;}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;font-weight:300;min-height:100vh;transition:background .3s,color .3s;}
 
 /* ── Header ── */
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:.875rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);width:100%;}
-.logo{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);letter-spacing:2px;font-weight:500;white-space:nowrap;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.logo{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:2px;font-weight:500;}
 .logo span{color:var(--text2);}
-.hdr-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0;}
-.status-pill{display:flex;align-items:center;gap:6px;background:var(--accent-s);border:1px solid var(--border);padding:4px 10px;border-radius:20px;}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;flex-shrink:0;}
+.hdr-right{display:flex;align-items:center;gap:.75rem;}
+.status-pill{display:flex;align-items:center;gap:6px;background:var(--accent-s);border:1px solid var(--border);padding:4px 12px;border-radius:20px;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.status-txt{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2);white-space:nowrap;}
-.icon-btn{background:none;border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.status-txt{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
+.icon-btn{background:none;border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .icon-btn:hover{border-color:var(--accent);color:var(--accent);}
-.refresh-btn{background:var(--accent);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:500;transition:background .2s;white-space:nowrap;flex-shrink:0;}
+.refresh-btn{background:var(--accent);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:500;transition:background .2s;}
 .refresh-btn:hover{background:var(--accent-d);}
 
 /* ── Main ── */
-main{padding:1rem;max-width:1160px;margin:0 auto;width:100%;overflow-x:hidden;}
-.sec-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:.875rem;margin-top:1.5rem;}
+main{padding:2rem;max-width:1160px;margin:0 auto;}
+.sec-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:.875rem;margin-top:2rem;}
 .sec-label:first-child{margin-top:0;}
 .err{background:#fff0ee;border:1px solid #fcc;border-radius:8px;padding:.875rem 1rem;color:#c0392b;font-size:13px;margin-bottom:1rem;display:none;}
 [data-theme="dark"] .err{background:#2a1515;border-color:#4a2020;color:#ff8080;}
 
 /* ── Config ── */
-.cfg-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.875rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.625rem;flex-wrap:wrap;box-shadow:var(--shadow);}
+.cfg-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;box-shadow:var(--shadow);}
 .cfg-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
-.url-inp{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:0;width:100%;}
+.url-inp{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:180px;}
 .url-inp:focus{outline:none;border-color:var(--accent);}
 .sel{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;}
-.save-btn{background:var(--accent);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;white-space:nowrap;}
+.save-btn{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;}
 .save-btn:hover{background:var(--accent-d);}
 
 /* ── SW stat cards (big 4) ── */
-.sw-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;}
-.sw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .15s;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;}
+.sw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .15s;box-shadow:var(--shadow);position:relative;overflow:hidden;}
 .sw-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.12);}
 .sw-card.on{border-color:var(--col)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--col) 20%,transparent),var(--shadow)!important;}
 
-.sw-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.625rem;}
-.sw-id{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;font-weight:500;}
-.sw-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
-.sw-icon-wrap{width:34px;height:34px;border-radius:9px;background:var(--accent-s);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .25s;}
+.sw-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;}
+.sw-id{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;font-weight:500;}
+.sw-lbl{font-size:12px;color:var(--muted);margin-top:2px;}
+.sw-icon-wrap{width:40px;height:40px;border-radius:11px;background:var(--accent-s);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .25s;}
 .sw-card.on .sw-icon-wrap{background:var(--col);border-color:var(--col);}
-.sw-icon-wrap svg{width:17px;height:17px;}
+.sw-icon-wrap svg{width:20px;height:20px;}
 
-.sw-state{font-size:26px;font-weight:500;color:var(--off);letter-spacing:1px;margin-bottom:.75rem;transition:color .25s;}
+.sw-state{font-size:32px;font-weight:500;color:var(--off);letter-spacing:1px;margin-bottom:1rem;transition:color .25s;}
 .sw-card.on .sw-state{color:var(--col);}
 
 /* progress bar */
-.sw-bar{height:3px;border-radius:2px;background:var(--border);margin-bottom:.75rem;overflow:hidden;}
+.sw-bar{height:3px;border-radius:2px;background:var(--border);margin-bottom:1rem;overflow:hidden;}
 .sw-bar-fill{height:100%;border-radius:2px;transition:width .6s;}
 
 /* stat grid inside card */
-.sw-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.sw-stats{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;}
 .stat-cell{}
-.stat-cell-label{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
-.stat-cell-val{font-size:12px;font-weight:500;color:var(--text);}
+.stat-cell-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
+.stat-cell-val{font-size:13px;font-weight:500;color:var(--text);}
 .stat-cell-val.hi{color:var(--col);}
 
 /* MAC rows inside card */
-.sw-mac-area{margin-top:.875rem;padding-top:.75rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.375rem;}
+.sw-mac-area{margin-top:1rem;padding-top:.875rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.375rem;}
 .mac-row{display:flex;align-items:center;gap:.5rem;}
-.mac-type-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 6px;border-radius:4px;font-weight:500;flex-shrink:0;}
+.mac-type-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:4px;font-weight:500;flex-shrink:0;}
 .mac-type-read{background:#e3f2fd;color:#1565c0;}
 [data-theme="dark"] .mac-type-read{background:#0d2a45;color:#64b5f6;}
 .mac-type-write{background:#e8f5e9;color:#2e7d32;}
 [data-theme="dark"] .mac-type-write{background:#0d3318;color:#66bb6a;}
-.mac-val{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:.3px;word-break:break-all;}
+.mac-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:.3px;}
 .mac-val.empty{color:var(--muted);font-style:italic;}
 
-.sw-hint{position:absolute;bottom:.5rem;right:.75rem;font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+.sw-hint{position:absolute;bottom:.625rem;right:.875rem;font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
 
 /* ── Charts ── */
-.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1rem;margin-top:.875rem;box-shadow:var(--shadow);overflow:hidden;}
-.chart-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;}
-.chart-title{font-size:13px;font-weight:500;color:var(--text);}
-.tabs{display:flex;gap:3px;flex-wrap:wrap;}
-.tab{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 9px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .2s;}
+.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);}
+.chart-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem;}
+.chart-title{font-size:14px;font-weight:500;color:var(--text);}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;}
+.tab{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 11px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .2s;}
 .tab:hover{border-color:var(--accent);color:var(--accent);}
 .tab.active{background:var(--accent-s);border-color:var(--accent);color:var(--accent);font-weight:500;}
-canvas{max-height:260px;width:100%!important;}
-.date-row{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
-.date-inp{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:6px;font-size:11px;font-family:'IBM Plex Mono',monospace;max-width:140px;}
+canvas{max-height:260px;}
+.date-row{display:flex;align-items:center;gap:.625rem;flex-wrap:wrap;}
+.date-inp{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:6px;font-size:12px;font-family:'IBM Plex Mono',monospace;}
 .date-inp:focus{outline:none;border-color:var(--accent);}
 
 /* ── Log table ── */
-.log-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;}
-.log-table{width:100%;border-collapse:collapse;font-size:11px;min-width:520px;}
-.log-table th{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);text-align:left;padding:.5rem .625rem;border-bottom:1px solid var(--border);text-transform:uppercase;white-space:nowrap;}
-.log-table td{padding:.5rem .625rem;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2);white-space:nowrap;}
+.log-table{width:100%;border-collapse:collapse;font-size:12px;}
+.log-table th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);text-transform:uppercase;white-space:nowrap;}
+.log-table td{padding:.55rem .75rem;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
 .log-table tr:last-child td{border-bottom:none;}
 .log-table tr:hover td{background:var(--accent-s);}
-.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:500;}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;}
 .badge-on{background:var(--tag-on-bg);color:var(--tag-on);}
 .badge-off{background:var(--tag-off-bg);color:var(--tag-off);}
-.chg-badge{background:var(--accent-s);color:var(--accent);padding:2px 5px;border-radius:3px;font-size:9px;margin-right:2px;}
-.mac-sm{font-size:9px;color:var(--muted);max-width:90px;overflow:hidden;text-overflow:ellipsis;}
+.chg-badge{background:var(--accent-s);color:var(--accent);padding:2px 5px;border-radius:3px;font-size:10px;margin-right:2px;}
+.mac-sm{font-size:10px;color:var(--muted);}
 
-.loading{text-align:center;padding:2rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.loading{text-align:center;padding:3rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
 
 /* ── Modal ── */
-.modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:1.5rem 1.25rem;width:100%;max-width:520px;box-shadow:0 -8px 40px rgba(0,0,0,.2);transform:translateY(100%);transition:transform .3s ease;max-height:90vh;overflow-y:auto;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.75rem;width:100%;max-width:480px;box-shadow:0 12px 48px rgba(0,0,0,.2);transform:translateY(12px);transition:transform .2s;}
 .modal-overlay.open .modal{transform:translateY(0);}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
-.modal-title{font-size:15px;font-weight:500;}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.modal-title{font-size:16px;font-weight:500;}
 .modal-sw-pill{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
 .modal-close{background:none;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px;transition:all .2s;}
 .modal-close:hover{border-color:var(--accent);color:var(--accent);}
 
-.info-block{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:.5rem;}
+.info-block{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.875rem 1.125rem;margin-bottom:.625rem;}
 .info-block-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.375rem;}
-.info-block-val{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;letter-spacing:.4px;color:var(--text);word-break:break-all;}
+.info-block-val{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:500;letter-spacing:.4px;color:var(--text);}
 .info-block-val.empty{color:var(--muted);font-size:12px;font-weight:400;}
 .edit-row{display:flex;gap:.5rem;margin-top:.5rem;}
-.edit-inp{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;min-width:0;}
+.edit-inp{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;}
 .edit-inp:focus{outline:none;border-color:var(--accent);}
 .edit-btn{background:var(--accent);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;white-space:nowrap;}
 .edit-btn:hover{background:var(--accent-d);}
 .saved-note{font-size:11px;color:#4caf50;font-family:'IBM Plex Mono',monospace;margin-top:.375rem;display:none;}
 
-.divider{border:none;border-top:1px solid var(--border);margin:.75rem 0;}
+.divider{border:none;border-top:1px solid var(--border);margin:.875rem 0;}
 .lbl-wrap label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:.375rem;}
 .lbl-inp{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;font-family:'Sarabun',sans-serif;}
 .lbl-inp:focus{outline:none;border-color:var(--accent);}
 .modal-footer{display:flex;justify-content:flex-end;margin-top:.75rem;}
 
 /* stat summary section */
-.summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.625rem;}
-.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.875rem;box-shadow:var(--shadow);}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;}
+.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem;box-shadow:var(--shadow);}
 .sum-sw{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;margin-bottom:.375rem;font-weight:500;}
-.sum-num{font-size:24px;font-weight:500;font-family:'IBM Plex Mono',monospace;line-height:1.1;}
-.sum-unit{font-size:11px;color:var(--muted);}
-.sum-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:.25rem;}
+.sum-num{font-size:28px;font-weight:500;font-family:'IBM Plex Mono',monospace;line-height:1.1;}
+.sum-unit{font-size:12px;color:var(--muted);}
+.sum-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-top:.3rem;}
 .sum-row span{color:var(--text);font-weight:500;}
 
-/* ── Desktop overrides ── */
-@media(min-width:768px){
-  main{padding:2rem;}
-  header{padding:.875rem 2rem;}
-  .sw-grid{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));}
-  .sw-card{padding:1.5rem;border-radius:16px;}
-  .sw-state{font-size:32px;}
-  .sw-icon-wrap{width:40px;height:40px;}
-  .sw-icon-wrap svg{width:20px;height:20px;}
-  .stat-cell-label{font-size:10px;}
-  .stat-cell-val{font-size:13px;}
-  .sw-mac-area{display:flex;}
-  .summary-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
-  .sum-num{font-size:28px;}
-  .chart-box{padding:1.5rem;}
-  .modal-overlay{align-items:center;padding:1rem;}
-  .modal{border-radius:18px;max-width:480px;transform:translateY(12px);}
-  .modal-overlay.open .modal{transform:translateY(0);}
-  .cfg-bar{padding:1rem 1.5rem;}
-}
-
-/* ── Mobile: hide MAC in cards ── */
-@media(max-width:767px){
+@media(max-width:600px){
+  main{padding:1rem;}
+  header{padding:.875rem 1rem;}
+  .sw-grid{grid-template-columns:1fr 1fr;}
   .sw-mac-area{display:none;}
-  .status-txt{display:none;}
-  .cfg-bar{flex-direction:column;align-items:stretch;}
-  .url-inp{width:100%;}
-  .chart-hdr{flex-direction:column;align-items:flex-start;}
-  .sec-label{letter-spacing:1.5px;}
-  .sum-row{font-size:9px;}
 }
 </style>
 </head>
@@ -227,7 +200,7 @@ canvas{max-height:260px;width:100%!important;}
   </div>
 
   <!-- SW Cards -->
-  <div class="sec-label">สถานะปัจจุบัน &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— แตะการ์ดเพื่อดู / แก้ไข Device Info</span></div>
+  <div class="sec-label">สถานะปัจจุบัน &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— คลิกการ์ดเพื่อดู / แก้ไข Device Info</span></div>
   <div class="sw-grid" id="swGrid"><div class="loading">กำลังโหลด...</div></div>
 
   <!-- Summary stats -->
@@ -251,7 +224,7 @@ canvas{max-height:260px;width:100%!important;}
   <div class="chart-box">
     <div class="chart-hdr">
       <div class="chart-title">ประวัติสถานะ</div>
-      <div style="display:flex;gap:.625rem;align-items:center;flex-wrap:wrap;">
+      <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
         <div class="date-row">
           <input type="date" class="date-inp" id="filterDate"/>
           <button class="tab" onclick="clearDate()">ล้าง</button>
@@ -292,7 +265,7 @@ canvas{max-height:260px;width:100%!important;}
         <button class="tab" onclick="clearLogDate()">ล้าง</button>
       </div>
     </div>
-    <div class="log-scroll" id="logWrap"><div class="loading">กำลังโหลด...</div></div>
+    <div id="logWrap"><div class="loading">กำลังโหลด...</div></div>
   </div>
 </main>
 
@@ -360,9 +333,9 @@ function saveConfig(){
 // ═══════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════
-let allHistory  = [];
-let deviceList  = [];
-let localMap    = {};
+let allHistory  = [];   // [{t, mac_read, mac_write, s1..s4}]
+let deviceList  = [];   // [{mac_read, mac_write, label}] from ?sts=devices
+let localMap    = {};   // localStorage override: {sw1:{writeMac,label},...}
 
 const SW_COLORS = ['#f47b20','#2196f3','#4caf50','#e91e63'];
 const SW_NAMES  = ['SW1','SW2','SW3','SW4'];
@@ -406,12 +379,14 @@ function cc(){
 }
 
 // ═══════════════════════════════════════════════
-//  LOCAL MAP
+//  LOCAL MAP (Write MAC override + label)
 // ═══════════════════════════════════════════════
 function loadLocalMap(){ try{return JSON.parse(localStorage.getItem('devMap')||'{}')}catch{return{}} }
 function saveLocalMap(m){ localStorage.setItem('devMap',JSON.stringify(m)); }
 
+// ── รวม DeviceMap จาก GAS + localMap: localMap ชนะถ้ามี ──
 function getDeviceInfo(swIdx){
+  // หา mac_write จาก history — นับว่า mac_write ไหนส่งข้อมูล SW[swIdx] มากที่สุด
   const freq = {};
   allHistory.slice(-300).forEach(r=>{
     const mw = r.mac_write||'';
@@ -420,12 +395,17 @@ function getDeviceInfo(swIdx){
     }
   });
   const topWrite = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
+
+  // หา mac_read ที่ paired กับ topWrite จาก deviceList
   const paired = deviceList.find(d=>d.mac_write===topWrite)||{};
   const macRead  = paired.mac_read||'';
   const gasLabel = paired.label||'';
+
+  // localMap override
   const lm = loadLocalMap()['sw'+(swIdx+1)]||{};
   const writeMac = lm.writeMac || topWrite;
   const label    = lm.label    || gasLabel;
+
   return { macRead, macWrite: writeMac, label };
 }
 
@@ -456,36 +436,54 @@ function filterDays(rows,days){
   return rows.filter(r=>r.t>=cut);
 }
 
-function calcStats(rows){
-  return SW_KEYS.map((k,i)=>{
-    if(!rows.length) return {pct:0,toggles:0,todayToggles:0,todayPct:0,maxDay:'—',maxDayCnt:0};
+function calcStats(rows) {
+  // กรองเฉพาะ detect rows (ตัด heartbeat ออก) สำหรับนับครั้ง
+  const detectRows = rows.filter(r => !r.trigger || r.trigger === 'detect');
+
+  return SW_KEYS.map((k, i) => {
+    if (!rows.length) return {pct:0,toggles:0,todayToggles:0,todayPct:0,maxDay:'—',maxDayCnt:0};
+
     const today = new Date(); today.setHours(0,0,0,0);
-    const todayRows = rows.filter(r=>{ const d=new Date(r.t);d.setHours(0,0,0,0);return d.getTime()===today.getTime(); });
-    let toggles=0, prev='', dayMap={};
-    let todayToggle=0, todayPrev='';
-    rows.forEach(r=>{
+
+    // % เวลาเปิด ใช้ทุก row (รวม heartbeat)
+    const onCount = rows.filter(r => r[k]==='On').length;
+    const pct     = Math.round(onCount / rows.length * 100);
+
+    // วันนี้ % เปิด ใช้ทุก row
+    const todayRows = rows.filter(r => { const d=new Date(r.t);d.setHours(0,0,0,0);return d.getTime()===today.getTime(); });
+    const todayOn   = todayRows.filter(r => r[k]==='On').length;
+    const todayPct  = todayRows.length ? Math.round(todayOn/todayRows.length*100) : 0;
+
+    // นับครั้งที่ตรวจจับได้ — ใช้เฉพาะ detect rows ที่ SW = On
+    const detToday = detectRows.filter(r => {
+      const d = new Date(r.t); d.setHours(0,0,0,0);
+      return d.getTime()===today.getTime() && r[k]==='On';
+    }).length;
+
+    // นับรวมทุกวัน แยกตาม detect On
+    const dayMap = {};
+    detectRows.forEach(r => {
+      if (r[k] !== 'On') return;
       const day = new Date(r.t).toLocaleDateString('th-TH');
-      if(prev==='Off'&&r[k]==='On'){ toggles++; dayMap[day]=(dayMap[day]||0)+1; }
-      prev=r[k];
+      dayMap[day] = (dayMap[day]||0) + 1;
     });
-    todayRows.forEach(r=>{ if(todayPrev==='Off'&&r[k]==='On') todayToggle++; todayPrev=r[k]; });
-    const onCount = rows.filter(r=>r[k]==='On').length;
-    const pct     = Math.round(onCount/rows.length*100);
-    const todayOn = todayRows.filter(r=>r[k]==='On').length;
-    const todayPct= todayRows.length?Math.round(todayOn/todayRows.length*100):0;
-    let maxDay='—',maxDayCnt=0;
-    Object.entries(dayMap).forEach(([d,c])=>{ if(c>maxDayCnt){maxDayCnt=c;maxDay=d;} });
-    return{pct,toggles,todayToggles:todayToggle,todayPct,maxDay,maxDayCnt};
+    const totalDetect = Object.values(dayMap).reduce((a,b)=>a+b, 0);
+
+    let maxDay='—', maxDayCnt=0;
+    Object.entries(dayMap).forEach(([d,c]) => { if(c>maxDayCnt){maxDayCnt=c;maxDay=d;} });
+
+    return { pct, toggles:totalDetect, todayToggles:detToday, todayPct, maxDay, maxDayCnt };
   });
 }
 
 function calcDailyToggle(rows){
-  const prev=['','','',''];
-  const days={};
-  rows.forEach(r=>{
+  // นับเฉพาะ detect rows ที่ SW=On ต่อวัน
+  const detectRows = rows.filter(r => !r.trigger || r.trigger === 'detect');
+  const days = {};
+  detectRows.forEach(r => {
     const dk = new Date(r.t).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit'});
-    if(!days[dk]) days[dk]={sw1:0,sw2:0,sw3:0,sw4:0};
-    SW_KEYS.forEach((k,i)=>{ if(prev[i]==='Off'&&r[k]==='On') days[dk]['sw'+(i+1)]++; prev[i]=r[k]; });
+    if (!days[dk]) days[dk] = {sw1:0,sw2:0,sw3:0,sw4:0};
+    SW_KEYS.forEach((k,i) => { if(r[k]==='On') days[dk]['sw'+(i+1)]++; });
   });
   return days;
 }
@@ -509,6 +507,7 @@ function renderCards(){
     const s    = stats[i];
     const col  = SW_COLORS[i];
     const dev  = getDeviceInfo(i);
+    const hint = (dev.macRead||dev.macWrite)?'📡 + 💡 configured':'คลิกเพื่อตั้งค่า';
 
     const readMacEl  = dev.macRead
       ? `<span class="mac-val">${dev.macRead}</span>`
@@ -523,8 +522,8 @@ function renderCards(){
          onclick="openModal(${i})">
       <div class="sw-head">
         <div>
-          <div class="sw-id" style="color:${col};">${name}</div>
-          ${dev.label?`<div class="sw-lbl">${dev.label}</div>`:''}
+          <div class="sw-id" style="color:${col};">${name}${dev.label?` <span style="color:var(--muted);font-weight:400;letter-spacing:0;">· ${dev.label}</span>`:''}
+          </div>
         </div>
         <div class="sw-icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="${on?'#fff':'var(--muted)'}" stroke-width="2">
@@ -541,19 +540,19 @@ function renderCards(){
 
       <div class="sw-stats">
         <div class="stat-cell">
-          <div class="stat-cell-label">% เปิด (รวม)</div>
+          <div class="stat-cell-label">% เวลาเปิด (รวม)</div>
           <div class="stat-cell-val">${s.pct}%</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-cell-label">เปิดทั้งหมด</div>
+          <div class="stat-cell-label">ตรวจจับรวม</div>
           <div class="stat-cell-val">${s.toggles} ครั้ง</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-cell-label">วันนี้เปิด</div>
+          <div class="stat-cell-label">วันนี้ตรวจจับ</div>
           <div class="stat-cell-val hi" style="color:${col};">${s.todayToggles} ครั้ง</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-cell-label">วันนี้ %</div>
+          <div class="stat-cell-label">วันนี้ % เปิด</div>
           <div class="stat-cell-val hi" style="color:${col};">${s.todayPct}%</div>
         </div>
         <div class="stat-cell">
@@ -562,10 +561,11 @@ function renderCards(){
         </div>
         <div class="stat-cell">
           <div class="stat-cell-label">วันที่สูงสุด</div>
-          <div class="stat-cell-val" style="font-size:10px;">${s.maxDay}</div>
+          <div class="stat-cell-val" style="font-size:11px;">${s.maxDay}</div>
         </div>
       </div>
 
+      <!-- MAC info ใต้การ์ด -->
       <div class="sw-mac-area">
         <div class="mac-row">
           <span class="mac-type-badge mac-type-read">READ</span>
@@ -576,6 +576,8 @@ function renderCards(){
           ${writeMacEl}
         </div>
       </div>
+
+      <div class="sw-hint">${hint}</div>
     </div>`;
   }).join('');
 }
@@ -593,9 +595,10 @@ function renderSummary(){
       <div class="sum-sw" style="color:${col};">${name}</div>
       <div><span class="sum-num" style="color:${col};">${s.pct}</span><span class="sum-unit"> %</span></div>
       <div class="sum-row">เปิดรวม <span>${s.toggles} ครั้ง</span></div>
-      <div class="sum-row">วันนี้ <span style="color:${col};">${s.todayToggles} ครั้ง</span></div>
+      <div class="sum-row">วันนี้เปิด <span style="color:${col};">${s.todayToggles} ครั้ง</span></div>
       <div class="sum-row">วันนี้ % <span style="color:${col};">${s.todayPct}%</span></div>
-      <div class="sum-row">สูงสุด/วัน <span>${s.maxDayCnt}</span></div>
+      <div class="sum-row">สูงสุด/วัน <span>${s.maxDayCnt} ครั้ง</span></div>
+      <div class="sum-row" style="font-size:10px;">วันสูงสุด <span style="font-size:10px;">${s.maxDay}</span></div>
     </div>`;
   }).join('');
 }
@@ -669,7 +672,7 @@ function renderHistChart(){
   }
   const cfg={type:'line',data:{labels,datasets},options:{responsive:true,animation:false,
     scales:{
-      x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},maxTicksLimit:8},grid:{color:c.grid}},
+      x:{ticks:{color:c.text,font:{family:'IBM Plex Mono',size:10},maxTicksLimit:12},grid:{color:c.grid}},
       y:{min:-.1,max:1.1,ticks:{color:c.text,callback:v=>v===1?'ON':v===0?'OFF':'',font:{family:'IBM Plex Mono',size:10}},grid:{color:c.grid}}
     },
     plugins:{legend:{labels:{color:c.text,font:{family:'IBM Plex Mono',size:11},boxWidth:12}},
@@ -733,7 +736,8 @@ function renderLog(){
     <thead><tr>
       <th>วันที่</th><th>เวลา</th>
       <th>MAC Write</th><th>MAC Read</th>
-      <th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th><th>เปลี่ยน</th>
+      <th>SW1</th><th>SW2</th><th>SW3</th><th>SW4</th>
+      <th>Trigger</th><th>เปลี่ยน</th>
     </tr></thead>
     <tbody>${rows.map(r=>{
       const d   = new Date(r.t);
@@ -741,12 +745,17 @@ function renderLog(){
       const prv = idx>0?all[idx-1]:null;
       const chg = [];
       if(prv) SW_KEYS.forEach((k,i)=>{ if(prv[k]!==r[k]&&r[k]==='On') chg.push(SW_NAMES[i]); });
+      const isDetect = !r.trigger || r.trigger==='detect';
+      const trigBadge = isDetect
+        ? `<span class="badge badge-on">⚡ detect</span>`
+        : `<span class="badge badge-off">♡ hb</span>`;
       return `<tr>
         <td>${d.toLocaleDateString('th-TH')}</td>
         <td>${d.toLocaleTimeString('th-TH')}</td>
         <td class="mac-sm">${r.mac_write||'—'}</td>
         <td class="mac-sm">${r.mac_read||'—'}</td>
         <td>${badge(r.s1)}</td><td>${badge(r.s2)}</td><td>${badge(r.s3)}</td><td>${badge(r.s4)}</td>
+        <td>${trigBadge}</td>
         <td>${chg.map(c=>`<span class="chg-badge">${c}↑</span>`).join('')}</td>
       </tr>`;
     }).join('')}</tbody>
@@ -769,16 +778,19 @@ function openModal(i){
   pill.textContent = SW_NAMES[i];
   pill.style.cssText = `background:${col}22;color:${col};border:1px solid ${col};`;
 
+  // Read MAC
   const rm = document.getElementById('mReadMac');
   rm.textContent  = dev.macRead||'ยังไม่มีข้อมูลใน Sheets';
   rm.className    = 'info-block-val'+(dev.macRead?'':' empty');
 
+  // Write MAC
   const wm = document.getElementById('mWriteMacDisp');
   wm.textContent = dev.macWrite||'ยังไม่ได้กรอก';
   wm.className   = 'info-block-val'+(dev.macWrite?'':' empty');
   document.getElementById('mWriteMacInp').value = dev.macWrite;
   document.getElementById('savedNote').style.display='none';
 
+  // Label
   document.getElementById('mLblInp').value = lm.label||dev.label||'';
 
   document.getElementById('modalOv').classList.add('open');
