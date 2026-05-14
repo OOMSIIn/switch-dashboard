@@ -55,7 +55,6 @@ main{padding:2rem;max-width:1160px;margin:0 auto;}
 .save-btn{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;}
 .save-btn:hover{background:var(--accent-d);}
 
-/* ── SW stat cards (big 4) — เหมือน v9 ── */
 .sw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;}
 .sw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .15s;box-shadow:var(--shadow);position:relative;overflow:hidden;}
 .sw-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.12);}
@@ -69,6 +68,11 @@ main{padding:2rem;max-width:1160px;margin:0 auto;}
 
 .sw-state{font-size:32px;font-weight:500;color:var(--off);letter-spacing:1px;margin-bottom:1rem;transition:color .25s;}
 .sw-card.on .sw-state{color:var(--col);}
+
+/* ★ เพิ่ม: แสดง last seen time ใต้ state */
+.sw-lastseen{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:-0.75rem;margin-bottom:0.75rem;}
+.sw-lastseen.online{color:#4caf50;}
+.sw-lastseen.offline{color:#e74c3c;}
 
 .sw-bar{height:3px;border-radius:2px;background:var(--border);margin-bottom:1rem;overflow:hidden;}
 .sw-bar-fill{height:100%;border-radius:2px;transition:width .6s;}
@@ -89,7 +93,6 @@ main{padding:2rem;max-width:1160px;margin:0 auto;}
 .mac-val.empty{color:var(--muted);font-style:italic;}
 .sw-hint{position:absolute;bottom:.625rem;right:.875rem;font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
 
-/* ── Summary ── */
 .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;}
 .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem;box-shadow:var(--shadow);}
 .sum-sw{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;margin-bottom:.375rem;font-weight:500;}
@@ -98,7 +101,6 @@ main{padding:2rem;max-width:1160px;margin:0 auto;}
 .sum-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-top:.3rem;}
 .sum-row span{color:var(--text);font-weight:500;}
 
-/* ── Charts ── */
 .chart-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);}
 .chart-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem;}
 .chart-title{font-size:14px;font-weight:500;color:var(--text);}
@@ -111,7 +113,6 @@ canvas{max-height:260px;}
 .date-inp{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:6px;font-size:12px;font-family:'IBM Plex Mono',monospace;}
 .date-inp:focus{outline:none;border-color:var(--accent);}
 
-/* ── Log table ── */
 .log-table{width:100%;border-collapse:collapse;font-size:12px;}
 .log-table th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);text-transform:uppercase;white-space:nowrap;}
 .log-table td{padding:.55rem .75rem;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
@@ -123,7 +124,6 @@ canvas{max-height:260px;}
 .mac-sm{font-size:10px;color:var(--muted);}
 .loading{text-align:center;padding:3rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
 
-/* ── Modal ── */
 .modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.75rem;width:100%;max-width:480px;box-shadow:0 12px 48px rgba(0,0,0,.2);transform:translateY(12px);transition:transform .2s;}
@@ -185,15 +185,12 @@ canvas{max-height:260px;}
     <button class="save-btn" onclick="saveConfig()">บันทึก</button>
   </div>
 
-  <!-- Read board cards (เหมือน SW cards v9) -->
-  <div class="sec-label">สถานะปัจจุบัน &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— คลิกการ์ดเพื่อดู / แก้ไข Device Info</span></div>
+  <div class="sec-label">สถานะปัจจุบัน &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— คลิกการ์ดเพื่อดู / แก้ไข DEVICE INFO</span></div>
   <div class="sw-grid" id="swGrid"><div class="loading">กำลังโหลด...</div></div>
 
-  <!-- Summary -->
-  <div class="sec-label">สถิติสรุป แยกต่อ Read Board</div>
+  <div class="sec-label">สถิติสรุป แยกต่อ READ BOARD</div>
   <div class="summary-grid" id="sumGrid"><div class="loading">กำลังโหลด...</div></div>
 
-  <!-- Detect/วัน bar chart (แทน uptime %) -->
   <div class="chart-box">
     <div class="chart-hdr">
       <div class="chart-title">จำนวน detect ต่อวัน (ทุก Board)</div>
@@ -206,7 +203,6 @@ canvas{max-height:260px;}
     <canvas id="uptimeChart" style="max-height:180px;"></canvas>
   </div>
 
-  <!-- History line chart (detect/เวลา) -->
   <div class="chart-box">
     <div class="chart-hdr">
       <div class="chart-title">ประวัติ detect</div>
@@ -227,7 +223,6 @@ canvas{max-height:260px;}
     <canvas id="histChart"></canvas>
   </div>
 
-  <!-- Daily detect bar chart แยกต่อ board -->
   <div class="chart-box">
     <div class="chart-hdr">
       <div class="chart-title">จำนวนครั้ง detect ต่อวัน แยก Board</div>
@@ -242,7 +237,6 @@ canvas{max-height:260px;}
     <canvas id="dailyChart"></canvas>
   </div>
 
-  <!-- Log table -->
   <div class="chart-box">
     <div class="chart-hdr">
       <div class="chart-title">Log ย้อนหลัง</div>
@@ -255,7 +249,6 @@ canvas{max-height:260px;}
   </div>
 </main>
 
-<!-- Modal: Device Info (เหมือน v9) -->
 <div class="modal-overlay" id="modalOv" onclick="closeModalBg(event)">
   <div class="modal">
     <div class="modal-hdr">
@@ -265,14 +258,10 @@ canvas{max-height:260px;}
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-
-    <!-- Read MAC -->
     <div class="info-block">
       <div class="info-block-label" style="color:#1565c0;">📡 Read Board — MAC</div>
       <div class="info-block-val" id="mReadMac">—</div>
     </div>
-
-    <!-- Write MAC -->
     <div class="info-block">
       <div class="info-block-label" style="color:#2e7d32;">💡 Write Board — MAC</div>
       <div class="info-block-val" id="mWriteMacDisp">—</div>
@@ -282,10 +271,7 @@ canvas{max-height:260px;}
       </div>
       <div class="saved-note" id="savedNote">✓ บันทึกแล้ว</div>
     </div>
-
     <hr class="divider"/>
-
-    <!-- Label -->
     <div class="lbl-wrap">
       <label>ชื่อ / Location</label>
       <input class="lbl-inp" id="mLblInp" placeholder="เช่น ทางเข้าหน้า, จุด B..."/>
@@ -319,14 +305,14 @@ function saveConfig(){
 // ═══════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════
-// allHistory: [{t, mac_read, mac_write, trigger}]
-// deviceList: [{mac_read, mac_write, label, last_seen_read, last_seen_write}]
 let allHistory = [];
 let deviceList = [];
 
 const SW_COLORS = ['#f47b20','#2196f3','#4caf50','#e91e63'];
 
-// Ordered list of Read MACs (A,B,C,D) — สร้างจาก deviceList + history
+// ★ ACTIVE_TIMEOUT: บอร์ดต้องส่ง register มาภายใน 5 นาที ไม่อย่างนั้นถือว่า OFFLINE
+const ACTIVE_TIMEOUT_MS = 5 * 60 * 1000;
+
 function getReadBoards() {
   const seen = new Set();
   const boards = [];
@@ -336,10 +322,10 @@ function getReadBoards() {
   allHistory.forEach(r=>{
     if(r.mac_read && !seen.has(r.mac_read)){
       seen.add(r.mac_read);
-      boards.push({ mac_read:r.mac_read, mac_write:'', label:'' });
+      boards.push({ mac_read:r.mac_read, mac_write:'', label:'', last_seen_read:null });
     }
   });
-  return boards; // max 4 ตัว แสดงตามลำดับ
+  return boards;
 }
 
 let histMode    = 'all';
@@ -380,31 +366,26 @@ function cc(){
 }
 
 // ═══════════════════════════════════════════════
-//  LOCAL MAP (Write MAC override + label) — เหมือน v9
+//  LOCAL MAP
 // ═══════════════════════════════════════════════
 function loadLocalMap(){ try{return JSON.parse(localStorage.getItem('devMap')||'{}')}catch{return{}} }
 function saveLocalMap(m){ localStorage.setItem('devMap',JSON.stringify(m)); }
 
-// key: boardIdx (0-3) → {writeMac, label}
 function getDeviceInfo(boardIdx){
   const boards  = getReadBoards();
   const board   = boards[boardIdx] || {};
   const macRead = board.mac_read || '';
-
-  // หา mac_write จาก deviceList
   const devEntry  = deviceList.find(d=>d.mac_read===macRead)||{};
   const gasWriteMac = devEntry.mac_write || '';
   const gasLabel    = devEntry.label || '';
-
   const lm       = loadLocalMap()['board'+(boardIdx+1)] || {};
   const macWrite = lm.writeMac || gasWriteMac;
   const label    = lm.label    || gasLabel;
-
   return { macRead, macWrite, label };
 }
 
 // ═══════════════════════════════════════════════
-//  CALC — นับ detect แทน On/Off toggle
+//  CALC
 // ═══════════════════════════════════════════════
 function filterDays(rows, days){
   if(days==='all') return rows;
@@ -415,13 +396,10 @@ function filterDays(rows, days){
 function calcBoardStats(macRead, allRows) {
   const detectRows = allRows.filter(r=>r.mac_read===macRead && r.trigger==='detect');
   const today = new Date(); today.setHours(0,0,0,0);
-
   const todayCount = detectRows.filter(r=>{
     const d=new Date(r.t); d.setHours(0,0,0,0);
     return d.getTime()===today.getTime();
   }).length;
-
-  // detect แยกต่อวัน → หาวันที่สูงสุด
   const dayMap={};
   detectRows.forEach(r=>{
     const dk=new Date(r.t).toLocaleDateString('th-TH');
@@ -429,18 +407,12 @@ function calcBoardStats(macRead, allRows) {
   });
   let maxDay='—', maxDayCnt=0;
   Object.entries(dayMap).forEach(([d,c])=>{ if(c>maxDayCnt){maxDayCnt=c;maxDay=d;} });
-
-  // คำนวณ % detect ต่อวัน = (ตรวจจับวันนี้ / max ตลอด) * 100
   const pct = maxDayCnt ? Math.round(todayCount/maxDayCnt*100) : 0;
-
-  // last detect
   const lastDet = detectRows.length ? new Date(detectRows[detectRows.length-1].t) : null;
-
   return { total:detectRows.length, todayCount, maxDay, maxDayCnt, pct, lastDet };
 }
 
 function calcDailyDetect(rows) {
-  // นับ detect แยกต่อ mac_read แต่ละวัน
   const detectRows = rows.filter(r=>r.trigger==='detect');
   const days={};
   const boards=getReadBoards();
@@ -453,6 +425,19 @@ function calcDailyDetect(rows) {
     });
   });
   return days;
+}
+
+// ★ ฟังก์ชันแปลง last_seen เป็น "x นาทีที่แล้ว"
+function formatLastSeen(ts) {
+  if (!ts) return 'ไม่มีข้อมูล';
+  const diff = Date.now() - ts;
+  const min  = Math.floor(diff / 60000);
+  const sec  = Math.floor(diff / 1000);
+  if (sec < 60)  return sec + ' วินาทีที่แล้ว';
+  if (min < 60)  return min + ' นาทีที่แล้ว';
+  const hr = Math.floor(min / 60);
+  if (hr < 24)   return hr + ' ชั่วโมงที่แล้ว';
+  return Math.floor(hr/24) + ' วันที่แล้ว';
 }
 
 // ═══════════════════════════════════════════════
@@ -473,7 +458,7 @@ async function fetchDevices(){
 }
 
 // ═══════════════════════════════════════════════
-//  RENDER — SW CARDS (เหมือน v9 แต่ใช้ detect count)
+//  RENDER — SW CARDS
 // ═══════════════════════════════════════════════
 function boardName(i){ return 'READ '+String.fromCharCode(65+i); }
 
@@ -490,8 +475,12 @@ function renderCards(){
     const s    = calcBoardStats(b.mac_read, allHistory);
     const name = boardName(i);
 
-    // "on" (active) = มี detect วันนี้
-    const isActive = s.todayCount > 0;
+    // ★★★ แก้ isActive: เช็คจาก last_seen_read ใน deviceList ภายใน 5 นาที
+    const devEntry   = deviceList.find(d => d.mac_read === b.mac_read) || {};
+    const lastSeen   = devEntry.last_seen_read || null;
+    const isActive   = lastSeen ? (Date.now() - lastSeen < ACTIVE_TIMEOUT_MS) : false;
+    const lastSeenTxt = formatLastSeen(lastSeen);
+    const lastSeenCls = isActive ? 'online' : 'offline';
 
     const readMacEl  = dev.macRead
       ? `<span class="mac-val">${dev.macRead}</span>`
@@ -513,7 +502,8 @@ function renderCards(){
         <div class="sw-icon-wrap">📡</div>
       </div>
 
-      <div class="sw-state">${isActive?'ACTIVE':'IDLE'}</div>
+      <div class="sw-state">${isActive?'ACTIVE':'OFFLINE'}</div>
+      <div class="sw-lastseen ${lastSeenCls}">last seen: ${lastSeenTxt}</div>
 
       <div class="sw-bar">
         <div class="sw-bar-fill" style="width:${s.pct}%;background:${col};"></div>
@@ -588,7 +578,6 @@ function setUptimeRange(r,btn){
 }
 
 function renderUptimeChart(){
-  // bar chart: detect count ต่อ board ใน range
   const c=cc();
   const rows=filterDays(allHistory.filter(r=>r.trigger==='detect'), uptimeRange);
   const boards=getReadBoards();
@@ -628,10 +617,8 @@ function renderHistChart(){
   const fd=document.getElementById('filterDate').value;
   let rows=allHistory.filter(r=>r.trigger==='detect');
   if(fd){ const d=new Date(fd); rows=rows.filter(r=>new Date(r.t).toDateString()===d.toDateString()); }
-
   const boards=getReadBoards();
   const labels=rows.map(r=>new Date(r.t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}));
-
   let datasets;
   if(histMode==='all'){
     datasets=boards.slice(0,4).map((b,i)=>({
@@ -705,11 +692,8 @@ function renderLog(){
   if(fd){ const d=new Date(fd); rows=rows.filter(r=>new Date(r.t).toDateString()===d.toDateString()); }
   else   { rows=rows.slice(0,40); }
   if(!rows.length){ wrap.innerHTML='<div class="loading">ไม่มีข้อมูล</div>'; return; }
-
   const boards=getReadBoards();
   const boardLabel=mac=>{ const i=boards.findIndex(b=>b.mac_read===mac); return i>=0?boardName(i):mac.slice(-8); };
-  const writeLabel=mac=>{ const d=deviceList.find(d=>d.mac_write===mac); return mac?mac.slice(-8):'—'; };
-
   wrap.innerHTML=`<table class="log-table">
     <thead><tr>
       <th>วันที่</th><th>เวลา</th>
@@ -735,7 +719,7 @@ function renderLog(){
 }
 
 // ═══════════════════════════════════════════════
-//  MODAL (เหมือน v9)
+//  MODAL
 // ═══════════════════════════════════════════════
 let modalIdx=-1;
 
@@ -744,23 +728,19 @@ function openModal(i){
   const col=SW_COLORS[i];
   const dev=getDeviceInfo(i);
   const lm=loadLocalMap()['board'+(i+1)]||{};
-
   document.getElementById('modalTitle').textContent=lm.label||dev.label||'Device Info';
   const pill=document.getElementById('modalPill');
   pill.textContent=boardName(i);
   pill.style.cssText=`background:${col}22;color:${col};border:1px solid ${col};`;
-
   const rm=document.getElementById('mReadMac');
   rm.textContent=dev.macRead||'ยังไม่มีข้อมูลใน Sheets';
   rm.className='info-block-val'+(dev.macRead?'':' empty');
-
   const wm=document.getElementById('mWriteMacDisp');
   wm.textContent=dev.macWrite||'ยังไม่ได้กรอก';
   wm.className='info-block-val'+(dev.macWrite?'':' empty');
   document.getElementById('mWriteMacInp').value=dev.macWrite;
   document.getElementById('savedNote').style.display='none';
   document.getElementById('mLblInp').value=lm.label||dev.label||'';
-
   document.getElementById('modalOv').classList.add('open');
 }
 
