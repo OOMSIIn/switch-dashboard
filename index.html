@@ -69,7 +69,6 @@ main{padding:2rem;max-width:1160px;margin:0 auto;}
 .sw-state{font-size:32px;font-weight:500;color:var(--off);letter-spacing:1px;margin-bottom:1rem;transition:color .25s;}
 .sw-card.on .sw-state{color:var(--col);}
 
-/* ★ เพิ่ม: แสดง last seen time ใต้ state */
 .sw-lastseen{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:-0.75rem;margin-bottom:0.75rem;}
 .sw-lastseen.online{color:#4caf50;}
 .sw-lastseen.offline{color:#e74c3c;}
@@ -113,7 +112,17 @@ canvas{max-height:260px;}
 .date-inp{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:6px;font-size:12px;font-family:'IBM Plex Mono',monospace;}
 .date-inp:focus{outline:none;border-color:var(--accent);}
 
-.log-table{width:100%;border-collapse:collapse;font-size:12px;}
+/* ── Log table scroll wrapper ── */
+.log-scroll-wrap{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  border-radius:8px;
+}
+.log-scroll-wrap::-webkit-scrollbar{height:4px;}
+.log-scroll-wrap::-webkit-scrollbar-track{background:var(--border);border-radius:2px;}
+.log-scroll-wrap::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
+
+.log-table{width:100%;border-collapse:collapse;font-size:12px;min-width:560px;}
 .log-table th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);text-transform:uppercase;white-space:nowrap;}
 .log-table td{padding:.55rem .75rem;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
 .log-table tr:last-child td{border-bottom:none;}
@@ -283,9 +292,6 @@ canvas{max-height:260px;}
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-//  CONFIG
-// ═══════════════════════════════════════════════
 const DEFAULT_URL = "";
 let webAppURL    = localStorage.getItem('dashURL') || DEFAULT_URL;
 let autoInterval = parseInt(localStorage.getItem('dashInt') || '30000');
@@ -302,15 +308,11 @@ function saveConfig(){
   startTimer(); fetchAll();
 }
 
-// ═══════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════
 let allHistory = [];
 let deviceList = [];
 
 const SW_COLORS = ['#f47b20','#2196f3','#4caf50','#e91e63'];
 
-// ★ ACTIVE_TIMEOUT: บอร์ดต้องส่ง register มาภายใน 5 นาที ไม่อย่างนั้นถือว่า OFFLINE
 const ACTIVE_TIMEOUT_MS = 5 * 60 * 1000;
 
 function getReadBoards() {
@@ -335,9 +337,6 @@ let histChartObj   = null;
 let dailyChartObj  = null;
 let uptimeChartObj = null;
 
-// ═══════════════════════════════════════════════
-//  THEME
-// ═══════════════════════════════════════════════
 const savedTheme = localStorage.getItem('dashTheme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
 document.getElementById('themeBtn').textContent = savedTheme==='dark'?'☀️':'🌙';
@@ -365,9 +364,6 @@ function cc(){
   };
 }
 
-// ═══════════════════════════════════════════════
-//  LOCAL MAP
-// ═══════════════════════════════════════════════
 function loadLocalMap(){ try{return JSON.parse(localStorage.getItem('devMap')||'{}')}catch{return{}} }
 function saveLocalMap(m){ localStorage.setItem('devMap',JSON.stringify(m)); }
 
@@ -384,9 +380,6 @@ function getDeviceInfo(boardIdx){
   return { macRead, macWrite, label };
 }
 
-// ═══════════════════════════════════════════════
-//  CALC
-// ═══════════════════════════════════════════════
 function filterDays(rows, days){
   if(days==='all') return rows;
   const cut=Date.now()-parseInt(days)*86400000;
@@ -427,7 +420,6 @@ function calcDailyDetect(rows) {
   return days;
 }
 
-// ★ ฟังก์ชันแปลง last_seen เป็น "x นาทีที่แล้ว"
 function formatLastSeen(ts) {
   if (!ts) return 'ไม่มีข้อมูล';
   const diff = Date.now() - ts;
@@ -440,9 +432,6 @@ function formatLastSeen(ts) {
   return Math.floor(hr/24) + ' วันที่แล้ว';
 }
 
-// ═══════════════════════════════════════════════
-//  FETCH
-// ═══════════════════════════════════════════════
 async function fetchHistory(){
   const r=await fetch(webAppURL+'?sts=history');
   const t=await r.text();
@@ -457,9 +446,6 @@ async function fetchDevices(){
   }catch{return[];}
 }
 
-// ═══════════════════════════════════════════════
-//  RENDER — SW CARDS
-// ═══════════════════════════════════════════════
 function boardName(i){ return 'READ '+String.fromCharCode(65+i); }
 
 function renderCards(){
@@ -475,7 +461,6 @@ function renderCards(){
     const s    = calcBoardStats(b.mac_read, allHistory);
     const name = boardName(i);
 
-    // ★★★ แก้ isActive: เช็คจาก last_seen_read ใน deviceList ภายใน 5 นาที
     const devEntry   = deviceList.find(d => d.mac_read === b.mac_read) || {};
     const lastSeen   = devEntry.last_seen_read || null;
     const isActive   = lastSeen ? (Date.now() - lastSeen < ACTIVE_TIMEOUT_MS) : false;
@@ -544,9 +529,6 @@ function renderCards(){
   }).join('');
 }
 
-// ═══════════════════════════════════════════════
-//  RENDER — SUMMARY GRID
-// ═══════════════════════════════════════════════
 function renderSummary(){
   const boards=getReadBoards();
   document.getElementById('sumGrid').innerHTML=boards.slice(0,4).map((b,i)=>{
@@ -566,9 +548,6 @@ function renderSummary(){
   }).join('');
 }
 
-// ═══════════════════════════════════════════════
-//  CHARTS
-// ═══════════════════════════════════════════════
 function setUptimeRange(r,btn){
   uptimeRange=r;
   document.querySelectorAll('#uptimeTabs .tab').forEach(t=>t.classList.remove('active'));
@@ -680,9 +659,6 @@ function renderDailyChart(){
   dailyChartObj=new Chart(document.getElementById('dailyChart').getContext('2d'),cfg);
 }
 
-// ═══════════════════════════════════════════════
-//  LOG TABLE
-// ═══════════════════════════════════════════════
 function clearLogDate(){ document.getElementById('logDate').value=''; renderLog(); }
 
 function renderLog(){
@@ -694,7 +670,7 @@ function renderLog(){
   if(!rows.length){ wrap.innerHTML='<div class="loading">ไม่มีข้อมูล</div>'; return; }
   const boards=getReadBoards();
   const boardLabel=mac=>{ const i=boards.findIndex(b=>b.mac_read===mac); return i>=0?boardName(i):mac.slice(-8); };
-  wrap.innerHTML=`<table class="log-table">
+  wrap.innerHTML=`<div class="log-scroll-wrap"><table class="log-table">
     <thead><tr>
       <th>วันที่</th><th>เวลา</th>
       <th>Read Board</th><th>MAC Read</th>
@@ -715,12 +691,9 @@ function renderLog(){
         <td>${trigBadge}</td>
       </tr>`;
     }).join('')}</tbody>
-  </table>`;
+  </table></div>`;
 }
 
-// ═══════════════════════════════════════════════
-//  MODAL
-// ═══════════════════════════════════════════════
 let modalIdx=-1;
 
 function openModal(i){
@@ -773,9 +746,6 @@ function saveLabel(){
   renderCards(); renderSummary();
 }
 
-// ═══════════════════════════════════════════════
-//  UTIL
-// ═══════════════════════════════════════════════
 function showErr(msg){ const e=document.getElementById('errMsg'); e.style.display=msg?'block':'none'; e.textContent=msg; }
 function setStatus(s){ document.getElementById('statusDot').style.background={ok:'#f47b20',loading:'#f4c020',error:'#e74c3c'}[s]; }
 
@@ -784,9 +754,6 @@ document.getElementById('logDate').addEventListener('change', renderLog);
 
 function renderCharts(){ renderUptimeChart(); renderHistChart(); renderDailyChart(); }
 
-// ═══════════════════════════════════════════════
-//  MAIN FETCH
-// ═══════════════════════════════════════════════
 async function fetchAll(){
   try{
     showErr(''); setStatus('loading');
