@@ -666,7 +666,7 @@ function renderLog(){
   const fd=document.getElementById('logDate').value;
   let rows=[...allHistory].reverse();
   if(fd){ const d=new Date(fd); rows=rows.filter(r=>new Date(r.t).toDateString()===d.toDateString()); }
-  else   { rows=rows.slice(0,40); }
+  else   { rows=rows.slice(0,15); }
   if(!rows.length){ wrap.innerHTML='<div class="loading">ไม่มีข้อมูล</div>'; return; }
   const boards=getReadBoards();
   const boardLabel=mac=>{ const i=boards.findIndex(b=>b.mac_read===mac); return i>=0?boardName(i):mac.slice(-8); };
