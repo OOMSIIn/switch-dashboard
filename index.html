@@ -890,12 +890,18 @@ function startTimer(){
 //  FLOORPLAN render
 //  Zone1(ส้ม)=Read A, Zone2(ฟ้า)=Read B, Zone3(เขียว)=Read C
 // ═══════════════════════════════════════
-const ACTIVE_FP_MS = 5 * 60 * 1000;
+const ACTIVE_FP_MS = 15 * 1000;  // 15 วินาที
 const FP_Z_EL   = {1:'fpZ1', 2:'fpZ2', 3:'fpZ3'};
 const FP_Z_DOTS = {
   1: ['fds1_1','fds1_2','fds1_3'],
   2: ['fds2_1','fds2_2','fds2_3'],
   3: ['fds3_1','fds3_2','fds3_3','fds3_4']
+};
+// pin_id แต่ละ dot (ตรงกับ sw1/sw2/sw3/sw4 ที่ Read board ส่งมา)
+const FP_DOT_PIN = {
+  'fds1_1':'sw1','fds1_2':'sw2','fds1_3':'sw3',
+  'fds2_1':'sw1','fds2_2':'sw2','fds2_3':'sw3',
+  'fds3_1':'sw1','fds3_2':'sw2','fds3_3':'sw3','fds3_4':'sw4'
 };
 const FP_Z_COL = {1:'#f47b20', 2:'#22d3ee', 3:'#a3e635'};
 
@@ -927,11 +933,17 @@ function renderFloorplan(){
     const tStr=lastTs?new Date(lastTs).toLocaleTimeString('th-TH'):'ไม่มีข้อมูล';
     const zEl=document.getElementById(FP_Z_EL[zn]);
     if(zEl) zEl.classList.toggle('fp-on',active);
+    // dot กระพริบเฉพาะ pin ที่ detect จริงใน 15 วิ — zone overlay pulse ปกติ
     (FP_Z_DOTS[zn]||[]).forEach(id=>{
       const d=document.getElementById(id);
       if(!d) return;
-      d.classList.toggle('fp-fire',active);
-      d.classList.toggle('fp-idle',!active);
+      const pinId=FP_DOT_PIN[id]||'';
+      const dotRow=[...allHistory]
+        .filter(r=>r.mac_read===mac&&r.trigger==='detect'&&r.pin_id===pinId)
+        .sort((a,b)=>b.t-a.t)[0];
+      const dotActive=!!(mac&&dotRow&&(now-dotRow.t<ACTIVE_FP_MS));
+      d.classList.toggle('fp-fire',dotActive);
+      d.classList.toggle('fp-idle',!dotActive);
     });
     const dot=document.getElementById('fpDot'+zn);
     const txt=document.getElementById('fpTxt'+zn);
