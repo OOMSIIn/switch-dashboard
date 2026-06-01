@@ -989,13 +989,9 @@ function renderFloorplan(){
     (FP_Z_DOTS[zn]||[]).forEach(id=>{
       const d=document.getElementById(id);
       if(!d) return;
-      const pinId=FP_DOT_PIN[id]||'';
-      const dotRow=[...allHistory]
-        .filter(r=>r.mac_write===mac&&r.trigger==='detect'&&r.pin_id===pinId)   /* ← mac_write */
-        .sort((a,b)=>b.t-a.t)[0];
-      const dotActive=!!(mac&&dotRow&&(now-dotRow.t<ACTIVE_FP_MS));
-      d.classList.toggle('fp-fire',dotActive);
-      d.classList.toggle('fp-idle',!dotActive);
+      /* ถ้า zone active → กระพิบทุก dot ในโซนพร้อมกันเลย */
+      d.classList.toggle('fp-fire',active);
+      d.classList.toggle('fp-idle',!active);
     });
     const dot=document.getElementById('fpDot'+zn);
     const txt=document.getElementById('fpTxt'+zn);
