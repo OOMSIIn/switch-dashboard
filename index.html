@@ -231,9 +231,71 @@ canvas{max-height:260px;}
 .mode-save-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
 .mode-toast{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4caf50;margin-top:.5rem;display:none;}
 .mode-toast.err{color:#e74c3c;}
+
+/* ── Login Overlay ── */
+#loginOverlay{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;width:100%;max-width:360px;box-shadow:0 12px 40px rgba(0,0,0,.18);}
+.login-logo{font-family:'IBM Plex Mono',monospace;font-size:20px;color:var(--accent);letter-spacing:2px;margin-bottom:.25rem;}
+.login-sub{font-size:12px;color:var(--muted);margin-bottom:1.75rem;}
+.login-field{margin-bottom:1rem;}
+.login-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:.375rem;}
+.login-inp{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;font-family:'IBM Plex Mono',monospace;}
+.login-inp:focus{outline:none;border-color:var(--accent);}
+.login-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;transition:background .2s;margin-top:.5rem;}
+.login-btn:hover{background:var(--accent-d);}
+.login-err{font-size:11px;color:#e74c3c;font-family:'IBM Plex Mono',monospace;margin-top:.625rem;display:none;text-align:center;}
+
+/* ── Settings Panel ── */
+.settings-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.875rem;margin-bottom:1rem;}
+.setting-item label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:.375rem;}
+.setting-inp{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.setting-inp:focus{outline:none;border-color:var(--accent);}
+.settings-footer{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;}
+.settings-save-btn{background:var(--accent);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;}
+.settings-save-btn:hover{background:var(--accent-d);}
+.settings-toast{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4caf50;display:none;}
+.settings-toast.err{color:#e74c3c;}
+
+/* ── Force Relay ── */
+.force-relay-row{display:flex;align-items:center;gap:.75rem;margin-top:.625rem;flex-wrap:wrap;}
+.force-btn{padding:7px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Mono',monospace;border:1.5px solid;transition:all .2s;}
+.force-on-btn{background:rgba(244,123,32,.12);border-color:var(--accent);color:var(--accent);}
+.force-on-btn:hover,.force-on-btn.active{background:var(--accent);color:#fff;}
+.force-off-btn{background:var(--bg);border-color:var(--border);color:var(--muted);}
+.force-off-btn:hover,.force-off-btn.active{background:#e74c3c22;border-color:#e74c3c;color:#e74c3c;}
+.force-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+
+/* ── Password Eye ── */
+.pw-wrap{position:relative;}
+.pw-wrap .login-inp{padding-right:40px;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0;line-height:1;}
+.pw-eye:hover{color:var(--text);}
 </style>
 </head>
 <body>
+
+
+<!-- Login Overlay -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">⚡ DetectLog</div>
+    <div class="login-sub">ระบบกันขโมย — กรุณาเข้าสู่ระบบ</div>
+    <div class="login-field">
+      <label class="login-label">Username</label>
+      <input class="login-inp" id="loginUser" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPw').focus()"/>
+    </div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <div class="pw-wrap">
+        <input class="login-inp" type="password" id="loginPw" placeholder="••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <button class="pw-eye" type="button" onclick="togglePw()" id="pwEye">👁</button>
+      </div>
+    </div>
+    <button class="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
 
 <header>
   <div class="logo">⚡ Detect<span>Log</span></div>
@@ -243,7 +305,7 @@ canvas{max-height:260px;}
       <span class="status-txt" id="lastUpdate">—</span>
     </div>
     <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
-    <button class="refresh-btn" onclick="fetchAll()">↻ Refresh</button>
+    <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
 
@@ -360,6 +422,43 @@ canvas{max-height:260px;}
     <div class="mode-toast" id="modeToast"></div>
   </div>
 
+
+  <!-- Advanced Settings -->
+  <div class="sec-label">ตั้งค่าขั้นสูง &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— อัปเดตอัตโนมัติไปยัง Read Board ทุกตัว</span></div>
+  <div class="settings-panel">
+    <div class="settings-grid">
+      <div class="setting-item">
+        <label>เวลาเริ่ม Night Mode</label>
+        <input class="setting-inp" id="sNightStart" type="time" value="17:30"/>
+      </div>
+      <div class="setting-item">
+        <label>เวลาสิ้นสุด Night Mode</label>
+        <input class="setting-inp" id="sNightEnd" type="time" value="06:00"/>
+      </div>
+      <div class="setting-item">
+        <label>Relay Timeout (วินาที)</label>
+        <input class="setting-inp" id="sRelayTimeout" type="number" min="5" max="300" value="15"/>
+      </div>
+      <div class="setting-item">
+        <label>Poll Interval (วินาที)</label>
+        <input class="setting-inp" id="sPollInterval" type="number" min="10" max="300" value="35"/>
+      </div>
+    </div>
+    <div class="settings-footer">
+      <button class="settings-save-btn" onclick="saveAdvSettings()">บันทึกการตั้งค่า</button>
+      <span class="settings-toast" id="settingsToast"></span>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0;">
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:.625rem;">Force Relay (เปิด/ปิดทันที)</div>
+    <div class="force-relay-row">
+      <button class="force-btn force-on-btn" id="forceOnBtn" onclick="setForceRelay(1)">⚡ Force ON</button>
+      <button class="force-btn force-off-btn" id="forceOffBtn" onclick="setForceRelay(0)">✕ Force OFF</button>
+      <span class="force-status" id="forceStatus">สถานะ: ปกติ</span>
+    </div>
+  </div>
+
   <!-- สถานะปัจจุบัน — เปลี่ยน WRITE BOARD -->
   <div class="sec-label">สถานะปัจจุบัน &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— คลิกการ์ดเพื่อดู / แก้ไข DEVICE INFO</span></div>
   <div class="sw-grid" id="swGrid"><div class="loading">กำลังโหลด...</div></div>
@@ -467,7 +566,7 @@ canvas{max-height:260px;}
 </div>
 
 <script>
-const DEFAULT_URL = "";
+const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw9OF0VE6xTsH2qyKqGbsScNx6vVbJoQ9mWuG69SrEdaTIr4cuzxkQe8d024YqhQkAI/exec";  // ← แก้ URL ที่นี่ที่เดียว
 let webAppURL    = localStorage.getItem('dashURL') || DEFAULT_URL;
 let autoInterval = parseInt(localStorage.getItem('dashInt') || '30000');
 let timer        = null;
@@ -1139,8 +1238,142 @@ function showModeToast(msg, isErr){
   setTimeout(()=>t.style.display='none', 3000);
 }
 
+
+/* ═══════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════ */
+
+function togglePw(){
+  const inp = document.getElementById('loginPw');
+  const eye = document.getElementById('pwEye');
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    eye.textContent = '🙈';
+  } else {
+    inp.type = 'password';
+    eye.textContent = '👁';
+  }
+}
+
+function checkStoredLogin(){
+  const saved    = sessionStorage.getItem('dashAuth');
+  const savedUser= localStorage.getItem('dashUser') || '';
+  webAppURL = DEFAULT_URL;
+  document.getElementById('urlInp').value = DEFAULT_URL;
+  if(saved === 'ok'){
+    document.getElementById('loginOverlay').style.display = 'none';
+  } else {
+    if(savedUser) document.getElementById('loginUser').value = savedUser;
+  }
+}
+
+async function doLogin(){
+  const url  = DEFAULT_URL;
+  const user = document.getElementById('loginUser').value.trim();
+  const pw   = document.getElementById('loginPw').value.trim();
+  const err  = document.getElementById('loginErr');
+  err.style.display = 'none';
+  if(!user) { err.textContent='กรุณากรอก Username'; err.style.display='block'; return; }
+  if(!pw)   { err.textContent='กรุณากรอก Password'; err.style.display='block'; return; }
+  const btn = document.querySelector('.login-btn');
+  btn.textContent = 'กำลังเข้าสู่ระบบ...'; btn.disabled = true;
+  try{
+    const r = await fetch(url + '?sts=login&username=' + encodeURIComponent(user) + '&password=' + encodeURIComponent(pw));
+    const t = await r.text();
+    if(t.trim() === 'OK'){
+      webAppURL = DEFAULT_URL;
+      localStorage.setItem('dashUser', user);
+      document.getElementById('urlInp').value = DEFAULT_URL;
+      sessionStorage.setItem('dashAuth','ok');
+      sessionStorage.setItem('dashUser', user);
+      document.getElementById('loginOverlay').style.display = 'none';
+      fetchAll();
+      fetchRelayMode();
+      fetchAdvSettings();
+    } else {
+      const msg = t.includes('wrong_password') ? 'Username หรือ Password ไม่ถูกต้อง'
+                : t.includes('no_users')       ? 'ยังไม่มี User ใน Sheets'
+                : t.includes('missing_fields') ? 'กรุณากรอกข้อมูลให้ครบ'
+                : 'เกิดข้อผิดพลาด: ' + t;
+      err.textContent = msg; err.style.display = 'block';
+    }
+  }catch(e){
+    err.textContent = 'เชื่อมต่อไม่ได้: ' + e.message;
+    err.style.display = 'block';
+  }
+  btn.textContent = 'เข้าสู่ระบบ'; btn.disabled = false;
+}
+
+/* ═══════════════════════════════════════
+   ADVANCED SETTINGS
+═══════════════════════════════════════ */
+async function fetchAdvSettings(){
+  if(!webAppURL) return;
+  try{
+    const r = await fetch(webAppURL + '?sts=getsettings');
+    const t = await r.text();
+    if(!t.startsWith('OK,')) return;
+    const p = t.split(',');
+    // OK,mode,night_start,night_end,relay_timeout,poll_interval,force_relay
+    if(p[2]) document.getElementById('sNightStart').value   = p[2];
+    if(p[3]) document.getElementById('sNightEnd').value     = p[3];
+    if(p[4]) document.getElementById('sRelayTimeout').value = p[4];
+    if(p[5]) document.getElementById('sPollInterval').value = p[5];
+    const force = parseInt(p[6]||'0');
+    updateForceUI(force);
+  }catch(e){ console.warn('[Settings] fetch failed',e); }
+}
+
+async function saveAdvSettings(){
+  const mode    = selectedRelayMode || currentRelayMode || 1;
+  const nStart  = document.getElementById('sNightStart').value   || '17:30';
+  const nEnd    = document.getElementById('sNightEnd').value     || '06:00';
+  const rTout   = document.getElementById('sRelayTimeout').value || '15';
+  const pInt    = document.getElementById('sPollInterval').value || '35';
+  const toast   = document.getElementById('settingsToast');
+  try{
+    const url = webAppURL + '?sts=savesettings&mode=' + mode
+      + '&night_start=' + encodeURIComponent(nStart)
+      + '&night_end='   + encodeURIComponent(nEnd)
+      + '&relay_timeout=' + rTout
+      + '&poll_interval=' + pInt;
+    const r = await fetch(url);
+    const t = await r.text();
+    if(t.startsWith('OK')){
+      toast.textContent = '✓ บันทึกสำเร็จ'; toast.className = 'settings-toast';
+    } else {
+      toast.textContent = 'Error: ' + t; toast.className = 'settings-toast err';
+    }
+  }catch(e){
+    toast.textContent = 'เชื่อมต่อไม่ได้'; toast.className = 'settings-toast err';
+  }
+  toast.style.display = 'inline';
+  setTimeout(()=>toast.style.display='none', 3000);
+}
+
+async function setForceRelay(state){
+  try{
+    const r = await fetch(webAppURL + '?sts=forcerelay&state=' + state);
+    const t = await r.text();
+    if(t.startsWith('OK')) updateForceUI(state);
+  }catch(e){ console.warn('[Force]',e); }
+}
+
+function updateForceUI(state){
+  const onBtn  = document.getElementById('forceOnBtn');
+  const offBtn = document.getElementById('forceOffBtn');
+  const status = document.getElementById('forceStatus');
+  if(!onBtn) return;
+  onBtn.classList.toggle('active',  state===1);
+  offBtn.classList.toggle('active', state===0);
+  status.textContent = state===1 ? 'สถานะ: ⚡ Force ON (Relay เปิดตลอด)' : 'สถานะ: ปกติ (ควบคุมโดย mode)';
+  status.style.color = state===1 ? 'var(--accent)' : '';
+}
+
+checkStoredLogin();
 fetchAll();
 fetchRelayMode();
+fetchAdvSettings();
 startTimer();
 </script>
 </body>
