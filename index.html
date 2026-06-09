@@ -271,7 +271,15 @@ canvas{max-height:260px;}
 .pw-wrap .login-inp{padding-right:40px;}
 .pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0;line-height:1;}
 .pw-eye:hover{color:var(--text);}
+
+/* ── Lucide Icons ── */
+.lucide{display:inline-block;vertical-align:middle;flex-shrink:0;}
+.lucide-sm  svg{width:18px;height:18px;stroke-width:2.5;}
+.lucide-md  svg{width:22px;height:22px;stroke-width:2.5;}
+.lucide-lg  svg{width:28px;height:28px;stroke-width:2.5;}
+.lucide-xl  svg{width:32px;height:32px;stroke-width:2.5;}
 </style>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" onload="lucide.createIcons()"></script>
 </head>
 <body>
 
@@ -279,7 +287,7 @@ canvas{max-height:260px;}
 <!-- Login Overlay -->
 <div id="loginOverlay">
   <div class="login-box">
-    <div class="login-logo">⚡ DetectLog</div>
+    <div class="login-logo"><span class="lucide lucide-md" style="margin-right:6px;color:var(--accent)"><i data-lucide="shield-check"></i></span>DetectLog</div>
     <div class="login-sub">ระบบกันขโมย — กรุณาเข้าสู่ระบบ</div>
     <div class="login-field">
       <label class="login-label">Username</label>
@@ -289,7 +297,7 @@ canvas{max-height:260px;}
       <label class="login-label">Password</label>
       <div class="pw-wrap">
         <input class="login-inp" type="password" id="loginPw" placeholder="••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
-        <button class="pw-eye" type="button" onclick="togglePw()" id="pwEye">👁</button>
+        <button class="pw-eye" type="button" onclick="togglePw()" id="pwEye"><span class="lucide lucide-sm" id="pwEyeIcon"><i data-lucide="eye"></i></span></button>
       </div>
     </div>
     <button class="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
@@ -298,15 +306,15 @@ canvas{max-height:260px;}
 </div>
 
 <header>
-  <div class="logo">⚡ Detect<span>Log</span></div>
+  <div class="logo"><span class="lucide lucide-md" style="margin-right:6px"><i data-lucide="shield-check"></i></span>Detect<span>Log</span></div>
   <div class="hdr-right">
     <div class="status-pill">
       <div class="status-dot" id="statusDot"></div>
       <span class="status-txt" id="lastUpdate">—</span>
     </div>
-    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
-    <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
-        <button class="refresh-btn" onclick="doLogout()" style="background:transparent;border:1px solid var(--border);color:var(--muted);">⏻ ออกจากระบบ</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn"><span class="lucide lucide-md"><i data-lucide="moon" id="themeIcon"></i></span></button>
+    <button class="refresh-btn" onclick="location.reload()"><span class="lucide lucide-sm" style="margin-right:6px"><i data-lucide="refresh-cw"></i></span>Refresh</button>
+        <button class="refresh-btn" onclick="doLogout()" style="background:transparent;border:1px solid var(--border);color:var(--muted);"><span class="lucide lucide-sm" style="margin-right:6px"><i data-lucide="log-out"></i></span>ออกจากระบบ</button>
   </div>
 </header>
 
@@ -386,33 +394,33 @@ canvas{max-height:260px;}
   <div class="sec-label">ควบคุมโหมดการทำงานของไฟ &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— Global (ทุก Read Board)</span></div>
   <div class="mode-panel">
     <div class="mode-panel-hdr">
-      <div class="mode-panel-title">💡 โหมดการทำงานของไฟ</div>
+      <div class="mode-panel-title"><span class="lucide lucide-sm" style="margin-right:6px;color:var(--accent)"><i data-lucide="zap"></i></span>โหมดการทำงานของไฟ</div>
       <span class="mode-current-badge" id="modeCurBadge">กำลังโหลด...</span>
     </div>
     <div class="mode-btns">
       <button class="mode-opt" data-mode="1" onclick="selectRelayMode(1)">
-        <div class="mode-opt-icon">🌞</div>
+        <div class="mode-opt-icon"><span class="lucide lucide-md"><i data-lucide="sun"></i></span></div>
         <div class="mode-opt-body">
           <div class="mode-opt-name">24 ชั่วโมง ทุกวัน</div>
           <div class="mode-opt-desc">ไฟเปิดได้ตลอดเวลา ทุกวัน</div>
         </div>
       </button>
       <button class="mode-opt" data-mode="2" onclick="selectRelayMode(2)">
-        <div class="mode-opt-icon">📅</div>
+        <div class="mode-opt-icon"><span class="lucide lucide-md"><i data-lucide="calendar-days"></i></span></div>
         <div class="mode-opt-body">
           <div class="mode-opt-name">ตารางสัปดาห์</div>
           <div class="mode-opt-desc">จ–ศ: 17:30–06:00 · ส–อา: ตลอด 24 ชม.</div>
         </div>
       </button>
       <button class="mode-opt" data-mode="3" onclick="selectRelayMode(3)">
-        <div class="mode-opt-icon">🌙</div>
+        <div class="mode-opt-icon"><span class="lucide lucide-md"><i data-lucide="moon"></i></span></div>
         <div class="mode-opt-body">
           <div class="mode-opt-name">กลางคืนทุกวัน</div>
           <div class="mode-opt-desc">ทุกวัน: 17:30–06:00 เท่านั้น</div>
         </div>
       </button>
       <button class="mode-opt" data-mode="4" onclick="selectRelayMode(4)">
-        <div class="mode-opt-icon">⛔</div>
+        <div class="mode-opt-icon"><span class="lucide lucide-md"><i data-lucide="ban"></i></span></div>
         <div class="mode-opt-body">
           <div class="mode-opt-name">ปิดทั้งหมด</div>
           <div class="mode-opt-desc">ไม่เปิด Relay ไม่ว่ากรณีใด</div>
@@ -454,7 +462,7 @@ canvas{max-height:260px;}
 
     <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:.625rem;">Force Relay (เปิด/ปิดทันที)</div>
     <div class="force-relay-row">
-      <button class="force-btn force-on-btn" id="forceOnBtn" onclick="setForceRelay(1)">⚡ Force ON</button>
+      <button class="force-btn force-on-btn" id="forceOnBtn" onclick="setForceRelay(1)"><span class="lucide lucide-sm" style="margin-right:5px"><i data-lucide="zap"></i></span>Force ON</button>
       <button class="force-btn force-off-btn" id="forceOffBtn" onclick="setForceRelay(0)">✕ Force OFF</button>
       <span class="force-status" id="forceStatus">สถานะ: ปกติ</span>
     </div>
@@ -537,7 +545,7 @@ canvas{max-height:260px;}
     </div>
     <!-- Write board ขึ้นก่อน (primary) -->
     <div class="info-block">
-      <div class="info-block-label" style="color:#1565c0;">💡 Write Board — MAC</div>
+      <div class="info-block-label" style="color:#1565c0;"><span class="lucide lucide-sm" style="margin-right:4px"><i data-lucide="pencil"></i></span>Write Board — MAC</div>
       <div class="info-block-val" id="mWriteMacDisp">—</div>
       <div class="edit-row">
         <input class="edit-inp" id="mWriteMacInp" placeholder="AA:BB:CC:DD:EE:FF"/>
@@ -547,7 +555,7 @@ canvas{max-height:260px;}
     </div>
     <!-- Read board ถัดมา (secondary) -->
     <div class="info-block">
-      <div class="info-block-label" style="color:#2e7d32;">📡 Read Board — MAC</div>
+      <div class="info-block-label" style="color:#2e7d32;"><span class="lucide lucide-sm" style="margin-right:4px"><i data-lucide="radio"></i></span>Read Board — MAC</div>
       <div class="info-block-val" id="mReadMac">—</div>
       <div class="edit-row">
         <input class="edit-inp" id="mReadMacInp" placeholder="AA:BB:CC:DD:EE:FF"/>
@@ -618,12 +626,14 @@ let uptimeChartObj = null;
 
 const savedTheme = localStorage.getItem('dashTheme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
-document.getElementById('themeBtn').textContent = savedTheme==='dark'?'☀️':'🌙';
+document.getElementById('themeIcon').setAttribute('data-lucide', savedTheme==='dark'?'sun':'moon');
+if(window.lucide) lucide.createIcons();
 
 function toggleTheme(){
   const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
   document.documentElement.setAttribute('data-theme',next);
-  document.getElementById('themeBtn').textContent=next==='dark'?'☀️':'🌙';
+  document.getElementById('themeIcon').setAttribute('data-lucide', next==='dark'?'sun':'moon');
+  if(window.lucide) lucide.createIcons();
   localStorage.setItem('dashTheme',next);
   destroyCharts(); renderCharts();
 }
@@ -779,7 +789,7 @@ function renderCards(){
           <div class="sw-id" style="color:${col};">${name}${dev.label?` <span style="color:var(--muted);font-weight:400;letter-spacing:0;">· ${dev.label}</span>`:''}
           </div>
         </div>
-        <div class="sw-icon-wrap">💡</div>
+        <div class="sw-icon-wrap"><span class="lucide lucide-xl"><i data-lucide="zap"></i></span></div>
       </div>
 
       <div class="sw-state">${isActive?'ACTIVE':'OFFLINE'}</div>
@@ -1252,15 +1262,16 @@ function doLogout(){
 }
 
 function togglePw(){
-  const inp = document.getElementById('loginPw');
-  const eye = document.getElementById('pwEye');
+  const inp  = document.getElementById('loginPw');
+  const icon = document.getElementById('pwEyeIcon');
   if(inp.type === 'password'){
     inp.type = 'text';
-    eye.textContent = '🙈';
+    icon.innerHTML = '<i data-lucide="eye-off"></i>';
   } else {
     inp.type = 'password';
-    eye.textContent = '👁';
+    icon.innerHTML = '<i data-lucide="eye"></i>';
   }
+  lucide.createIcons();
 }
 
 function checkStoredLogin(){
