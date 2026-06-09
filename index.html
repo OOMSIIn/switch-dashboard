@@ -3,549 +3,1208 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detect Dashboard</title>
+<title>DetectLog — Security Operations</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-@import url('https://script.google.com/macros/s/AKfycbw9OF0VE6xTsH2qyKqGbsScNx6vVbJoQ9mWuG69SrEdaTIr4cuzxkQe8d024YqhQkAI/exec');
-
-[data-theme="light"]{
-  --bg:#f5f4f0;--surface:#fff;--border:#e0ddd7;--border2:#ccc9c2;
-  --accent:#f47b20;--accent-s:#fff0e6;--accent-d:#c95e0a;
-  --text:#2a2925;--text2:#5a5750;--muted:#9a9690;
-  --off:#c8c5be;--tag-on-bg:#fff0e6;--tag-on:#c95e0a;
-  --tag-off-bg:#eeede9;--tag-off:#9a9690;
-  --shadow:0 1px 4px rgba(0,0,0,.07);--overlay:rgba(0,0,0,.4);
+/* ═══════════════════════════════
+   TOKENS
+═══════════════════════════════ */
+:root{
+  --bg:#F7F6F4;
+  --surface:#FFFFFF;
+  --surface2:#F2F1EF;
+  --border:#E4E2DE;
+  --border2:#D0CEC9;
+  --accent:#F47B20;
+  --accent-dim:#FDF0E6;
+  --accent-dark:#D4640F;
+  --text:#19171A;
+  --text2:#52504E;
+  --muted:#8F8C88;
+  --off:#C8C5C0;
+  --success:#2E9B5A;
+  --danger:#D94F3A;
+  --info:#2B7FD4;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.06);
+  --shadow:0 2px 8px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
+  --sidebar-w:220px;
+  --sidebar-collapsed-w:56px;
+  --radius:6px;
+  --radius-lg:10px;
 }
 [data-theme="dark"]{
-  --bg:#141210;--surface:#1e1b18;--border:#332e28;--border2:#4a4338;
-  --accent:#f47b20;--accent-s:#2a1e10;--accent-d:#ff9a4d;
-  --text:#f0ece6;--text2:#b0aa9f;--muted:#6e6860;
-  --off:#3a3530;--tag-on-bg:#2a1e10;--tag-on:#f47b20;
-  --tag-off-bg:#2a2520;--tag-off:#6e6860;
-  --shadow:0 1px 4px rgba(0,0,0,.3);--overlay:rgba(0,0,0,.65);
+  --bg:#111010;
+  --surface:#1A1917;
+  --surface2:#211F1C;
+  --border:#2E2C28;
+  --border2:#403D37;
+  --accent:#F47B20;
+  --accent-dim:#261910;
+  --accent-dark:#FF9240;
+  --text:#F0EDE8;
+  --text2:#A09C96;
+  --muted:#615E59;
+  --off:#3A3733;
+  --success:#3DB870;
+  --danger:#E85F4A;
+  --info:#5096E0;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow:0 2px 8px rgba(0,0,0,.4);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.6);
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;font-weight:300;min-height:100vh;transition:background .3s,color .3s;}
+html,body{height:100%;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  line-height:1.5;
+  display:flex;
+  flex-direction:column;
+}
 
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
-.logo{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:2px;font-weight:500;}
-.logo span{color:var(--text2);}
-.hdr-right{display:flex;align-items:center;gap:.75rem;}
-.status-pill{display:flex;align-items:center;gap:6px;background:var(--accent-s);border:1px solid var(--border);padding:4px 12px;border-radius:20px;}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.status-txt{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
-.icon-btn{background:none;border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
-.refresh-btn{background:var(--accent);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:500;transition:background .2s;}
-.refresh-btn:hover{background:var(--accent-d);}
+/* ═══════════════════════════════
+   APP SHELL
+═══════════════════════════════ */
+.app{display:flex;flex:1;height:100vh;overflow:hidden;}
 
-main{padding:2rem;max-width:1160px;margin:0 auto;}
-.sec-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:.875rem;margin-top:2rem;}
-.sec-label:first-child{margin-top:0;}
-.err{background:#fff0ee;border:1px solid #fcc;border-radius:8px;padding:.875rem 1rem;color:#c0392b;font-size:13px;margin-bottom:1rem;display:none;}
-[data-theme="dark"] .err{background:#2a1515;border-color:#4a2020;color:#ff8080;}
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  z-index:50;
+  transition:width .2s ease;
+  position:relative;
+}
+.sidebar.collapsed{
+  width:var(--sidebar-collapsed-w);
+}
+.sidebar.collapsed .brand-sub,
+.sidebar.collapsed .nav-section-label,
+.sidebar.collapsed .nav-item span,
+.sidebar.collapsed .nav-item-text,
+.sidebar.collapsed .status-label,
+.sidebar.collapsed .status-time,
+.sidebar.collapsed .sidebar-footer .btn-ghost,
+.sidebar.collapsed .brand-name{
+  display:none;
+}
+.sidebar.collapsed .brand-logo{justify-content:center;}
+.sidebar.collapsed .brand-icon{margin:0;}
+.sidebar.collapsed .nav-section{padding:10px 8px 4px;}
+.sidebar.collapsed .nav-item{justify-content:center;padding:8px;gap:0;}
+.sidebar.collapsed .nav-item svg{opacity:1;}
+.sidebar.collapsed .sidebar-footer{padding:10px 8px;}
+.sidebar.collapsed .status-indicator{justify-content:center;padding:8px;}
+.sidebar.collapsed .sidebar-footer>div{flex-direction:column;gap:6px;}
+.sidebar-toggle{
+  position:fixed;
+  left:var(--sidebar-w);
+  top:60px;
+  width:20px;height:48px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:none;
+  border-radius:0 8px 8px 0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  z-index:55;
+  color:var(--muted);
+  box-shadow:2px 0 6px rgba(0,0,0,.10);
+  transition:color .15s, background .15s, left .2s ease;
+}
+.sidebar.collapsed ~ * .sidebar-toggle,
+.sidebar.collapsed + .sidebar-toggle-fixed{
+  left:var(--sidebar-collapsed-w);
+}
+.sidebar-toggle:hover{color:var(--accent);background:var(--accent-dim);}
+.sidebar-toggle svg{width:13px;height:13px;stroke-width:2.5;transition:transform .2s;}
+.sidebar.collapsed ~ .sidebar-toggle-fixed svg{transform:rotate(180deg);}
+/* collapsed state moves toggle */
+body.sidebar-collapsed .sidebar-toggle{left:var(--sidebar-collapsed-w);}
+body.sidebar-collapsed .sidebar-toggle svg{transform:rotate(180deg);}
+.sidebar-brand{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border);
+}
+.brand-logo{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:2px;
+}
+.brand-icon{
+  width:30px;height:30px;
+  background:var(--accent);
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.brand-icon svg{color:#fff;width:16px;height:16px;stroke-width:2.5;}
+.brand-name{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.5px;
+  color:var(--text);
+}
+.brand-sub{
+  font-size:10px;
+  color:var(--muted);
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  padding-left:39px;
+}
 
-.cfg-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;box-shadow:var(--shadow);}
-.cfg-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
-.url-inp{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:180px;}
-.url-inp:focus{outline:none;border-color:var(--accent);}
-.sel{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;}
-.save-btn{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;}
-.save-btn:hover{background:var(--accent-d);}
+.nav-section{padding:16px 12px 8px;}
+.nav-section-label{
+  font-size:9px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-family:'IBM Plex Mono',monospace;
+  padding:0 8px;
+  margin-bottom:4px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  color:var(--text2);
+  font-size:13px;
+  font-weight:400;
+  text-decoration:none;
+  transition:background .15s,color .15s;
+  border:none;background:none;width:100%;text-align:left;
+}
+.nav-item svg{width:15px;height:15px;stroke-width:2;flex-shrink:0;opacity:.7;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:var(--accent-dim);color:var(--accent);}
+.nav-item.active svg{opacity:1;}
 
-.sw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;}
-.sw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .15s;box-shadow:var(--shadow);position:relative;overflow:hidden;}
-.sw-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.12);}
-.sw-card.on{border-color:var(--col)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--col) 20%,transparent),var(--shadow)!important;}
+/* Collapsed tooltip */
+.sidebar.collapsed .nav-item{position:relative;}
+.sidebar.collapsed .nav-item:hover::after{
+  content:attr(data-tip);
+  position:absolute;
+  left:calc(100% + 10px);
+  top:50%;transform:translateY(-50%);
+  background:var(--text);color:var(--bg);
+  font-size:11px;padding:4px 8px;
+  border-radius:4px;white-space:nowrap;
+  pointer-events:none;z-index:100;
+}
 
-.sw-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;}
-.sw-id{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;font-weight:500;}
-.sw-lbl{font-size:12px;color:var(--muted);margin-top:2px;}
-/* Write board icon wrap — ใช้สี accent เขียว */
-.sw-icon-wrap{width:40px;height:40px;border-radius:11px;background:var(--accent-s);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .25s;font-size:20px;}
-.sw-card.on .sw-icon-wrap{background:var(--col);border-color:var(--col);}
+/* Smooth scroll for main content */
+.main{scroll-behavior:smooth;}
 
-.sw-state{font-size:32px;font-weight:500;color:var(--off);letter-spacing:1px;margin-bottom:1rem;transition:color .25s;}
-.sw-card.on .sw-state{color:var(--col);}
+.sidebar-footer{
+  margin-top:auto;
+  padding:16px;
+  border-top:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.status-indicator{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;
+  background:var(--surface2);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+}
+.status-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent);
+  flex-shrink:0;
+  animation:blink 2.5s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+.status-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
+.status-time{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2);margin-left:auto;}
 
-.sw-lastseen{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:-0.75rem;margin-bottom:0.75rem;}
-.sw-lastseen.online{color:#4caf50;}
-.sw-lastseen.offline{color:#e74c3c;}
+/* ── Main content ── */
+.main{
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
 
-.sw-bar{height:3px;border-radius:2px;background:var(--border);margin-bottom:1rem;overflow:hidden;}
-.sw-bar-fill{height:100%;border-radius:2px;transition:width .6s;}
+/* ── Topbar ── */
+.topbar{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+  position:sticky;top:0;z-index:40;
+}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.page-title{font-size:14px;font-weight:500;color:var(--text);}
+.page-sub{font-size:12px;color:var(--muted);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
 
-.sw-stats{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;}
-.stat-cell-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
-.stat-cell-val{font-size:13px;font-weight:500;color:var(--text);}
-.stat-cell-val.hi{color:var(--col);}
+.btn-icon{
+  background:none;border:1px solid var(--border);
+  width:32px;height:32px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text2);
+  transition:all .15s;
+}
+.btn-icon svg{width:14px;height:14px;stroke-width:2;}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent);}
 
-.sw-mac-area{margin-top:1rem;padding-top:.875rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.375rem;}
-.mac-row{display:flex;align-items:center;gap:.5rem;}
-.mac-type-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:4px;font-weight:500;flex-shrink:0;}
-/* สลับสี badge: WRITE=น้ำเงิน, READ=เขียว */
-.mac-type-write{background:#e3f2fd;color:#1565c0;}
-[data-theme="dark"] .mac-type-write{background:#0d2a45;color:#64b5f6;}
-.mac-type-read{background:#e8f5e9;color:#2e7d32;}
-[data-theme="dark"] .mac-type-read{background:#0d3318;color:#66bb6a;}
-.mac-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:.3px;}
-.mac-val.empty{color:var(--muted);font-style:italic;}
-.sw-hint{position:absolute;bottom:.625rem;right:.875rem;font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+.btn-primary{
+  background:var(--accent);color:#fff;
+  border:none;padding:7px 14px;
+  border-radius:var(--radius);
+  font-size:12px;font-weight:500;
+  cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  transition:background .15s;
+}
+.btn-primary svg{width:13px;height:13px;stroke-width:2.5;}
+.btn-primary:hover{background:var(--accent-dark);}
 
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;}
-.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem;box-shadow:var(--shadow);}
-.sum-sw{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;margin-bottom:.375rem;font-weight:500;}
-.sum-num{font-size:28px;font-weight:500;font-family:'IBM Plex Mono',monospace;line-height:1.1;}
-.sum-unit{font-size:12px;color:var(--muted);}
-.sum-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-top:.3rem;}
-.sum-row span{color:var(--text);font-weight:500;}
+.btn-ghost{
+  background:none;color:var(--text2);
+  border:1px solid var(--border);padding:7px 14px;
+  border-radius:var(--radius);font-size:12px;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  transition:all .15s;
+}
+.btn-ghost svg{width:13px;height:13px;stroke-width:2;}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);}
 
-.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);}
-.chart-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem;}
-.chart-title{font-size:14px;font-weight:500;color:var(--text);}
-.tabs{display:flex;gap:4px;flex-wrap:wrap;}
-.tab{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 11px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .2s;}
-.tab:hover{border-color:var(--accent);color:var(--accent);}
-.tab.active{background:var(--accent-s);border-color:var(--accent);color:var(--accent);font-weight:500;}
-canvas{max-height:260px;}
-.date-row{display:flex;align-items:center;gap:.625rem;flex-wrap:wrap;}
-.date-inp{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:6px;font-size:12px;font-family:'IBM Plex Mono',monospace;}
+/* ── Content area ── */
+.content{padding:24px;display:flex;flex-direction:column;gap:24px;}
+
+/* ── Section header ── */
+.section-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.section-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* ── Error bar ── */
+.err-bar{
+  background:#FEF1EF;border:1px solid #F5B8B2;
+  border-radius:var(--radius);padding:10px 14px;
+  color:var(--danger);font-size:12px;display:none;
+}
+[data-theme="dark"] .err-bar{background:#2A1410;border-color:#5A2020;color:#E88070;}
+
+/* ── Config bar ── */
+.config-row{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:14px 18px;
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;
+  box-shadow:var(--shadow-sm);
+}
+.config-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;color:var(--muted);
+  white-space:nowrap;letter-spacing:.5px;
+}
+.inp{
+  flex:1;min-width:180px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:7px 10px;
+  border-radius:var(--radius);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+}
+.inp:focus{outline:none;border-color:var(--accent);background:var(--surface);}
+.sel-inp{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:7px 10px;border-radius:var(--radius);
+  font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;
+}
+
+/* ═══════════════════════════════
+   DEVICE CARDS
+═══════════════════════════════ */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;}
+
+.device-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:18px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:border-color .2s,box-shadow .2s,transform .15s;
+  box-shadow:var(--shadow-sm);
+}
+.device-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--col,var(--border));
+  border-radius:var(--radius-lg) 0 0 var(--radius-lg);
+  transition:background .2s;
+}
+.device-card:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
+.device-card.active{border-color:color-mix(in srgb,var(--col) 40%,var(--border));}
+
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.card-id-row{display:flex;align-items:center;gap:8px;}
+.card-badge{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;font-weight:500;
+  letter-spacing:2px;
+  padding:3px 8px;border-radius:4px;
+  text-transform:uppercase;
+}
+.card-label{font-size:11px;color:var(--muted);margin-top:3px;}
+
+.card-icon{
+  width:34px;height:34px;
+  border-radius:8px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:background .2s;
+}
+.device-card.active .card-icon{background:var(--col);border-color:var(--col);}
+.card-icon svg{width:16px;height:16px;stroke-width:2;color:var(--muted);}
+.device-card.active .card-icon svg{color:#fff;}
+
+.card-status{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:12px;
+}
+.card-status-dot{
+  width:7px;height:7px;border-radius:50%;
+  flex-shrink:0;
+}
+.device-card.active .card-status-dot{animation:blink 2s infinite;}
+.card-status-text{
+  font-size:12px;font-weight:500;
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:1px;
+}
+.card-lastseen{font-size:10px;color:var(--muted);margin-left:auto;font-family:'IBM Plex Mono',monospace;}
+
+.card-bar{height:2px;background:var(--border);border-radius:1px;margin-bottom:14px;}
+.card-bar-fill{height:100%;border-radius:1px;transition:width .6s;}
+
+.card-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-item{}
+.stat-item-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;letter-spacing:.3px;}
+.stat-item-val{font-size:15px;font-weight:500;color:var(--text);}
+.stat-item-val.accent{color:var(--col);}
+
+.card-mac{
+  margin-top:12px;padding-top:12px;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;gap:5px;
+}
+.mac-row{display:flex;align-items:center;gap:7px;}
+.mac-badge{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:8px;letter-spacing:1px;
+  padding:2px 6px;border-radius:3px;font-weight:500;
+  flex-shrink:0;text-transform:uppercase;
+}
+.mac-badge-w{background:#EBF3FF;color:#1A5FA8;}
+.mac-badge-r{background:#EBF7EF;color:#1A7A3A;}
+[data-theme="dark"] .mac-badge-w{background:#102040;color:#4D9FE8;}
+[data-theme="dark"] .mac-badge-r{background:#0F2A18;color:#4DB870;}
+.mac-val{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2);}
+.mac-empty{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);font-style:italic;}
+
+/* ═══════════════════════════════
+   SUMMARY STRIP
+═══════════════════════════════ */
+.summary-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.sum-tile{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:16px;
+  box-shadow:var(--shadow-sm);
+  border-top:2px solid var(--col,var(--border));
+}
+.sum-board{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:2px;
+  font-weight:500;margin-bottom:6px;
+  color:var(--col,var(--muted));
+}
+.sum-num{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:26px;font-weight:500;line-height:1;
+  color:var(--col,var(--text));
+}
+.sum-unit{font-size:11px;color:var(--muted);margin-left:2px;}
+.sum-meta{margin-top:6px;}
+.sum-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:2px;}
+.sum-row strong{color:var(--text);font-weight:500;}
+
+/* ═══════════════════════════════
+   PANELS (chart, floorplan, etc.)
+═══════════════════════════════ */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+  box-shadow:var(--shadow-sm);
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;flex-wrap:wrap;gap:8px;
+}
+.panel-title{font-size:13px;font-weight:500;color:var(--text);}
+.panel-title svg{width:14px;height:14px;stroke-width:2;vertical-align:-2px;margin-right:6px;color:var(--accent);}
+
+.tabs-row{display:flex;gap:3px;flex-wrap:wrap;}
+.tab-btn{
+  background:none;border:1px solid var(--border);
+  color:var(--muted);padding:4px 10px;
+  border-radius:4px;font-size:10px;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;
+  transition:all .15s;letter-spacing:.3px;
+}
+.tab-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tab-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);font-weight:500;}
+
+canvas{max-height:240px;}
+
+.date-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.date-inp{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:4px 8px;
+  border-radius:4px;font-size:11px;
+  font-family:'IBM Plex Mono',monospace;
+}
 .date-inp:focus{outline:none;border-color:var(--accent);}
 
-/* ── Log table scroll wrapper ── */
-.log-scroll-wrap{
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-  border-radius:8px;
+/* ── Log table ── */
+.log-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:6px;}
+.log-scroll::-webkit-scrollbar{height:3px;}
+.log-scroll::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
+.log-table{width:100%;border-collapse:collapse;min-width:540px;font-size:11px;}
+.log-table th{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:2px;color:var(--muted);
+  text-align:left;padding:8px 10px;
+  border-bottom:1px solid var(--border);
+  text-transform:uppercase;white-space:nowrap;
 }
-.log-scroll-wrap::-webkit-scrollbar{height:4px;}
-.log-scroll-wrap::-webkit-scrollbar-track{background:var(--border);border-radius:2px;}
-.log-scroll-wrap::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
-
-.log-table{width:100%;border-collapse:collapse;font-size:12px;min-width:560px;}
-.log-table th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);text-transform:uppercase;white-space:nowrap;}
-.log-table td{padding:.55rem .75rem;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
+.log-table td{
+  padding:8px 10px;border-bottom:1px solid var(--border);
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2);
+}
 .log-table tr:last-child td{border-bottom:none;}
-.log-table tr:hover td{background:var(--accent-s);}
-.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;}
-.badge-on{background:var(--tag-on-bg);color:var(--tag-on);}
-.badge-off{background:var(--tag-off-bg);color:var(--tag-off);}
-.mac-sm{font-size:10px;color:var(--muted);}
-.loading{text-align:center;padding:3rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.log-table tr:hover td{background:var(--accent-dim);}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:500;letter-spacing:.5px;}
+.badge-detect{background:var(--accent-dim);color:var(--accent);}
+.badge-hb{background:var(--surface2);color:var(--muted);}
 
-.modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
-.modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.75rem;width:100%;max-width:480px;box-shadow:0 12px 48px rgba(0,0,0,.2);transform:translateY(12px);transition:transform .2s;}
-.modal-overlay.open .modal{transform:translateY(0);}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
-.modal-title{font-size:16px;font-weight:500;}
-.modal-sw-pill{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
-.modal-close{background:none;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px;transition:all .2s;}
-.modal-close:hover{border-color:var(--accent);color:var(--accent);}
-.info-block{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.875rem 1.125rem;margin-bottom:.625rem;}
-.info-block-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.375rem;}
-.info-block-val{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:500;letter-spacing:.4px;color:var(--text);}
-.info-block-val.empty{color:var(--muted);font-size:12px;font-weight:400;}
-.edit-row{display:flex;gap:.5rem;margin-top:.5rem;}
-.edit-inp{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;}
-.edit-inp:focus{outline:none;border-color:var(--accent);}
-.edit-btn{background:var(--accent);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;white-space:nowrap;}
-.edit-btn:hover{background:var(--accent-d);}
-.saved-note{font-size:11px;color:#4caf50;font-family:'IBM Plex Mono',monospace;margin-top:.375rem;display:none;}
-.divider{border:none;border-top:1px solid var(--border);margin:.875rem 0;}
-.lbl-wrap label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:.375rem;}
-.lbl-inp{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;font-family:'Sarabun',sans-serif;}
-.lbl-inp:focus{outline:none;border-color:var(--accent);}
-.modal-footer{display:flex;justify-content:flex-end;margin-top:.75rem;}
+/* ── Floorplan ── */
+.fp-map{position:relative;width:100%;overflow:hidden;border-radius:6px;border:1px solid var(--border);}
+.fp-map img{width:100%;height:auto;display:block;}
+[data-theme="dark"] .fp-map img{filter:invert(1) hue-rotate(180deg);opacity:.75;}
+.fp-zone{position:absolute;border-radius:3px;pointer-events:none;}
+.fp-z1{border:2px solid #F47B20;background:transparent;}
+.fp-z1.fp-on{background:rgba(244,123,32,.15);animation:fp-pulse 1.5s ease-in-out infinite;}
+.fp-z2{border:2px solid #22D3EE;background:transparent;}
+.fp-z2.fp-on{background:rgba(34,211,238,.15);animation:fp-pulse 1.5s ease-in-out infinite;}
+.fp-z3{border:2px solid #84CC16;background:transparent;}
+.fp-z3.fp-on{background:rgba(132,204,22,.15);animation:fp-pulse 1.5s ease-in-out infinite;}
+@keyframes fp-pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.fp-dot{position:absolute;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);cursor:pointer;z-index:10;transition:box-shadow .3s;}
+.fp-dot.fp-idle{background:#9CA3AF;border:2px solid rgba(255,255,255,.85);box-shadow:0 0 0 2px #9ca3af44;}
+.fp-dot.fp-fire{border:2px solid rgba(255,255,255,.95);animation:fp-blink .6s step-end infinite;}
+.fp-dot.fp-fire.fp-c1{background:#F47B20;box-shadow:0 0 0 3px #f47b2077;}
+.fp-dot.fp-fire.fp-c2{background:#22D3EE;box-shadow:0 0 0 3px #22d3ee77;}
+.fp-dot.fp-fire.fp-c3{background:#84CC16;box-shadow:0 0 0 3px #84cc1677;}
+@keyframes fp-blink{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1);}50%{opacity:.1;transform:translate(-50%,-50%) scale(1.6);}}
+.fp-tip{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text);pointer-events:none;white-space:nowrap;box-shadow:var(--shadow);z-index:50;opacity:0;transition:opacity .1s;}
+.fp-tip.show{opacity:1;}
+.fp-status-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.fp-chip{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:5px;padding:5px 10px;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:1px;
+}
+.fp-chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.fp-chip-zone{font-weight:500;}
+.fp-chip-state{color:var(--muted);}
 
-@media(max-width:600px){
-  main{padding:1rem;}
-  header{padding:.875rem 1rem;}
-  .sw-grid{grid-template-columns:1fr 1fr;}
-  .sw-mac-area{display:none;}
+/* ── Legend pills ── */
+.legend-row{display:flex;gap:8px;flex-wrap:wrap;}
+.legend-pill{
+  display:flex;align-items:center;gap:5px;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:1px;padding:3px 8px;border-radius:20px;
+  border:1px solid;font-weight:500;
 }
 
-/* ── Floorplan section ── */
-.fp-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);}
-.fp-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;}
-.fp-title{font-size:14px;font-weight:500;color:var(--text);}
-.fp-legend{display:flex;gap:.625rem;flex-wrap:wrap;}
-.fp-pill{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;padding:3px 10px;border-radius:20px;font-weight:500;border:1.5px solid;}
-.fp-map{position:relative;width:100%;overflow:hidden;border-radius:8px;border:1px solid var(--border);}
-.fp-map img{width:100%;height:auto;display:block;}
-[data-theme="dark"] .fp-map img{filter:invert(1) hue-rotate(180deg);opacity:.8;}
-
-/* Zone overlays */
-.fp-zone{position:absolute;border-radius:3px;pointer-events:none;}
-
-/* Zone1 ส้ม */
-.fp-z1{border:2.5px solid #f47b20;background:transparent;}
-.fp-z1.fp-on{background:rgba(244,123,32,.18);animation:fp-zp 1.4s ease-in-out infinite;}
-
-/* Zone2 ฟ้า */
-.fp-z2{border:2.5px solid #22d3ee;background:transparent;}
-.fp-z2.fp-on{background:rgba(34,211,238,.22);animation:fp-zp 1.4s ease-in-out infinite;}
-
-/* Zone3 เขียวมะนาว */
-.fp-z3{border:2.5px solid #a3e635;background:transparent;}
-.fp-z3.fp-on{background:rgba(163,230,53,.18);animation:fp-zp 1.4s ease-in-out infinite;}
-
-@keyframes fp-zp{0%,100%{opacity:1;}50%{opacity:.3;}}
-
-/* sensor dots */
-.fp-dot{position:absolute;width:20px;height:20px;border-radius:50%;transform:translate(-50%,-50%);cursor:pointer;z-index:10;transition:box-shadow .3s;}
-.fp-dot.fp-idle{background:#9ca3af;border:2.5px solid rgba(255,255,255,.9);box-shadow:0 0 0 2px #9ca3af55;}
-.fp-dot.fp-fire{border:2.5px solid rgba(255,255,255,.95);animation:fp-blink .5s step-end infinite;}
-.fp-dot.fp-fire.fp-c1{background:#f47b20;box-shadow:0 0 0 3px #f47b2088;}
-.fp-dot.fp-fire.fp-c2{background:#22d3ee;box-shadow:0 0 0 3px #22d3ee88;}
-.fp-dot.fp-fire.fp-c3{background:#a3e635;box-shadow:0 0 0 3px #a3e63588;}
-@keyframes fp-blink{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1);}50%{opacity:.1;transform:translate(-50%,-50%) scale(1.65);}}
-
-/* tooltip */
-.fp-tip{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 9px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text);pointer-events:none;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.18);z-index:50;opacity:0;transition:opacity .12s;}
-.fp-tip.fp-show{opacity:1;}
-
-/* status chips */
-.fp-status{display:flex;gap:.5rem;margin-top:.875rem;flex-wrap:wrap;}
-.fp-chip{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-family:'IBM Plex Mono',monospace;font-size:10px;}
-.fp-cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s;}
-
-/* ── Relay Mode Panel ── */
-.mode-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);}
-.mode-panel-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;}
-.mode-panel-title{font-size:14px;font-weight:500;color:var(--text);}
-.mode-current-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 10px;border-radius:20px;background:var(--accent-s);border:1px solid var(--accent);color:var(--accent);letter-spacing:1px;}
-.mode-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.625rem;}
-.mode-opt{display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all .2s;text-align:left;color:var(--text);width:100%;}
-.mode-opt:hover{border-color:var(--accent);background:var(--accent-s);}
-.mode-opt.active{border-color:var(--accent);background:var(--accent-s);}
+/* ═══════════════════════════════
+   MODE PANEL
+═══════════════════════════════ */
+.mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;}
+.mode-opt{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:11px 13px;
+  cursor:pointer;transition:all .15s;text-align:left;color:var(--text);width:100%;
+  font-family:'Inter',sans-serif;
+}
+.mode-opt:hover{border-color:var(--border2);}
+.mode-opt.active{border-color:var(--accent);background:var(--accent-dim);}
 .mode-opt.active .mode-opt-icon{color:var(--accent);}
-.mode-opt-icon{font-size:18px;width:26px;text-align:center;flex-shrink:0;}
-.mode-opt-body{flex:1;}
-.mode-opt-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px;}
-.mode-opt-desc{font-size:10px;color:var(--muted);line-height:1.4;}
-.mode-save-btn{margin-top:.875rem;background:var(--accent);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;letter-spacing:.5px;}
-.mode-save-btn:hover{background:var(--accent-d);}
-.mode-save-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
-.mode-toast{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4caf50;margin-top:.5rem;display:none;}
-.mode-toast.err{color:#e74c3c;}
+.mode-opt-icon{
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:var(--muted);
+}
+.mode-opt-icon svg{width:16px;height:16px;stroke-width:2;}
+.mode-opt-name{font-size:12px;font-weight:500;margin-bottom:2px;}
+.mode-opt-desc{font-size:10px;color:var(--muted);line-height:1.3;}
+.mode-footer{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.mode-badge{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  padding:3px 9px;border-radius:20px;
+  background:var(--accent-dim);border:1px solid var(--accent);
+  color:var(--accent);letter-spacing:1px;
+}
+.toast-msg{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--success);display:none;}
+.toast-msg.err{color:var(--danger);}
 
-/* ── Login Overlay ── */
-#loginOverlay{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
-.login-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;width:100%;max-width:360px;box-shadow:0 12px 40px rgba(0,0,0,.18);}
-.login-logo{font-family:'IBM Plex Mono',monospace;font-size:20px;color:var(--accent);letter-spacing:2px;margin-bottom:.25rem;}
-.login-sub{font-size:12px;color:var(--muted);margin-bottom:1.75rem;}
-.login-field{margin-bottom:1rem;}
-.login-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:.375rem;}
-.login-inp{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;font-family:'IBM Plex Mono',monospace;}
-.login-inp:focus{outline:none;border-color:var(--accent);}
-.login-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;transition:background .2s;margin-top:.5rem;}
-.login-btn:hover{background:var(--accent-d);}
-.login-err{font-size:11px;color:#e74c3c;font-family:'IBM Plex Mono',monospace;margin-top:.625rem;display:none;text-align:center;}
+/* ═══════════════════════════════
+   SETTINGS
+═══════════════════════════════ */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:14px;}
+.field-wrap label{
+  display:block;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:5px;
+}
+.field-inp{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:8px 10px;border-radius:var(--radius);
+  font-family:'IBM Plex Mono',monospace;font-size:12px;
+}
+.field-inp:focus{outline:none;border-color:var(--accent);}
+.settings-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
+.force-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.force-on{
+  padding:7px 14px;border-radius:var(--radius);font-size:11px;font-weight:500;
+  cursor:pointer;border:1px solid var(--accent);
+  background:transparent;color:var(--accent);
+  font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;
+  transition:all .15s;
+}
+.force-on:hover,.force-on.active{background:var(--accent);color:#fff;}
+.force-off{
+  padding:7px 14px;border-radius:var(--radius);font-size:11px;font-weight:500;
+  cursor:pointer;border:1px solid var(--border);
+  background:transparent;color:var(--muted);
+  font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;
+  transition:all .15s;
+}
+.force-off:hover,.force-off.active{border-color:var(--danger);color:var(--danger);}
+.force-status{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
 
-/* ── Settings Panel ── */
-.settings-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);}
-.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.875rem;margin-bottom:1rem;}
-.setting-item label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:.375rem;}
-.setting-inp{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;}
-.setting-inp:focus{outline:none;border-color:var(--accent);}
-.settings-footer{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;}
-.settings-save-btn{background:var(--accent);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;}
-.settings-save-btn:hover{background:var(--accent-d);}
-.settings-toast{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4caf50;display:none;}
-.settings-toast.err{color:#e74c3c;}
+/* ═══════════════════════════════
+   MODAL
+═══════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  padding:16px;opacity:0;pointer-events:none;transition:opacity .18s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:22px;width:100%;max-width:460px;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(10px);transition:transform .18s;
+}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.modal-title-row{display:flex;align-items:center;gap:8px;}
+.modal-title{font-size:15px;font-weight:500;}
+.modal-pill{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  padding:2px 8px;border-radius:20px;font-weight:500;
+}
+.modal-close{
+  background:none;border:1px solid var(--border);
+  width:28px;height:28px;border-radius:var(--radius);
+  cursor:pointer;color:var(--muted);font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.modal-close:hover{border-color:var(--accent);color:var(--accent);}
+.info-block{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;
+}
+.info-block-label{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;
+}
+.info-block-val{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;
+  font-weight:500;letter-spacing:.5px;color:var(--text);margin-bottom:8px;
+}
+.info-block-val.empty{color:var(--muted);font-size:11px;font-weight:400;}
+.edit-row{display:flex;gap:6px;}
+.edit-inp{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  color:var(--text);padding:7px 10px;border-radius:var(--radius);
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+}
+.edit-inp:focus{outline:none;border-color:var(--accent);}
+.edit-btn{
+  background:var(--accent);color:#fff;border:none;
+  padding:7px 12px;border-radius:var(--radius);
+  font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;
+  white-space:nowrap;transition:background .15s;
+}
+.edit-btn:hover{background:var(--accent-dark);}
+.saved-note{font-size:10px;color:var(--success);font-family:'IBM Plex Mono',monospace;margin-top:5px;display:none;}
+.modal-divider{border:none;border-top:1px solid var(--border);margin:12px 0;}
+.modal-footer{display:flex;justify-content:flex-end;margin-top:8px;}
+.lbl-field label{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;
+}
+.lbl-inp{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:8px 10px;border-radius:var(--radius);font-size:13px;
+}
+.lbl-inp:focus{outline:none;border-color:var(--accent);}
 
-/* ── Force Relay ── */
-.force-relay-row{display:flex;align-items:center;gap:.75rem;margin-top:.625rem;flex-wrap:wrap;}
-.force-btn{padding:7px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Mono',monospace;border:1.5px solid;transition:all .2s;}
-.force-on-btn{background:rgba(244,123,32,.12);border-color:var(--accent);color:var(--accent);}
-.force-on-btn:hover,.force-on-btn.active{background:var(--accent);color:#fff;}
-.force-off-btn{background:var(--bg);border-color:var(--border);color:var(--muted);}
-.force-off-btn:hover,.force-off-btn.active{background:#e74c3c22;border-color:#e74c3c;color:#e74c3c;}
-.force-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
-
-/* ── Password Eye ── */
+/* ═══════════════════════════════
+   LOGIN
+═══════════════════════════════ */
+#loginOverlay{
+  position:fixed;inset:0;background:var(--bg);
+  z-index:999;display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.login-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:32px;
+  width:100%;max-width:360px;
+  box-shadow:var(--shadow-lg);
+}
+.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.login-brand-icon{
+  width:34px;height:34px;background:var(--accent);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+}
+.login-brand-icon svg{width:18px;height:18px;stroke-width:2.5;color:#fff;}
+.login-brand-name{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:500;letter-spacing:.5px;}
+.login-sub{font-size:11px;color:var(--muted);margin-bottom:24px;padding-left:44px;}
+.login-field{margin-bottom:14px;}
+.login-label{
+  display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;
+}
+.login-inp{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:10px 12px;border-radius:var(--radius);
+  font-size:13px;font-family:'IBM Plex Mono',monospace;
+}
+.login-inp:focus{outline:none;border-color:var(--accent);background:var(--surface);}
 .pw-wrap{position:relative;}
 .pw-wrap .login-inp{padding-right:40px;}
-.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0;line-height:1;}
+.pw-eye{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:var(--muted);
+  display:flex;align-items:center;
+}
+.pw-eye svg{width:15px;height:15px;stroke-width:2;}
 .pw-eye:hover{color:var(--text);}
+.login-btn{
+  width:100%;background:var(--accent);color:#fff;border:none;
+  padding:11px;border-radius:var(--radius);font-size:13px;font-weight:600;
+  cursor:pointer;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;
+  transition:background .15s;margin-top:4px;
+}
+.login-btn:hover{background:var(--accent-dark);}
+.login-err{font-size:11px;color:var(--danger);font-family:'IBM Plex Mono',monospace;margin-top:8px;display:none;text-align:center;}
 
-/* ── Lucide Icons ── */
-.lucide{display:inline-block;vertical-align:middle;flex-shrink:0;}
-.lucide-sm  svg{width:18px;height:18px;stroke-width:2.5;}
-.lucide-md  svg{width:22px;height:22px;stroke-width:2.5;}
-.lucide-lg  svg{width:28px;height:28px;stroke-width:2.5;}
-.lucide-xl  svg{width:32px;height:32px;stroke-width:2.5;}
+/* ═══════════════════════════════
+   MOBILE HEADER (hidden on desktop)
+═══════════════════════════════ */
+.mobile-header{
+  display:none;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:12px 16px;
+  align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:60;
+  box-shadow:var(--shadow-sm);
+}
+.mobile-brand{display:flex;align-items:center;gap:8px;}
+.mobile-brand-icon{
+  width:28px;height:28px;background:var(--accent);
+  border-radius:6px;display:flex;align-items:center;justify-content:center;
+}
+.mobile-brand-icon svg{width:14px;height:14px;color:#fff;stroke-width:2.5;}
+.mobile-brand-name{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;}
+.mobile-actions{display:flex;gap:6px;align-items:center;}
+.mobile-status{
+  display:flex;align-items:center;gap:5px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:4px 10px;
+}
+.hamburger-btn{
+  background:none;border:1px solid var(--border);
+  width:32px;height:32px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text2);
+}
+.hamburger-btn svg{width:16px;height:16px;stroke-width:2;}
+
+/* ═══════════════════════════════
+   LOADING STATE
+═══════════════════════════════ */
+.loading-text{text-align:center;padding:32px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;}
+
+/* ═══════════════════════════════
+   MOBILE DRAWER
+═══════════════════════════════ */
+.mobile-drawer-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:80;
+}
+.mobile-drawer-overlay.open{display:block;}
+.mobile-drawer{
+  position:fixed;left:0;top:0;bottom:0;width:260px;
+  background:var(--surface);border-right:1px solid var(--border);
+  z-index:90;
+  transform:translateX(-100%);transition:transform .2s;
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.mobile-drawer.open{transform:translateX(0);}
+
+/* ═══════════════════════════════
+   RESPONSIVE
+═══════════════════════════════ */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .sidebar-toggle{display:none;}
+  .mobile-header{display:flex;}
+  .app{flex-direction:column;}
+  .main{flex:1;overflow-y:auto;}
+  .topbar{display:none;}
+  .content{padding:16px;gap:16px;}
+  .cards-grid{grid-template-columns:1fr 1fr;}
+  .card-mac{display:none;}
+  .config-row{gap:8px;}
+}
+@media(max-width:480px){
+  .cards-grid{grid-template-columns:1fr;}
+  .summary-strip{grid-template-columns:1fr 1fr;}
+  .mode-grid{grid-template-columns:1fr 1fr;}
+}
 </style>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" onload="lucide.createIcons()"></script>
 </head>
 <body>
 
-
-<!-- Login Overlay -->
+<!-- ═══════════════════════════════
+     LOGIN OVERLAY
+═══════════════════════════════ -->
 <div id="loginOverlay">
-  <div class="login-box">
-    <div class="login-logo"><span class="lucide lucide-md" style="margin-right:6px;color:var(--accent)"><i data-lucide="shield-check"></i></span>DetectLog</div>
-    <div class="login-sub">ระบบกันขโมย — กรุณาเข้าสู่ระบบ</div>
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-brand-icon"><i data-lucide="shield-check"></i></div>
+      <div class="login-brand-name">DetectLog</div>
+    </div>
+    <div class="login-sub">Security Operations — กรุณาเข้าสู่ระบบ</div>
+
     <div class="login-field">
       <label class="login-label">Username</label>
-      <input class="login-inp" id="loginUser" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPw').focus()"/>
+      <input class="login-inp" id="loginUser" placeholder="username" autocomplete="username"
+             onkeydown="if(event.key==='Enter')document.getElementById('loginPw').focus()"/>
     </div>
     <div class="login-field">
       <label class="login-label">Password</label>
       <div class="pw-wrap">
-        <input class="login-inp" type="password" id="loginPw" placeholder="••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
-        <button class="pw-eye" type="button" onclick="togglePw()" id="pwEye"><span class="lucide lucide-sm" id="pwEyeIcon"><i data-lucide="eye"></i></span></button>
+        <input class="login-inp" type="password" id="loginPw" placeholder="••••••••"
+               autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <button class="pw-eye" type="button" onclick="togglePw()" id="pwEye">
+          <span id="pwEyeIcon"><i data-lucide="eye"></i></span>
+        </button>
       </div>
     </div>
+
     <button class="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
     <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
-<header>
-  <div class="logo"><span class="lucide lucide-md" style="margin-right:6px"><i data-lucide="shield-check"></i></span>Detect<span>Log</span></div>
-  <div class="hdr-right">
-    <div class="status-pill">
-      <div class="status-dot" id="statusDot"></div>
-      <span class="status-txt" id="lastUpdate">—</span>
+<!-- ═══════════════════════════════
+     MOBILE HEADER
+═══════════════════════════════ -->
+<header class="mobile-header">
+  <div class="mobile-brand">
+    <div class="mobile-brand-icon"><i data-lucide="shield-check"></i></div>
+    <div class="mobile-brand-name">DetectLog</div>
+  </div>
+  <div class="mobile-actions">
+    <div class="mobile-status">
+      <div class="status-dot" id="statusDotMobile" style="width:6px;height:6px;"></div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);" id="lastUpdateMobile">—</span>
     </div>
-    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn"><span class="lucide lucide-md"><i data-lucide="moon" id="themeIcon"></i></span></button>
-    <button class="refresh-btn" onclick="location.reload()"><span class="lucide lucide-sm" style="margin-right:6px"><i data-lucide="refresh-cw"></i></span>Refresh</button>
-        <button class="refresh-btn" onclick="doLogout()" style="background:transparent;border:1px solid var(--border);color:var(--muted);"><span class="lucide lucide-sm" style="margin-right:6px"><i data-lucide="log-out"></i></span>ออกจากระบบ</button>
+    <button class="hamburger-btn" onclick="openDrawer()"><i data-lucide="menu"></i></button>
   </div>
 </header>
 
-<main>
-  <div class="err" id="errMsg"></div>
-
-  <div class="cfg-bar">
-    <span class="cfg-label">Web App URL :</span>
-    <input class="url-inp" id="urlInp" placeholder="https://script.google.com/macros/s/.../exec"/>
-    <select class="sel" id="intSel">
-      <option value="30000">Auto 30s</option>
-      <option value="60000">Auto 60s</option>
-      <option value="0">Manual</option>
-    </select>
-    <button class="save-btn" onclick="saveConfig()">บันทึก</button>
+<!-- Mobile drawer -->
+<div class="mobile-drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="mobile-drawer" id="mobileDrawer">
+  <div style="padding:20px;border-bottom:1px solid var(--border);">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;margin-bottom:4px;">DetectLog</div>
+    <div style="font-size:11px;color:var(--muted);">Security Operations Dashboard</div>
   </div>
-
-  <!-- FLOORPLAN — legend เปลี่ยน Read→Write -->
-  <div class="sec-label">FLOORPLAN MONITOR &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— Real-time sensor overlay</span></div>
-  <div class="fp-section">
-    <div class="fp-hdr">
-      <div class="fp-title">แผนผังอาคาร — ตำแหน่งเซ็นเซอร์</div>
-      <div class="fp-legend">
-        <div class="fp-pill" style="border-color:#f47b20;color:#f47b20;background:rgba(244,123,32,.08);">■ Zone 1 — Write A (ส้ม)</div>
-        <div class="fp-pill" style="border-color:#22d3ee;color:#22d3ee;background:rgba(34,211,238,.08);">■ Zone 2 — Write B (ฟ้า)</div>
-        <div class="fp-pill" style="border-color:#a3e635;color:#a3e635;background:rgba(163,230,53,.08);">■ Zone 3 — Write C (เขียว)</div>
-      </div>
-    </div>
-
-    <div class="fp-map" id="fpMap">
-      <img src="workshop.jpg" alt="workshop" draggable="false">
-
-      <div id="fpZ3" class="fp-zone fp-z3" style="left:22.9%;top:6.9%;width:42.0%;height:85.0%;"></div>
-      <div id="fpZ1" class="fp-zone fp-z1" style="left:71.3%;top:15.3%;width:18.8%;height:75.2%;"></div>
-      <div id="fpZ2" class="fp-zone fp-z2" style="left:77.7%;top:11.8%;width:18.1%;height:22.4%;"></div>
-
-      <!-- Zone 1 sensors (Write A) -->
-      <div class="fp-dot fp-idle fp-c1" id="fds1_1" data-lbl="Zone 1 — Stairs / Locker area"  style="left:74.2%;top:28.9%;"></div>
-      <div class="fp-dot fp-idle fp-c1" id="fds1_2" data-lbl="Zone 1 — Maintenance Staff Rm"  style="left:73.6%;top:67.6%;"></div>
-      <div class="fp-dot fp-idle fp-c1" id="fds1_3" data-lbl="Zone 1 — Canteen"               style="left:85.3%;top:76.0%;"></div>
-
-      <!-- Zone 2 sensors (Write B) -->
-      <div class="fp-dot fp-idle fp-c2" id="fds2_1" data-lbl="Zone 2 — Locker Rm (sensor 1)" style="left:80.5%;top:21.0%;"></div>
-      <div class="fp-dot fp-idle fp-c2" id="fds2_2" data-lbl="Zone 2 — Locker Rm (sensor 2)" style="left:82.9%;top:23.0%;"></div>
-      <div class="fp-dot fp-idle fp-c2" id="fds2_3" data-lbl="Zone 2 — Locker Rm (sensor 3)" style="left:81.5%;top:25.5%;"></div>
-
-      <!-- Zone 3 sensors (Write C) -->
-      <div class="fp-dot fp-idle fp-c3" id="fds3_1" data-lbl="Zone 3 — Fire Exit (ramp)"      style="left:30.9%;top:31.4%;"></div>
-      <div class="fp-dot fp-idle fp-c3" id="fds3_2" data-lbl="Zone 3 — Fire Exit (bottom)"    style="left:33.6%;top:81.7%;"></div>
-      <div class="fp-dot fp-idle fp-c3" id="fds3_3" data-lbl="Zone 3 — Access Control (col6)" style="left:52.3%;top:29.7%;"></div>
-      <div class="fp-dot fp-idle fp-c3" id="fds3_4" data-lbl="Zone 3 — Fire Exit (col8)"      style="left:58.9%;top:24.0%;"></div>
-
-      <div class="fp-tip" id="fpTip"></div>
-    </div>
-
-    <div class="fp-status">
-      <div class="fp-chip">
-        <div class="fp-cdot" id="fpDot1" style="background:#6b7280;"></div>
-        <span style="color:#f47b20;font-weight:500;">ZONE 1</span>
-        <span id="fpTxt1" style="color:var(--muted);">IDLE</span>
-      </div>
-      <div class="fp-chip">
-        <div class="fp-cdot" id="fpDot2" style="background:#6b7280;"></div>
-        <span style="color:#22d3ee;font-weight:500;">ZONE 2</span>
-        <span id="fpTxt2" style="color:var(--muted);">IDLE</span>
-      </div>
-      <div class="fp-chip">
-        <div class="fp-cdot" id="fpDot3" style="background:#6b7280;"></div>
-        <span style="color:#a3e635;font-weight:500;">ZONE 3</span>
-        <span id="fpTxt3" style="color:var(--muted);">IDLE</span>
-      </div>
-    </div>
+  <div style="padding:12px;">
+    <div class="nav-item active" onclick="mobileNavTo('top')"><i data-lucide="layout-dashboard" style="width:15px;height:15px;"></i> ภาพรวมระบบ</div>
+    <div class="nav-item" onclick="mobileNavTo('sec-floorplan')"><i data-lucide="map" style="width:15px;height:15px;"></i> Floorplan</div>
+    <div class="nav-item" onclick="mobileNavTo('sec-stats')"><i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i> สถิติ Detect</div>
+    <div class="nav-item" onclick="mobileNavTo('sec-log')"><i data-lucide="scroll-text" style="width:15px;height:15px;"></i> Log ย้อนหลัง</div>
+    <div class="nav-item" onclick="mobileNavTo('sec-mode')"><i data-lucide="zap" style="width:15px;height:15px;"></i> โหมดการทำงาน</div>
+    <div class="nav-item" onclick="mobileNavTo('sec-settings')"><i data-lucide="settings-2" style="width:15px;height:15px;"></i> ตั้งค่าขั้นสูง</div>
   </div>
-
-
-  <!-- Relay Mode Control -->
-  <div class="sec-label">ควบคุมโหมดการทำงานของไฟ &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— Global (ทุก Read Board)</span></div>
-  <div class="mode-panel">
-    <div class="mode-panel-hdr">
-      <div class="mode-panel-title"><span class="lucide lucide-sm" style="margin-right:6px;color:var(--accent)"><i data-lucide="zap"></i></span>โหมดการทำงานของไฟ</div>
-      <span class="mode-current-badge" id="modeCurBadge">กำลังโหลด...</span>
-    </div>
-    <div class="mode-btns">
-      <button class="mode-opt" data-mode="1" onclick="selectRelayMode(1)">
-        <div class="mode-opt-icon"><span class="lucide lucide-md"><i data-lucide="sun"></i></span></div>
-        <div class="mode-opt-body">
-          <div class="mode-opt-name">24 ชั่วโมง ทุกวัน</div>
-          <div class="mode-opt-desc">ไฟเปิดได้ตลอดเวลา ทุกวัน</div>
-        </div>
-      </button>
-      <button class="mode-opt" data-mode="2" onclick="selectRelayMode(2)">
-        <div class="mode-opt-icon"><span class="lucide lucide-md"><i data-lucide="calendar-days"></i></span></div>
-        <div class="mode-opt-body">
-          <div class="mode-opt-name">ตารางสัปดาห์</div>
-          <div class="mode-opt-desc">จ–ศ: 17:30–06:00 · ส–อา: ตลอด 24 ชม.</div>
-        </div>
-      </button>
-      <button class="mode-opt" data-mode="3" onclick="selectRelayMode(3)">
-        <div class="mode-opt-icon"><span class="lucide lucide-md"><i data-lucide="moon"></i></span></div>
-        <div class="mode-opt-body">
-          <div class="mode-opt-name">กลางคืนทุกวัน</div>
-          <div class="mode-opt-desc">ทุกวัน: 17:30–06:00 เท่านั้น</div>
-        </div>
-      </button>
-      <button class="mode-opt" data-mode="4" onclick="selectRelayMode(4)">
-        <div class="mode-opt-icon"><span class="lucide lucide-md"><i data-lucide="ban"></i></span></div>
-        <div class="mode-opt-body">
-          <div class="mode-opt-name">ปิดทั้งหมด</div>
-          <div class="mode-opt-desc">ไม่เปิด Relay ไม่ว่ากรณีใด</div>
-        </div>
-      </button>
-    </div>
-    <button class="mode-save-btn" id="modeSaveBtn" onclick="saveRelayMode()" disabled>บันทึกโหมด</button>
-    <div class="mode-toast" id="modeToast"></div>
+  <div style="margin-top:auto;padding:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;">
+    <button class="btn-icon" style="width:auto;padding:8px 12px;gap:6px;display:flex;" onclick="toggleTheme()">
+      <i data-lucide="moon" id="themeIconMobile"></i>
+      <span style="font-size:12px;font-family:'IBM Plex Mono',monospace;">สลับธีม</span>
+    </button>
+    <button class="btn-ghost" style="width:100%;" onclick="doLogout()">
+      <i data-lucide="log-out"></i> ออกจากระบบ
+    </button>
   </div>
+</div>
 
+<!-- ═══════════════════════════════
+     APP SHELL
+═══════════════════════════════ -->
+<div class="app">
 
-  <!-- Advanced Settings -->
-  <div class="sec-label">ตั้งค่าขั้นสูง &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— อัปเดตอัตโนมัติไปยัง Read Board ทุกตัว</span></div>
-  <div class="settings-panel">
-    <div class="settings-grid">
-      <div class="setting-item">
-        <label>เวลาเริ่ม Night Mode</label>
-        <input class="setting-inp" id="sNightStart" type="time" value="17:30"/>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <div class="brand-icon"><i data-lucide="shield-check"></i></div>
+        <div class="brand-name">DetectLog</div>
       </div>
-      <div class="setting-item">
-        <label>เวลาสิ้นสุด Night Mode</label>
-        <input class="setting-inp" id="sNightEnd" type="time" value="06:00"/>
-      </div>
-      <div class="setting-item">
-        <label>Relay Timeout (วินาที)</label>
-        <input class="setting-inp" id="sRelayTimeout" type="number" min="5" max="300" value="15"/>
-      </div>
-      <div class="setting-item">
-        <label>Poll Interval (วินาที)</label>
-        <input class="setting-inp" id="sPollInterval" type="number" min="10" max="300" value="35"/>
-      </div>
-    </div>
-    <div class="settings-footer">
-      <button class="settings-save-btn" onclick="saveAdvSettings()">บันทึกการตั้งค่า</button>
-      <span class="settings-toast" id="settingsToast"></span>
+      <div class="brand-sub">Security Ops</div>
     </div>
 
-    <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0;">
-
-    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:.625rem;">Force Relay (เปิด/ปิดทันที)</div>
-    <div class="force-relay-row">
-      <button class="force-btn force-on-btn" id="forceOnBtn" onclick="setForceRelay(1)"><span class="lucide lucide-sm" style="margin-right:5px"><i data-lucide="zap"></i></span>Force ON</button>
-      <button class="force-btn force-off-btn" id="forceOffBtn" onclick="setForceRelay(0)">✕ Force OFF</button>
-      <span class="force-status" id="forceStatus">สถานะ: ปกติ</span>
+    <div class="nav-section">
+      <div class="nav-section-label">Monitor</div>
+      <button class="nav-item active" data-tip="ภาพรวมระบบ" onclick="navTo('top',this)"><i data-lucide="layout-dashboard"></i><span class="nav-item-text">ภาพรวมระบบ</span></button>
+      <button class="nav-item" data-tip="Floorplan" onclick="navTo('sec-floorplan',this)"><i data-lucide="map"></i><span class="nav-item-text">Floorplan</span></button>
+      <button class="nav-item" data-tip="Live Events" onclick="navTo('sec-stats',this)"><i data-lucide="activity"></i><span class="nav-item-text">Live Events</span></button>
     </div>
-  </div>
 
-  <!-- สถานะปัจจุบัน — เปลี่ยน WRITE BOARD -->
-  <div class="sec-label">สถานะปัจจุบัน &nbsp;<span style="font-size:9px;letter-spacing:1px;color:var(--muted);">— คลิกการ์ดเพื่อดู / แก้ไข DEVICE INFO</span></div>
-  <div class="sw-grid" id="swGrid"><div class="loading">กำลังโหลด...</div></div>
+    <div class="nav-section">
+      <div class="nav-section-label">Analytics</div>
+      <button class="nav-item" data-tip="สถิติ Detect" onclick="navTo('sec-stats',this)"><i data-lucide="bar-chart-2"></i><span class="nav-item-text">สถิติ Detect</span></button>
+      <button class="nav-item" data-tip="รายวัน" onclick="navTo('sec-stats',this)"><i data-lucide="calendar"></i><span class="nav-item-text">รายวัน</span></button>
+      <button class="nav-item" data-tip="Log ย้อนหลัง" onclick="navTo('sec-log',this)"><i data-lucide="scroll-text"></i><span class="nav-item-text">Log ย้อนหลัง</span></button>
+    </div>
 
-  <div class="sec-label">สถิติสรุป แยกต่อ WRITE BOARD</div>
-  <div class="summary-grid" id="sumGrid"><div class="loading">กำลังโหลด...</div></div>
+    <div class="nav-section">
+      <div class="nav-section-label">System</div>
+      <button class="nav-item" data-tip="โหมดการทำงาน" onclick="navTo('sec-mode',this)"><i data-lucide="zap"></i><span class="nav-item-text">โหมดการทำงาน</span></button>
+      <button class="nav-item" data-tip="ตั้งค่าขั้นสูง" onclick="navTo('sec-settings',this)"><i data-lucide="settings-2"></i><span class="nav-item-text">ตั้งค่าขั้นสูง</span></button>
+    </div>
 
-  <div class="chart-box">
-    <div class="chart-hdr">
-      <div class="chart-title">จำนวน detect ต่อวัน (ทุก Board)</div>
-      <div class="tabs" id="uptimeTabs">
-        <button class="tab active" onclick="setUptimeRange('all',this)">ทั้งหมด</button>
-        <button class="tab" onclick="setUptimeRange('7',this)">7 วัน</button>
-        <button class="tab" onclick="setUptimeRange('30',this)">30 วัน</button>
+    <div class="sidebar-footer">
+      <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-label">Live</span>
+        <span class="status-time" id="lastUpdate">—</span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn-icon" style="flex:1;width:auto;" onclick="toggleTheme()" title="สลับธีม">
+          <i data-lucide="moon" id="themeIcon"></i>
+        </button>
+        <button class="btn-icon" style="flex:1;width:auto;" onclick="location.reload()" title="รีเฟรช">
+          <i data-lucide="refresh-cw"></i>
+        </button>
+        <button class="btn-ghost" style="flex:1;font-size:11px;gap:5px;white-space:nowrap;" onclick="doLogout()">
+          <i data-lucide="log-out"></i><span class="nav-item-text">ออกจากระบบ</span>
+        </button>
       </div>
     </div>
-    <canvas id="uptimeChart" style="max-height:180px;"></canvas>
-  </div>
+  </aside>
+  <!-- Sidebar toggle tab - outside sidebar so overflow doesn't clip it -->
+  <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="ย่อ/ขยาย sidebar">
+    <i data-lucide="chevron-left"></i>
+  </button>
 
-  <div class="chart-box">
-    <div class="chart-hdr">
-      <div class="chart-title">ประวัติ detect</div>
-      <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
-        <div class="date-row">
-          <input type="date" class="date-inp" id="filterDate"/>
-          <button class="tab" onclick="clearDate()">ล้าง</button>
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">ภาพรวมระบบ</span>
+        <span class="page-sub">Security Monitoring Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-icon" onclick="location.reload()"><i data-lucide="refresh-cw"></i></button>
+        <button class="btn-primary" onclick="fetchAll()">
+          <i data-lucide="zap"></i>รีเฟรชข้อมูล
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <div class="err-bar" id="errMsg"></div>
+
+      <!-- Config -->
+      <div class="config-row">
+        <span class="config-label">Web App URL</span>
+        <input class="inp" id="urlInp" placeholder="https://script.google.com/macros/s/.../exec"/>
+        <select class="sel-inp" id="intSel">
+          <option value="30000">Auto 30s</option>
+          <option value="60000">Auto 60s</option>
+          <option value="0">Manual</option>
+        </select>
+        <button class="btn-primary" onclick="saveConfig()"><i data-lucide="save"></i>บันทึก</button>
+      </div>
+
+      <!-- FLOORPLAN -->
+      <div id="sec-floorplan">
+        <div class="section-hdr">
+          <div class="section-label">Floorplan Monitor</div>
+          <div class="legend-row">
+            <div class="legend-pill" style="border-color:#F47B20;color:#F47B20;background:rgba(244,123,32,.07);">Zone 1 — A</div>
+            <div class="legend-pill" style="border-color:#22D3EE;color:#22D3EE;background:rgba(34,211,238,.07);">Zone 2 — B</div>
+            <div class="legend-pill" style="border-color:#84CC16;color:#84CC16;background:rgba(132,204,22,.07);">Zone 3 — C</div>
+          </div>
         </div>
-        <div class="tabs" id="histTabs">
-          <button class="tab active" onclick="setHistMode('all',this)">All</button>
-          <button class="tab" onclick="setHistMode('0',this)">A</button>
-          <button class="tab" onclick="setHistMode('1',this)">B</button>
-          <button class="tab" onclick="setHistMode('2',this)">C</button>
-          <button class="tab" onclick="setHistMode('3',this)">D</button>
+        <div class="panel" style="padding:16px;">
+          <div class="fp-map" id="fpMap">
+            <img src="workshop.jpg" alt="Workshop Floorplan" draggable="false">
+            <div id="fpZ3" class="fp-zone fp-z3" style="left:22.9%;top:6.9%;width:42.0%;height:85.0%;"></div>
+            <div id="fpZ1" class="fp-zone fp-z1" style="left:71.3%;top:15.3%;width:18.8%;height:75.2%;"></div>
+            <div id="fpZ2" class="fp-zone fp-z2" style="left:77.7%;top:11.8%;width:18.1%;height:22.4%;"></div>
+            <div class="fp-dot fp-idle fp-c1" id="fds1_1" data-lbl="Zone 1 — Stairs / Locker area" style="left:74.2%;top:28.9%;"></div>
+            <div class="fp-dot fp-idle fp-c1" id="fds1_2" data-lbl="Zone 1 — Maintenance Staff Rm" style="left:73.6%;top:67.6%;"></div>
+            <div class="fp-dot fp-idle fp-c1" id="fds1_3" data-lbl="Zone 1 — Canteen" style="left:85.3%;top:76.0%;"></div>
+            <div class="fp-dot fp-idle fp-c2" id="fds2_1" data-lbl="Zone 2 — Locker Rm (sensor 1)" style="left:80.5%;top:21.0%;"></div>
+            <div class="fp-dot fp-idle fp-c2" id="fds2_2" data-lbl="Zone 2 — Locker Rm (sensor 2)" style="left:82.9%;top:23.0%;"></div>
+            <div class="fp-dot fp-idle fp-c2" id="fds2_3" data-lbl="Zone 2 — Locker Rm (sensor 3)" style="left:81.5%;top:25.5%;"></div>
+            <div class="fp-dot fp-idle fp-c3" id="fds3_1" data-lbl="Zone 3 — Fire Exit (ramp)" style="left:30.9%;top:31.4%;"></div>
+            <div class="fp-dot fp-idle fp-c3" id="fds3_2" data-lbl="Zone 3 — Fire Exit (bottom)" style="left:33.6%;top:81.7%;"></div>
+            <div class="fp-dot fp-idle fp-c3" id="fds3_3" data-lbl="Zone 3 — Access Control (col6)" style="left:52.3%;top:29.7%;"></div>
+            <div class="fp-dot fp-idle fp-c3" id="fds3_4" data-lbl="Zone 3 — Fire Exit (col8)" style="left:58.9%;top:24.0%;"></div>
+            <div class="fp-tip" id="fpTip"></div>
+          </div>
+          <div class="fp-status-row">
+            <div class="fp-chip">
+              <div class="fp-chip-dot" id="fpDot1" style="background:#6b7280;"></div>
+              <span class="fp-chip-zone" style="color:#F47B20;">ZONE 1</span>
+              <span class="fp-chip-state" id="fpTxt1">IDLE</span>
+            </div>
+            <div class="fp-chip">
+              <div class="fp-chip-dot" id="fpDot2" style="background:#6b7280;"></div>
+              <span class="fp-chip-zone" style="color:#22D3EE;">ZONE 2</span>
+              <span class="fp-chip-state" id="fpTxt2">IDLE</span>
+            </div>
+            <div class="fp-chip">
+              <div class="fp-chip-dot" id="fpDot3" style="background:#6b7280;"></div>
+              <span class="fp-chip-zone" style="color:#84CC16;">ZONE 3</span>
+              <span class="fp-chip-state" id="fpTxt3">IDLE</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <canvas id="histChart"></canvas>
-  </div>
 
-  <div class="chart-box">
-    <div class="chart-hdr">
-      <div class="chart-title">จำนวนครั้ง detect ต่อวัน แยก Board</div>
-      <div class="tabs" id="dailyTabs">
-        <button class="tab active" onclick="setDailyMode('all',this)">All</button>
-        <button class="tab" onclick="setDailyMode('0',this)">A</button>
-        <button class="tab" onclick="setDailyMode('1',this)">B</button>
-        <button class="tab" onclick="setDailyMode('2',this)">C</button>
-        <button class="tab" onclick="setDailyMode('3',this)">D</button>
+      <!-- RELAY MODE -->
+      <div id="sec-mode">
+        <div class="section-hdr">
+          <div class="section-label">โหมดการทำงาน</div>
+          <span class="mode-badge" id="modeCurBadge">กำลังโหลด...</span>
+        </div>
+        <div class="panel">
+          <div class="mode-grid">
+            <button class="mode-opt" data-mode="1" onclick="selectRelayMode(1)">
+              <div class="mode-opt-icon"><i data-lucide="sun"></i></div>
+              <div><div class="mode-opt-name">24H ทุกวัน</div><div class="mode-opt-desc">ไฟเปิดได้ตลอดเวลา</div></div>
+            </button>
+            <button class="mode-opt" data-mode="2" onclick="selectRelayMode(2)">
+              <div class="mode-opt-icon"><i data-lucide="calendar-days"></i></div>
+              <div><div class="mode-opt-name">ตารางสัปดาห์</div><div class="mode-opt-desc">จ–ศ: 17:30–06:00 · ส–อา: 24ชม.</div></div>
+            </button>
+            <button class="mode-opt" data-mode="3" onclick="selectRelayMode(3)">
+              <div class="mode-opt-icon"><i data-lucide="moon"></i></div>
+              <div><div class="mode-opt-name">กลางคืนทุกวัน</div><div class="mode-opt-desc">ทุกวัน: 17:30–06:00 เท่านั้น</div></div>
+            </button>
+            <button class="mode-opt" data-mode="4" onclick="selectRelayMode(4)">
+              <div class="mode-opt-icon"><i data-lucide="ban"></i></div>
+              <div><div class="mode-opt-name">ปิดทั้งหมด</div><div class="mode-opt-desc">ไม่เปิด Relay ไม่ว่ากรณีใด</div></div>
+            </button>
+          </div>
+          <div class="mode-footer">
+            <button class="btn-primary" id="modeSaveBtn" onclick="saveRelayMode()" disabled>บันทึกโหมด</button>
+            <span class="toast-msg" id="modeToast"></span>
+          </div>
+        </div>
       </div>
-    </div>
-    <canvas id="dailyChart"></canvas>
-  </div>
 
-  <div class="chart-box">
-    <div class="chart-hdr">
-      <div class="chart-title">Log ย้อนหลัง</div>
-      <div class="date-row">
-        <input type="date" class="date-inp" id="logDate"/>
-        <button class="tab" onclick="clearLogDate()">ล้าง</button>
+      <!-- SETTINGS -->
+      <div id="sec-settings">
+        <div class="section-hdr">
+          <div class="section-label">ตั้งค่าขั้นสูง</div>
+        </div>
+        <div class="panel">
+          <div class="settings-grid">
+            <div class="field-wrap"><label>เวลาเริ่ม Night Mode</label><input class="field-inp" id="sNightStart" type="time" value="17:30"/></div>
+            <div class="field-wrap"><label>เวลาสิ้นสุด Night Mode</label><input class="field-inp" id="sNightEnd" type="time" value="06:00"/></div>
+            <div class="field-wrap"><label>Relay Timeout (วินาที)</label><input class="field-inp" id="sRelayTimeout" type="number" min="5" max="300" value="15"/></div>
+            <div class="field-wrap"><label>Poll Interval (วินาที)</label><input class="field-inp" id="sPollInterval" type="number" min="10" max="300" value="35"/></div>
+          </div>
+          <div class="settings-footer">
+            <button class="btn-primary" onclick="saveAdvSettings()"><i data-lucide="save"></i>บันทึกการตั้งค่า</button>
+            <span class="toast-msg" id="settingsToast"></span>
+          </div>
+          <div class="divider"></div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Force Relay</div>
+          <div class="force-row">
+            <button class="force-on" id="forceOnBtn" onclick="setForceRelay(1)"><i data-lucide="zap" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"></i>Force ON</button>
+            <button class="force-off" id="forceOffBtn" onclick="setForceRelay(0)">Force OFF</button>
+            <span class="force-status" id="forceStatus">สถานะ: ปกติ</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div id="logWrap"><div class="loading">กำลังโหลด...</div></div>
-  </div>
-</main>
 
-<!-- Modal — สลับ Write↔Read -->
+      <!-- DEVICE CARDS -->
+      <div id="sec-devices">
+        <div class="section-hdr">
+          <div class="section-label">สถานะ Write Board</div>
+          <span style="font-size:10px;color:var(--muted);">คลิกการ์ดเพื่อแก้ไข Device Info</span>
+        </div>
+        <div class="cards-grid" id="swGrid"><div class="loading-text">กำลังโหลด...</div></div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div>
+        <div class="section-hdr"><div class="section-label">สถิติสรุป แยก Write Board</div></div>
+        <div class="summary-strip" id="sumGrid"><div class="loading-text">กำลังโหลด...</div></div>
+      </div>
+
+      <!-- CHART: Uptime -->
+      <div class="panel" id="sec-stats">
+        <div class="panel-head">
+          <div class="panel-title"><i data-lucide="bar-chart-2"></i>จำนวน Detect ต่อ Board</div>
+          <div class="tabs-row" id="uptimeTabs">
+            <button class="tab-btn active" onclick="setUptimeRange('all',this)">ทั้งหมด</button>
+            <button class="tab-btn" onclick="setUptimeRange('7',this)">7 วัน</button>
+            <button class="tab-btn" onclick="setUptimeRange('30',this)">30 วัน</button>
+          </div>
+        </div>
+        <canvas id="uptimeChart" style="max-height:180px;"></canvas>
+      </div>
+
+      <!-- CHART: History -->
+      <div class="panel" id="sec-hist">
+        <div class="panel-head">
+          <div class="panel-title"><i data-lucide="activity"></i>ประวัติ Detect</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <div class="date-row">
+              <input type="date" class="date-inp" id="filterDate"/>
+              <button class="tab-btn" onclick="clearDate()">ล้าง</button>
+            </div>
+            <div class="tabs-row" id="histTabs">
+              <button class="tab-btn active" onclick="setHistMode('all',this)">All</button>
+              <button class="tab-btn" onclick="setHistMode('0',this)">A</button>
+              <button class="tab-btn" onclick="setHistMode('1',this)">B</button>
+              <button class="tab-btn" onclick="setHistMode('2',this)">C</button>
+              <button class="tab-btn" onclick="setHistMode('3',this)">D</button>
+            </div>
+          </div>
+        </div>
+        <canvas id="histChart"></canvas>
+      </div>
+
+      <!-- CHART: Daily -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title"><i data-lucide="calendar"></i>Detect รายวัน แยก Board</div>
+          <div class="tabs-row" id="dailyTabs">
+            <button class="tab-btn active" onclick="setDailyMode('all',this)">All</button>
+            <button class="tab-btn" onclick="setDailyMode('0',this)">A</button>
+            <button class="tab-btn" onclick="setDailyMode('1',this)">B</button>
+            <button class="tab-btn" onclick="setDailyMode('2',this)">C</button>
+            <button class="tab-btn" onclick="setDailyMode('3',this)">D</button>
+          </div>
+        </div>
+        <canvas id="dailyChart"></canvas>
+      </div>
+
+      <!-- LOG TABLE -->
+      <div class="panel" id="sec-log">
+        <div class="panel-head">
+          <div class="panel-title"><i data-lucide="scroll-text"></i>Log ย้อนหลัง</div>
+          <div class="date-row">
+            <input type="date" class="date-inp" id="logDate"/>
+            <button class="tab-btn" onclick="clearLogDate()">ล้าง</button>
+          </div>
+        </div>
+        <div id="logWrap"><div class="loading-text">กำลังโหลด...</div></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- MODAL -->
 <div class="modal-overlay" id="modalOv" onclick="closeModalBg(event)">
   <div class="modal">
-    <div class="modal-hdr">
-      <div style="display:flex;align-items:center;gap:.625rem;">
+    <div class="modal-head">
+      <div class="modal-title-row">
         <span class="modal-title" id="modalTitle">Device Info</span>
-        <span class="modal-sw-pill" id="modalPill"></span>
+        <span class="modal-pill" id="modalPill"></span>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <!-- Write board ขึ้นก่อน (primary) -->
     <div class="info-block">
-      <div class="info-block-label" style="color:#1565c0;"><span class="lucide lucide-sm" style="margin-right:4px"><i data-lucide="pencil"></i></span>Write Board — MAC</div>
+      <div class="info-block-label" style="color:#1A5FA8;"><i data-lucide="pencil" style="width:10px;height:10px;vertical-align:-1px;margin-right:4px;"></i>Write Board — MAC</div>
       <div class="info-block-val" id="mWriteMacDisp">—</div>
       <div class="edit-row">
         <input class="edit-inp" id="mWriteMacInp" placeholder="AA:BB:CC:DD:EE:FF"/>
@@ -553,9 +1212,8 @@ canvas{max-height:260px;}
       </div>
       <div class="saved-note" id="savedNote">✓ บันทึกแล้ว</div>
     </div>
-    <!-- Read board ถัดมา (secondary) -->
     <div class="info-block">
-      <div class="info-block-label" style="color:#2e7d32;"><span class="lucide lucide-sm" style="margin-right:4px"><i data-lucide="radio"></i></span>Read Board — MAC</div>
+      <div class="info-block-label" style="color:#1A7A3A;"><i data-lucide="radio" style="width:10px;height:10px;vertical-align:-1px;margin-right:4px;"></i>Read Board — MAC</div>
       <div class="info-block-val" id="mReadMac">—</div>
       <div class="edit-row">
         <input class="edit-inp" id="mReadMacInp" placeholder="AA:BB:CC:DD:EE:FF"/>
@@ -563,8 +1221,8 @@ canvas{max-height:260px;}
       </div>
       <div class="saved-note" id="savedNoteRead">✓ บันทึกแล้ว</div>
     </div>
-    <hr class="divider"/>
-    <div class="lbl-wrap">
+    <hr class="modal-divider"/>
+    <div class="lbl-field">
       <label>ชื่อ / Location</label>
       <input class="lbl-inp" id="mLblInp" placeholder="เช่น ทางเข้าหน้า, จุด B..."/>
     </div>
@@ -575,13 +1233,16 @@ canvas{max-height:260px;}
 </div>
 
 <script>
-const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw9OF0VE6xTsH2qyKqGbsScNx6vVbJoQ9mWuG69SrEdaTIr4cuzxkQe8d024YqhQkAI/exec";  // ← แก้ URL ที่นี่ที่เดียว
+/* ═══════════════════════════════
+   CONFIG
+═══════════════════════════════ */
+const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw9OF0VE6xTsH2qyKqGbsScNx6vVbJoQ9mWuG69SrEdaTIr4cuzxkQe8d024YqhQkAI/exec";
 let webAppURL    = localStorage.getItem('dashURL') || DEFAULT_URL;
 let autoInterval = parseInt(localStorage.getItem('dashInt') || '30000');
 let timer        = null;
 
-document.getElementById('urlInp').value  = webAppURL;
-document.getElementById('intSel').value  = autoInterval;
+document.getElementById('urlInp').value = webAppURL;
+document.getElementById('intSel').value = autoInterval;
 
 function saveConfig(){
   webAppURL    = document.getElementById('urlInp').value.trim();
@@ -594,49 +1255,105 @@ function saveConfig(){
 let allHistory = [];
 let deviceList = [];
 
-const SW_COLORS = ['#f47b20','#2196f3','#4caf50','#e91e63'];
-
+const SW_COLORS = ['#F47B20','#2B7FD4','#2E9B5A','#9B3DD4'];
 const ACTIVE_TIMEOUT_MS = 5 * 60 * 1000;
 
-/* ─────────────────────────────────────────────
-   สลับ: ใช้ mac_write เป็น primary key แทน mac_read
-   getWriteBoards() แทน getReadBoards()
-───────────────────────────────────────────── */
-function getWriteBoards() {
-  const seen = new Set();
-  const boards = [];
+/* ── Theme ── */
+const savedTheme = localStorage.getItem('dashTheme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+updateThemeIcons(savedTheme);
+
+function updateThemeIcons(t){
+  const icon = t==='dark' ? 'sun' : 'moon';
+  ['themeIcon','themeIconMobile'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.setAttribute('data-lucide', icon); }
+  });
+  if(window.lucide) lucide.createIcons();
+}
+
+function toggleTheme(){
+  const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  updateThemeIcons(next);
+  localStorage.setItem('dashTheme',next);
+  destroyCharts(); renderCharts();
+  closeDrawer();
+}
+
+/* ── Mobile drawer ── */
+function openDrawer(){
+  document.getElementById('mobileDrawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('mobileDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+/* ── Sidebar collapse ── */
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const collapsed = sb.classList.toggle('collapsed');
+  document.body.classList.toggle('sidebar-collapsed', collapsed);
+  localStorage.setItem('sidebarCollapsed', collapsed?'1':'0');
+  if(window.lucide) lucide.createIcons();
+}
+(function initSidebar(){
+  if(localStorage.getItem('sidebarCollapsed')==='1'){
+    document.getElementById('sidebar').classList.add('collapsed');
+    document.body.classList.add('sidebar-collapsed');
+  }
+})();
+
+/* ── Navigation ── */
+function navTo(sectionId, btn){
+  // Update active state
+  document.querySelectorAll('.sidebar .nav-item').forEach(el=>el.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+
+  const main = document.querySelector('.main');
+  if(sectionId==='top'){
+    main.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
+  const el = document.getElementById(sectionId);
+  if(!el) return;
+  // Offset for topbar height
+  const topbar = document.querySelector('.topbar');
+  const offset = topbar ? topbar.offsetHeight + 8 : 8;
+  const elTop = el.offsetTop - offset;
+  main.scrollTo({top: elTop, behavior:'smooth'});
+}
+
+function mobileNavTo(sectionId){
+  closeDrawer();
+  setTimeout(()=>{
+    const main = document.querySelector('.main');
+    if(sectionId==='top'){main.scrollTo({top:0,behavior:'smooth'});return;}
+    const el=document.getElementById(sectionId);
+    if(!el)return;
+    main.scrollTo({top:el.offsetTop-60,behavior:'smooth'});
+  },220);
+}
+
+/* ── Write boards ── */
+function getWriteBoards(){
+  const seen=new Set(); const boards=[];
   deviceList.filter(d=>d.mac_write).forEach(d=>{
-    if(!seen.has(d.mac_write)){ seen.add(d.mac_write); boards.push(d); }
+    if(!seen.has(d.mac_write)){seen.add(d.mac_write);boards.push(d);}
   });
   allHistory.forEach(r=>{
-    if(r.mac_write && !seen.has(r.mac_write)){
+    if(r.mac_write&&!seen.has(r.mac_write)){
       seen.add(r.mac_write);
-      boards.push({ mac_write:r.mac_write, mac_read:'', label:'', last_seen_write:null });
+      boards.push({mac_write:r.mac_write,mac_read:'',label:'',last_seen_write:null});
     }
   });
   return boards;
 }
 
-let histMode    = 'all';
-let dailyMode   = 'all';
-let uptimeRange = 'all';
-let histChartObj   = null;
-let dailyChartObj  = null;
-let uptimeChartObj = null;
-
-const savedTheme = localStorage.getItem('dashTheme') || 'light';
-document.documentElement.setAttribute('data-theme', savedTheme);
-document.getElementById('themeIcon').setAttribute('data-lucide', savedTheme==='dark'?'sun':'moon');
-if(window.lucide) lucide.createIcons();
-
-function toggleTheme(){
-  const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
-  document.documentElement.setAttribute('data-theme',next);
-  document.getElementById('themeIcon').setAttribute('data-lucide', next==='dark'?'sun':'moon');
-  if(window.lucide) lucide.createIcons();
-  localStorage.setItem('dashTheme',next);
-  destroyCharts(); renderCharts();
-}
+let histMode='all', dailyMode='all', uptimeRange='all';
+let histChartObj=null, dailyChartObj=null, uptimeChartObj=null;
 
 function destroyCharts(){
   if(histChartObj){histChartObj.destroy();histChartObj=null;}
@@ -647,87 +1364,72 @@ function destroyCharts(){
 function cc(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   return{
-    grid:dark?'#2a2520':'#eeede9',text:dark?'#6e6860':'#9a9690',
-    tbg:dark?'#1e1b18':'#fff',tborder:dark?'#332e28':'#e0ddd7',
-    ttitle:dark?'#f0ece6':'#2a2925',tbody:dark?'#6e6860':'#9a9690'
+    grid:dark?'#2E2C28':'#EEECE8',
+    text:dark?'#615E59':'#8F8C88',
+    tbg:dark?'#1A1917':'#fff',
+    tborder:dark?'#2E2C28':'#E4E2DE',
+    ttitle:dark?'#F0EDE8':'#19171A',
+    tbody:dark?'#615E59':'#8F8C88'
   };
 }
 
-function loadLocalMap(){ try{return JSON.parse(localStorage.getItem('devMap')||'{}')}catch{return{}} }
-function saveLocalMap(m){ localStorage.setItem('devMap',JSON.stringify(m)); }
+function loadLocalMap(){try{return JSON.parse(localStorage.getItem('devMap')||'{}')}catch{return{}}}
+function saveLocalMap(m){localStorage.setItem('devMap',JSON.stringify(m));}
 
-/* ─────────────────────────────────────────────
-   getDeviceInfo — ใช้ boardIdx → mac_write เป็น primary
-───────────────────────────────────────────── */
 function getDeviceInfo(boardIdx){
-  const boards   = getWriteBoards();
-  const board    = boards[boardIdx] || {};
-  const macWrite = board.mac_write || '';
-  const devEntry = deviceList.find(d=>d.mac_write===macWrite)||{};
-  const gasReadMac = devEntry.mac_read || '';
-  const gasLabel   = devEntry.label || '';
-  const lm       = loadLocalMap()['board'+(boardIdx+1)] || {};
-  const macRead  = lm.readMac  || gasReadMac;
-  const label    = lm.label    || gasLabel;
-  return { macWrite, macRead, label };
+  const boards=getWriteBoards();
+  const board=boards[boardIdx]||{};
+  const macWrite=board.mac_write||'';
+  const devEntry=deviceList.find(d=>d.mac_write===macWrite)||{};
+  const gasReadMac=devEntry.mac_read||'';
+  const gasLabel=devEntry.label||'';
+  const lm=loadLocalMap()['board'+(boardIdx+1)]||{};
+  const macRead=lm.readMac||gasReadMac;
+  const label=lm.label||gasLabel;
+  return{macWrite,macRead,label};
 }
 
-function filterDays(rows, days){
+function filterDays(rows,days){
   if(days==='all') return rows;
   const cut=Date.now()-parseInt(days)*86400000;
   return rows.filter(r=>r.t>=cut);
 }
 
-/* ─────────────────────────────────────────────
-   calcBoardStats — กรองด้วย mac_write แทน mac_read
-───────────────────────────────────────────── */
-function calcBoardStats(macWrite, allRows) {
-  const detectRows = allRows.filter(r=>r.mac_write===macWrite && r.trigger==='detect');
-  const today = new Date(); today.setHours(0,0,0,0);
-  const todayCount = detectRows.filter(r=>{
-    const d=new Date(r.t); d.setHours(0,0,0,0);
-    return d.getTime()===today.getTime();
-  }).length;
+function calcBoardStats(macWrite,allRows){
+  const detectRows=allRows.filter(r=>r.mac_write===macWrite&&r.trigger==='detect');
+  const today=new Date(); today.setHours(0,0,0,0);
+  const todayCount=detectRows.filter(r=>{const d=new Date(r.t);d.setHours(0,0,0,0);return d.getTime()===today.getTime();}).length;
   const dayMap={};
-  detectRows.forEach(r=>{
-    const dk=new Date(r.t).toLocaleDateString('th-TH');
-    dayMap[dk]=(dayMap[dk]||0)+1;
-  });
-  let maxDay='—', maxDayCnt=0;
-  Object.entries(dayMap).forEach(([d,c])=>{ if(c>maxDayCnt){maxDayCnt=c;maxDay=d;} });
-  const pct = maxDayCnt ? Math.round(todayCount/maxDayCnt*100) : 0;
-  const lastDet = detectRows.length ? new Date(detectRows[detectRows.length-1].t) : null;
-  return { total:detectRows.length, todayCount, maxDay, maxDayCnt, pct, lastDet };
+  detectRows.forEach(r=>{const dk=new Date(r.t).toLocaleDateString('th-TH');dayMap[dk]=(dayMap[dk]||0)+1;});
+  let maxDay='—',maxDayCnt=0;
+  Object.entries(dayMap).forEach(([d,c])=>{if(c>maxDayCnt){maxDayCnt=c;maxDay=d;}});
+  const pct=maxDayCnt?Math.round(todayCount/maxDayCnt*100):0;
+  const lastDet=detectRows.length?new Date(detectRows[detectRows.length-1].t):null;
+  return{total:detectRows.length,todayCount,maxDay,maxDayCnt,pct,lastDet};
 }
 
-/* ─────────────────────────────────────────────
-   calcDailyDetect — กรองด้วย mac_write
-───────────────────────────────────────────── */
-function calcDailyDetect(rows) {
-  const detectRows = rows.filter(r=>r.trigger==='detect');
+function calcDailyDetect(rows){
+  const detectRows=rows.filter(r=>r.trigger==='detect');
   const days={};
   const boards=getWriteBoards();
   detectRows.forEach(r=>{
     const dk=new Date(r.t).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit'});
-    if(!days[dk]) days[dk]={};
-    boards.forEach((b,i)=>{
-      if(!days[dk]['b'+i]) days[dk]['b'+i]=0;
-      if(r.mac_write===b.mac_write) days[dk]['b'+i]++;
-    });
+    if(!days[dk])days[dk]={};
+    boards.forEach((b,i)=>{if(!days[dk]['b'+i])days[dk]['b'+i]=0;if(r.mac_write===b.mac_write)days[dk]['b'+i]++;});
   });
   return days;
 }
 
-function formatLastSeen(ts) {
-  if (!ts) return 'ไม่มีข้อมูล';
-  const diff = Date.now() - ts;
-  const min  = Math.floor(diff / 60000);
-  const sec  = Math.floor(diff / 1000);
-  if (sec < 60)  return sec + ' วินาทีที่แล้ว';
-  if (min < 60)  return min + ' นาทีที่แล้ว';
-  const hr = Math.floor(min / 60);
-  if (hr < 24)   return hr + ' ชั่วโมงที่แล้ว';
-  return Math.floor(hr/24) + ' วันที่แล้ว';
+function formatLastSeen(ts){
+  if(!ts) return 'ไม่มีข้อมูล';
+  const diff=Date.now()-ts;
+  const sec=Math.floor(diff/1000);
+  const min=Math.floor(diff/60000);
+  if(sec<60) return sec+'s ago';
+  if(min<60) return min+'m ago';
+  const hr=Math.floor(min/60);
+  if(hr<24) return hr+'h ago';
+  return Math.floor(hr/24)+'d ago';
 }
 
 async function fetchHistory(){
@@ -737,101 +1439,79 @@ async function fetchHistory(){
   return JSON.parse(t);
 }
 async function fetchDevices(){
-  try{
-    const r=await fetch(webAppURL+'?sts=devices');
-    const t=await r.text();
-    return JSON.parse(t);
-  }catch{return[];}
+  try{const r=await fetch(webAppURL+'?sts=devices');const t=await r.text();return JSON.parse(t);}catch{return[];}
 }
 
-/* ─── boardName ใช้ WRITE แทน READ ─── */
-function boardName(i){ return 'WRITE '+String.fromCharCode(65+i); }
+function boardName(i){return 'WRITE '+String.fromCharCode(65+i);}
 
-/* ─────────────────────────────────────────────
-   renderCards — icon 💡 (Write board primary)
-   แสดง WRITE MAC ก่อน, READ MAC ตามหลัง
-───────────────────────────────────────────── */
+/* ── RENDER CARDS ── */
 function renderCards(){
   const boards=getWriteBoards();
-  if(!boards.length){
-    document.getElementById('swGrid').innerHTML='<div class="loading">ไม่มีข้อมูล Write board</div>';
-    return;
-  }
+  if(!boards.length){document.getElementById('swGrid').innerHTML='<div class="loading-text">ไม่มีข้อมูล Write board</div>';return;}
 
   document.getElementById('swGrid').innerHTML=boards.slice(0,4).map((b,i)=>{
-    const col  = SW_COLORS[i];
-    const dev  = getDeviceInfo(i);
-    const s    = calcBoardStats(b.mac_write, allHistory);
-    const name = boardName(i);
+    const col=SW_COLORS[i];
+    const dev=getDeviceInfo(i);
+    const s=calcBoardStats(b.mac_write,allHistory);
+    const name=boardName(i);
+    const devEntry=deviceList.find(d=>d.mac_write===b.mac_write)||{};
+    const lastSeen=devEntry.last_seen_write||null;
+    const isActive=lastSeen?(Date.now()-lastSeen<ACTIVE_TIMEOUT_MS):false;
+    const lastSeenTxt=formatLastSeen(lastSeen);
 
-    const devEntry   = deviceList.find(d => d.mac_write === b.mac_write) || {};
-    const lastSeen   = devEntry.last_seen_write || null;
-    const isActive   = lastSeen ? (Date.now() - lastSeen < ACTIVE_TIMEOUT_MS) : false;
-    const lastSeenTxt = formatLastSeen(lastSeen);
-    const lastSeenCls = isActive ? 'online' : 'offline';
-
-    /* Write MAC (primary) */
-    const writeMacEl = dev.macWrite
-      ? `<span class="mac-val">${dev.macWrite}</span>`
-      : `<span class="mac-val empty">ยังไม่มีข้อมูล</span>`;
-    /* Read MAC (secondary) */
-    const readMacEl  = dev.macRead
-      ? `<span class="mac-val">${dev.macRead}</span>`
-      : `<span class="mac-val empty">ยังไม่ได้กรอก</span>`;
-    const hint=(dev.macWrite||dev.macRead)?'💡 + 📡 configured':'คลิกเพื่อตั้งค่า';
+    const writeMacEl=dev.macWrite?`<span class="mac-val">${dev.macWrite}</span>`:`<span class="mac-empty">ไม่มีข้อมูล</span>`;
+    const readMacEl=dev.macRead?`<span class="mac-val">${dev.macRead}</span>`:`<span class="mac-empty">ยังไม่ได้กรอก</span>`;
 
     return `
-    <div class="sw-card ${isActive?'on':''}"
-         style="--col:${col};"
-         onclick="openModal(${i})">
-      <div class="sw-head">
+    <div class="device-card ${isActive?'active':''}" style="--col:${col};" onclick="openModal(${i})">
+      <div class="card-head">
         <div>
-          <div class="sw-id" style="color:${col};">${name}${dev.label?` <span style="color:var(--muted);font-weight:400;letter-spacing:0;">· ${dev.label}</span>`:''}
+          <div class="card-id-row">
+            <span class="card-badge" style="background:${col}18;color:${col};">${name}</span>
+            ${dev.label?`<span style="font-size:11px;color:var(--muted);">${dev.label}</span>`:''}
           </div>
         </div>
-        <div class="sw-icon-wrap"><span class="lucide lucide-xl"><i data-lucide="zap"></i></span></div>
-      </div>
-
-      <div class="sw-state">${isActive?'ACTIVE':'OFFLINE'}</div>
-      <div class="sw-lastseen ${lastSeenCls}">last seen: ${lastSeenTxt}</div>
-
-      <div class="sw-bar">
-        <div class="sw-bar-fill" style="width:${s.pct}%;background:${col};"></div>
-      </div>
-
-      <div class="sw-stats">
-        <div class="stat-cell">
-          <div class="stat-cell-label">detect รวม</div>
-          <div class="stat-cell-val">${s.total} ครั้ง</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-cell-label">วันนี้ detect</div>
-          <div class="stat-cell-val hi" style="color:${col};">${s.todayCount} ครั้ง</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-cell-label">สูงสุด/วัน</div>
-          <div class="stat-cell-val">${s.maxDayCnt} ครั้ง</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-cell-label">วันที่สูงสุด</div>
-          <div class="stat-cell-val" style="font-size:11px;">${s.maxDay}</div>
+        <div class="card-icon">
+          <i data-lucide="zap"></i>
         </div>
       </div>
 
-      <div class="sw-mac-area">
-        <div class="mac-row">
-          <span class="mac-type-badge mac-type-write">WRITE</span>
-          ${writeMacEl}
+      <div class="card-status">
+        <div class="card-status-dot" style="background:${isActive?col:'var(--off)'};"></div>
+        <span class="card-status-text" style="color:${isActive?col:'var(--muted)'};">${isActive?'ACTIVE':'OFFLINE'}</span>
+        <span class="card-lastseen">${lastSeenTxt}</span>
+      </div>
+
+      <div class="card-bar">
+        <div class="card-bar-fill" style="width:${s.pct}%;background:${col};"></div>
+      </div>
+
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="stat-item-label">Detect รวม</div>
+          <div class="stat-item-val">${s.total}<span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:2px;">ครั้ง</span></div>
         </div>
-        <div class="mac-row">
-          <span class="mac-type-badge mac-type-read">READ</span>
-          ${readMacEl}
+        <div class="stat-item">
+          <div class="stat-item-label">วันนี้</div>
+          <div class="stat-item-val accent" style="--col:${col};">${s.todayCount}<span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:2px;">ครั้ง</span></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item-label">สูงสุด/วัน</div>
+          <div class="stat-item-val">${s.maxDayCnt}<span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:2px;">ครั้ง</span></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item-label">วันที่สูงสุด</div>
+          <div class="stat-item-val" style="font-size:12px;">${s.maxDay}</div>
         </div>
       </div>
 
-      <div class="sw-hint">${hint}</div>
+      <div class="card-mac">
+        <div class="mac-row"><span class="mac-badge mac-badge-w">WRITE</span>${writeMacEl}</div>
+        <div class="mac-row"><span class="mac-badge mac-badge-r">READ</span>${readMacEl}</div>
+      </div>
     </div>`;
   }).join('');
+  if(window.lucide) lucide.createIcons();
 }
 
 function renderSummary(){
@@ -839,23 +1519,26 @@ function renderSummary(){
   document.getElementById('sumGrid').innerHTML=boards.slice(0,4).map((b,i)=>{
     const col=SW_COLORS[i];
     const dev=getDeviceInfo(i);
-    const s=calcBoardStats(b.mac_write, allHistory);
+    const s=calcBoardStats(b.mac_write,allHistory);
     const name=boardName(i);
     const label=dev.label?(' · '+dev.label):'';
     return `
-    <div class="sum-card" style="border-top:3px solid ${col};">
-      <div class="sum-sw" style="color:${col};">${name}${label}</div>
-      <div><span class="sum-num" style="color:${col};">${s.todayCount}</span><span class="sum-unit"> วันนี้</span></div>
-      <div class="sum-row">รวม <span>${s.total} ครั้ง</span></div>
-      <div class="sum-row">สูงสุด/วัน <span>${s.maxDayCnt} ครั้ง</span></div>
-      <div class="sum-row" style="font-size:10px;">วันสูงสุด <span style="font-size:10px;">${s.maxDay}</span></div>
+    <div class="sum-tile" style="--col:${col};">
+      <div class="sum-board">${name}${label}</div>
+      <div><span class="sum-num">${s.todayCount}</span><span class="sum-unit">วันนี้</span></div>
+      <div class="sum-meta">
+        <div class="sum-row">รวม <strong>${s.total} ครั้ง</strong></div>
+        <div class="sum-row">สูงสุด/วัน <strong>${s.maxDayCnt}</strong></div>
+        <div class="sum-row" style="font-size:9px;">วันสูงสุด <strong style="font-size:9px;">${s.maxDay}</strong></div>
+      </div>
     </div>`;
   }).join('');
 }
 
+/* ── CHARTS ── */
 function setUptimeRange(r,btn){
   uptimeRange=r;
-  document.querySelectorAll('#uptimeTabs .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#uptimeTabs .tab-btn').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   if(uptimeChartObj){uptimeChartObj.destroy();uptimeChartObj=null;}
   renderUptimeChart();
@@ -863,7 +1546,7 @@ function setUptimeRange(r,btn){
 
 function renderUptimeChart(){
   const c=cc();
-  const rows=filterDays(allHistory.filter(r=>r.trigger==='detect'), uptimeRange);
+  const rows=filterDays(allHistory.filter(r=>r.trigger==='detect'),uptimeRange);
   const boards=getWriteBoards();
   const labels=boards.slice(0,4).map((_,i)=>boardName(i)+(getDeviceInfo(i).label?'\n'+getDeviceInfo(i).label:''));
   const counts=boards.slice(0,4).map(b=>rows.filter(r=>r.mac_write===b.mac_write).length);
@@ -871,8 +1554,8 @@ function renderUptimeChart(){
     type:'bar',
     data:{labels,datasets:[{
       label:'จำนวน detect',data:counts,
-      backgroundColor:SW_COLORS.slice(0,boards.length).map(x=>x+'bb'),
-      borderColor:SW_COLORS.slice(0,boards.length),borderWidth:1.5,borderRadius:6
+      backgroundColor:SW_COLORS.slice(0,boards.length).map(x=>x+'cc'),
+      borderColor:SW_COLORS.slice(0,boards.length),borderWidth:1,borderRadius:4
     }]},
     options:{responsive:true,animation:false,indexAxis:'y',
       scales:{
@@ -889,36 +1572,32 @@ function renderUptimeChart(){
 
 function setHistMode(m,btn){
   histMode=m;
-  document.querySelectorAll('#histTabs .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#histTabs .tab-btn').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   if(histChartObj){histChartObj.destroy();histChartObj=null;}
   renderHistChart();
 }
-function clearDate(){ document.getElementById('filterDate').value=''; renderHistChart(); }
+function clearDate(){document.getElementById('filterDate').value='';renderHistChart();}
 
-/* renderHistChart — กรองด้วย mac_write */
 function renderHistChart(){
   const c=cc();
   const fd=document.getElementById('filterDate').value;
   let rows=allHistory.filter(r=>r.trigger==='detect');
-  if(fd){ const d=new Date(fd); rows=rows.filter(r=>new Date(r.t).toDateString()===d.toDateString()); }
+  if(fd){const d=new Date(fd);rows=rows.filter(r=>new Date(r.t).toDateString()===d.toDateString());}
   const boards=getWriteBoards();
   const labels=rows.map(r=>new Date(r.t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}));
   let datasets;
   if(histMode==='all'){
     datasets=boards.slice(0,4).map((b,i)=>({
-      label:boardName(i), data:rows.map(r=>r.mac_write===b.mac_write?1:0),
+      label:boardName(i),data:rows.map(r=>r.mac_write===b.mac_write?1:0),
       borderColor:SW_COLORS[i],backgroundColor:SW_COLORS[i]+'22',
       fill:true,tension:.3,pointRadius:2,borderWidth:1.5
     }));
-  } else {
-    const i=parseInt(histMode);
-    const b=boards[i]||{};
-    datasets=[{
-      label:boardName(i),data:rows.map(r=>r.mac_write===b.mac_write?1:0),
+  }else{
+    const i=parseInt(histMode);const b=boards[i]||{};
+    datasets=[{label:boardName(i),data:rows.map(r=>r.mac_write===b.mac_write?1:0),
       borderColor:SW_COLORS[i],backgroundColor:SW_COLORS[i]+'33',
-      fill:true,tension:.3,pointRadius:2,borderWidth:2
-    }];
+      fill:true,tension:.3,pointRadius:2,borderWidth:2}];
   }
   const cfg={type:'line',data:{labels,datasets},options:{responsive:true,animation:false,
     scales:{
@@ -934,7 +1613,7 @@ function renderHistChart(){
 
 function setDailyMode(m,btn){
   dailyMode=m;
-  document.querySelectorAll('#dailyTabs .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#dailyTabs .tab-btn').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   if(dailyChartObj){dailyChartObj.destroy();dailyChartObj=null;}
   renderDailyChart();
@@ -951,7 +1630,7 @@ function renderDailyChart(){
       label:boardName(i),data:lbls.map(d=>(days[d]['b'+i]||0)),
       backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4
     }));
-  } else {
+  }else{
     const i=parseInt(dailyMode);
     datasets=[{label:boardName(i),data:lbls.map(d=>(days[d]['b'+i]||0)),
       backgroundColor:SW_COLORS[i]+'99',borderColor:SW_COLORS[i],borderWidth:1,borderRadius:4}];
@@ -965,19 +1644,18 @@ function renderDailyChart(){
   dailyChartObj=new Chart(document.getElementById('dailyChart').getContext('2d'),cfg);
 }
 
-function clearLogDate(){ document.getElementById('logDate').value=''; renderLog(); }
+function clearLogDate(){document.getElementById('logDate').value='';renderLog();}
 
-/* renderLog — header columns สลับ Write/Read, boardLabel ใช้ mac_write */
 function renderLog(){
   const wrap=document.getElementById('logWrap');
   const fd=document.getElementById('logDate').value;
   let rows=[...allHistory].reverse();
-  if(fd){ const d=new Date(fd); rows=rows.filter(r=>new Date(r.t).toDateString()===d.toDateString()); }
-  else   { rows=rows.slice(0,15); }
-  if(!rows.length){ wrap.innerHTML='<div class="loading">ไม่มีข้อมูล</div>'; return; }
+  if(fd){const d=new Date(fd);rows=rows.filter(r=>new Date(r.t).toDateString()===d.toDateString());}
+  else{rows=rows.slice(0,15);}
+  if(!rows.length){wrap.innerHTML='<div class="loading-text">ไม่มีข้อมูล</div>';return;}
   const boards=getWriteBoards();
-  const boardLabel=mac=>{ const i=boards.findIndex(b=>b.mac_write===mac); return i>=0?boardName(i):mac.slice(-8); };
-  wrap.innerHTML=`<div class="log-scroll-wrap"><table class="log-table">
+  const boardLabel=mac=>{const i=boards.findIndex(b=>b.mac_write===mac);return i>=0?boardName(i):mac.slice(-8);};
+  wrap.innerHTML=`<div class="log-scroll"><table class="log-table">
     <thead><tr>
       <th>วันที่</th><th>เวลา</th>
       <th>Write Board</th><th>MAC Write</th>
@@ -987,408 +1665,330 @@ function renderLog(){
       const d=new Date(r.t);
       const isDetect=r.trigger==='detect';
       const trigBadge=isDetect
-        ?`<span class="badge badge-on">⚡ detect</span>`
-        :`<span class="badge badge-off">♡ hb</span>`;
+        ?`<span class="badge badge-detect">⚡ DETECT</span>`
+        :`<span class="badge badge-hb">HB</span>`;
       return `<tr>
         <td>${d.toLocaleDateString('th-TH')}</td>
         <td>${d.toLocaleTimeString('th-TH')}</td>
         <td>${boardLabel(r.mac_write)}</td>
-        <td class="mac-sm">${r.mac_write||'—'}</td>
-        <td class="mac-sm">${r.mac_read||'—'}</td>
+        <td>${r.mac_write||'—'}</td>
+        <td>${r.mac_read||'—'}</td>
         <td>${trigBadge}</td>
       </tr>`;
     }).join('')}</tbody>
   </table></div>`;
 }
 
+/* ── Modal ── */
 let modalIdx=-1;
-
-/* openModal — Write MAC แสดงก่อน, Read MAC ตามหลัง */
 function openModal(i){
-  modalIdx=i;
-  const col=SW_COLORS[i];
-  const dev=getDeviceInfo(i);
+  modalIdx=i;const col=SW_COLORS[i];const dev=getDeviceInfo(i);
   const lm=loadLocalMap()['board'+(i+1)]||{};
   document.getElementById('modalTitle').textContent=lm.label||dev.label||'Device Info';
   const pill=document.getElementById('modalPill');
   pill.textContent=boardName(i);
-  pill.style.cssText=`background:${col}22;color:${col};border:1px solid ${col};`;
-
-  /* Write MAC (primary) */
+  pill.style.cssText=`background:${col}18;color:${col};border:1px solid ${col}44;`;
   const wm=document.getElementById('mWriteMacDisp');
   wm.textContent=dev.macWrite||'ยังไม่มีข้อมูลใน Sheets';
   wm.className='info-block-val'+(dev.macWrite?'':' empty');
   document.getElementById('mWriteMacInp').value=dev.macWrite;
   document.getElementById('savedNote').style.display='none';
-
-  /* Read MAC (secondary) */
   const rm=document.getElementById('mReadMac');
   rm.textContent=dev.macRead||'ยังไม่ได้กรอก';
   rm.className='info-block-val'+(dev.macRead?'':' empty');
   document.getElementById('mReadMacInp').value=dev.macRead;
   document.getElementById('savedNoteRead').style.display='none';
-
   document.getElementById('mLblInp').value=lm.label||dev.label||'';
   document.getElementById('modalOv').classList.add('open');
 }
+function closeModal(){document.getElementById('modalOv').classList.remove('open');}
+function closeModalBg(e){if(e.target===document.getElementById('modalOv'))closeModal();}
 
-function closeModal(){ document.getElementById('modalOv').classList.remove('open'); }
-function closeModalBg(e){ if(e.target===document.getElementById('modalOv')) closeModal(); }
-
-/* saveWriteMac — บันทึก Write MAC (เดิมชื่อ saveWriteMac ยังคงใช้ได้) */
 function saveWriteMac(){
   const val=document.getElementById('mWriteMacInp').value.trim().toUpperCase();
-  const map=loadLocalMap();
-  const key='board'+(modalIdx+1);
-  if(!map[key]) map[key]={};
-  map[key].writeMac=val;
-  saveLocalMap(map);
+  const map=loadLocalMap();const key='board'+(modalIdx+1);
+  if(!map[key])map[key]={};map[key].writeMac=val;saveLocalMap(map);
   document.getElementById('mWriteMacDisp').textContent=val||'ยังไม่มีข้อมูลใน Sheets';
   document.getElementById('mWriteMacDisp').className='info-block-val'+(val?'':' empty');
-  const note=document.getElementById('savedNote');
-  note.style.display='block';
-  setTimeout(()=>note.style.display='none',2000);
-  renderCards();
+  const note=document.getElementById('savedNote');note.style.display='block';
+  setTimeout(()=>note.style.display='none',2000);renderCards();
 }
-
-/* saveReadMac — บันทึก Read MAC (ใหม่ — secondary) */
 function saveReadMac(){
   const val=document.getElementById('mReadMacInp').value.trim().toUpperCase();
-  const map=loadLocalMap();
-  const key='board'+(modalIdx+1);
-  if(!map[key]) map[key]={};
-  map[key].readMac=val;
-  saveLocalMap(map);
+  const map=loadLocalMap();const key='board'+(modalIdx+1);
+  if(!map[key])map[key]={};map[key].readMac=val;saveLocalMap(map);
   document.getElementById('mReadMac').textContent=val||'ยังไม่ได้กรอก';
   document.getElementById('mReadMac').className='info-block-val'+(val?'':' empty');
-  const note=document.getElementById('savedNoteRead');
-  note.style.display='block';
-  setTimeout(()=>note.style.display='none',2000);
-  renderCards();
+  const note=document.getElementById('savedNoteRead');note.style.display='block';
+  setTimeout(()=>note.style.display='none',2000);renderCards();
 }
-
 function saveLabel(){
   const val=document.getElementById('mLblInp').value.trim();
-  const map=loadLocalMap();
-  const key='board'+(modalIdx+1);
-  if(!map[key]) map[key]={};
-  map[key].label=val;
-  saveLocalMap(map);
+  const map=loadLocalMap();const key='board'+(modalIdx+1);
+  if(!map[key])map[key]={};map[key].label=val;saveLocalMap(map);
   document.getElementById('modalTitle').textContent=val||'Device Info';
-  renderCards(); renderSummary();
+  renderCards();renderSummary();
 }
 
-function showErr(msg){ const e=document.getElementById('errMsg'); e.style.display=msg?'block':'none'; e.textContent=msg; }
-function setStatus(s){ document.getElementById('statusDot').style.background={ok:'#f47b20',loading:'#f4c020',error:'#e74c3c'}[s]; }
+/* ── Status / Fetch ── */
+function showErr(msg){const e=document.getElementById('errMsg');e.style.display=msg?'block':'none';e.textContent=msg;}
+function setStatus(s){
+  const col={ok:'var(--accent)',loading:'#F4C020',error:'var(--danger)'}[s];
+  ['statusDot','statusDotMobile'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.background=col;});
+}
 
-document.getElementById('filterDate').addEventListener('change', renderHistChart);
-document.getElementById('logDate').addEventListener('change', renderLog);
+document.getElementById('filterDate').addEventListener('change',renderHistChart);
+document.getElementById('logDate').addEventListener('change',renderLog);
 
-function renderCharts(){ renderUptimeChart(); renderHistChart(); renderDailyChart(); }
+function renderCharts(){renderUptimeChart();renderHistChart();renderDailyChart();}
 
 async function fetchAll(){
   try{
-    showErr(''); setStatus('loading');
-    const [history,devices]=await Promise.all([fetchHistory(),fetchDevices()]);
-    allHistory=history;
-    deviceList=devices;
-    renderCards();
-    renderSummary();
-    destroyCharts();
-    renderCharts();
-    renderLog();
-    renderFloorplan();
-    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('th-TH');
+    showErr('');setStatus('loading');
+    const[history,devices]=await Promise.all([fetchHistory(),fetchDevices()]);
+    allHistory=history;deviceList=devices;
+    renderCards();renderSummary();destroyCharts();renderCharts();renderLog();renderFloorplan();
+    const t=new Date().toLocaleTimeString('th-TH');
+    ['lastUpdate','lastUpdateMobile'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});
     setStatus('ok');
-  }catch(e){
-    showErr('⚠ ไม่สามารถเชื่อมต่อ: '+e.message);
-    setStatus('error');
-  }
+  }catch(e){showErr('⚠ เชื่อมต่อไม่ได้: '+e.message);setStatus('error');}
 }
 
 function startTimer(){
-  if(timer) clearInterval(timer);
-  if(autoInterval>0) timer=setInterval(fetchAll,autoInterval);
+  if(timer)clearInterval(timer);
+  if(autoInterval>0)timer=setInterval(fetchAll,autoInterval);
 }
 
-/* ═══════════════════════════════════════
-   FLOORPLAN render
-   Zone1(ส้ม)=Write A, Zone2(ฟ้า)=Write B, Zone3(เขียว)=Write C
-   ใช้ mac_write แทน mac_read
-═══════════════════════════════════════ */
-const ACTIVE_FP_MS = 15 * 1000;
-const FP_Z_EL   = {1:'fpZ1', 2:'fpZ2', 3:'fpZ3'};
-const FP_Z_DOTS = {
-  1: ['fds1_1','fds1_2','fds1_3'],
-  2: ['fds2_1','fds2_2','fds2_3'],
-  3: ['fds3_1','fds3_2','fds3_3','fds3_4']
-};
-const FP_DOT_PIN = {
-  'fds1_1':'sw1','fds1_2':'sw2','fds1_3':'sw3',
-  'fds2_1':'sw1','fds2_2':'sw2','fds2_3':'sw3',
-  'fds3_1':'sw1','fds3_2':'sw2','fds3_3':'sw3','fds3_4':'sw4'
-};
-const FP_Z_COL = {1:'#f47b20', 2:'#22d3ee', 3:'#a3e635'};
+/* ── Floorplan ── */
+const ACTIVE_FP_MS=15*1000;
+const FP_Z_EL={1:'fpZ1',2:'fpZ2',3:'fpZ3'};
+const FP_Z_DOTS={1:['fds1_1','fds1_2','fds1_3'],2:['fds2_1','fds2_2','fds2_3'],3:['fds3_1','fds3_2','fds3_3','fds3_4']};
+const FP_Z_COL={1:'#F47B20',2:'#22D3EE',3:'#84CC16'};
 
 (function initFpTooltip(){
   const tip=document.getElementById('fpTip');
   const map=document.getElementById('fpMap');
-  if(!tip||!map) return;
+  if(!tip||!map)return;
   document.querySelectorAll('.fp-dot').forEach(el=>{
-    el.addEventListener('mouseenter',()=>{tip.textContent=el.dataset.lbl||'';tip.classList.add('fp-show');});
+    el.addEventListener('mouseenter',()=>{tip.textContent=el.dataset.lbl||'';tip.classList.add('show');});
     el.addEventListener('mousemove',e=>{
       const r=map.getBoundingClientRect();
       tip.style.left=(e.clientX-r.left+14)+'px';
-      tip.style.top =(e.clientY-r.top -10)+'px';
+      tip.style.top=(e.clientY-r.top-10)+'px';
     });
-    el.addEventListener('mouseleave',()=>tip.classList.remove('fp-show'));
+    el.addEventListener('mouseleave',()=>tip.classList.remove('show'));
   });
 })();
 
 function renderFloorplan(){
-  const boards=getWriteBoards();   /* ← ใช้ Write boards */
-  const now=Date.now();
+  const boards=getWriteBoards();const now=Date.now();
   [1,2,3].forEach(zn=>{
-    const mac=(boards[zn-1]||{}).mac_write||'';   /* ← mac_write */
-    const lastRow=[...allHistory]
-      .filter(r=>r.mac_write===mac&&r.trigger==='detect')   /* ← mac_write */
-      .sort((a,b)=>b.t-a.t)[0];
+    const mac=(boards[zn-1]||{}).mac_write||'';
+    const lastRow=[...allHistory].filter(r=>r.mac_write===mac&&r.trigger==='detect').sort((a,b)=>b.t-a.t)[0];
     const lastTs=lastRow?lastRow.t:0;
     const active=mac&&(now-lastTs<ACTIVE_FP_MS);
     const tStr=lastTs?new Date(lastTs).toLocaleTimeString('th-TH'):'ไม่มีข้อมูล';
     const zEl=document.getElementById(FP_Z_EL[zn]);
-    if(zEl) zEl.classList.toggle('fp-on',active);
+    if(zEl)zEl.classList.toggle('fp-on',active);
     (FP_Z_DOTS[zn]||[]).forEach(id=>{
-      const d=document.getElementById(id);
-      if(!d) return;
-      /* ถ้า zone active → กระพิบทุก dot ในโซนพร้อมกันเลย */
-      d.classList.toggle('fp-fire',active);
-      d.classList.toggle('fp-idle',!active);
+      const d=document.getElementById(id);if(!d)return;
+      d.classList.toggle('fp-fire',active);d.classList.toggle('fp-idle',!active);
     });
     const dot=document.getElementById('fpDot'+zn);
     const txt=document.getElementById('fpTxt'+zn);
-    if(dot) dot.style.background=active?FP_Z_COL[zn]:'#6b7280';
-    if(txt){
-      txt.style.color=active?'var(--text)':'var(--muted)';
-      txt.textContent=active?('ACTIVE  '+tStr):'IDLE';
-    }
+    if(dot)dot.style.background=active?FP_Z_COL[zn]:'#6b7280';
+    if(txt){txt.style.color=active?'var(--text)':'var(--muted)';txt.textContent=active?('ACTIVE  '+tStr):'IDLE';}
   });
 }
 
-
-/* ═══════════════════════════════════════
-   RELAY MODE CONTROL
-═══════════════════════════════════════ */
-const MODE_LABELS = {
-  1:'24H ทุกวัน', 2:'ตารางสัปดาห์', 3:'กลางคืนทุกวัน', 4:'ปิดทั้งหมด'
-};
-let currentRelayMode = null;
-let selectedRelayMode = null;
+/* ── Relay Mode ── */
+const MODE_LABELS={1:'24H ทุกวัน',2:'ตารางสัปดาห์',3:'กลางคืนทุกวัน',4:'ปิดทั้งหมด'};
+let currentRelayMode=null,selectedRelayMode=null;
 
 async function fetchRelayMode(){
-  if(!webAppURL) return;
+  if(!webAppURL)return;
   try{
-    const r = await fetch(webAppURL+'?sts=getmode');
-    const t = await r.text();
+    const r=await fetch(webAppURL+'?sts=getmode');const t=await r.text();
     if(t.startsWith('OK,')){
-      const m = parseInt(t.split(',')[1]);
-      currentRelayMode = m;
-      selectedRelayMode = m;
-      highlightRelayMode(m);
-      updateModeBadge(m);
+      const m=parseInt(t.split(',')[1]);
+      currentRelayMode=m;selectedRelayMode=m;
+      highlightRelayMode(m);updateModeBadge(m);
     }
-  }catch(e){ console.warn('[Mode] fetch failed',e); }
+  }catch(e){console.warn('[Mode]',e);}
 }
 
 function selectRelayMode(m){
-  selectedRelayMode = m;
-  highlightRelayMode(m);
-  const btn = document.getElementById('modeSaveBtn');
-  btn.disabled = (m === currentRelayMode);
-  btn.textContent = (m === currentRelayMode) ? 'โหมดนี้ใช้งานอยู่แล้ว' : 'บันทึกโหมด';
+  selectedRelayMode=m;highlightRelayMode(m);
+  const btn=document.getElementById('modeSaveBtn');
+  btn.disabled=(m===currentRelayMode);
+  btn.textContent=(m===currentRelayMode)?'โหมดนี้ใช้งานอยู่แล้ว':'บันทึกโหมด';
 }
 
 function highlightRelayMode(m){
   document.querySelectorAll('.mode-opt').forEach(b=>b.classList.remove('active'));
-  const btn = document.querySelector('.mode-opt[data-mode="'+m+'"]');
-  if(btn) btn.classList.add('active');
+  const btn=document.querySelector('.mode-opt[data-mode="'+m+'"]');
+  if(btn)btn.classList.add('active');
 }
 
 function updateModeBadge(m){
-  const badge = document.getElementById('modeCurBadge');
-  if(badge) badge.textContent = 'MODE '+m+': '+( MODE_LABELS[m]||'ไม่ทราบ');
+  const badge=document.getElementById('modeCurBadge');
+  if(badge)badge.textContent='MODE '+m+': '+(MODE_LABELS[m]||'ไม่ทราบ');
 }
 
 async function saveRelayMode(){
-  if(!selectedRelayMode || selectedRelayMode === currentRelayMode) return;
-  const btn = document.getElementById('modeSaveBtn');
-  btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+  if(!selectedRelayMode||selectedRelayMode===currentRelayMode)return;
+  const btn=document.getElementById('modeSaveBtn');
+  btn.disabled=true;btn.textContent='กำลังบันทึก...';
   try{
-    const r = await fetch(webAppURL+'?sts=setmode&mode='+selectedRelayMode);
-    const t = await r.text();
+    const r=await fetch(webAppURL+'?sts=setmode&mode='+selectedRelayMode);const t=await r.text();
     if(t.startsWith('OK,')){
-      currentRelayMode = selectedRelayMode;
-      updateModeBadge(currentRelayMode);
-      btn.textContent = 'โหมดนี้ใช้งานอยู่แล้ว';
-      showModeToast('✓ บันทึกสำเร็จ — '+MODE_LABELS[currentRelayMode], false);
-    } else {
-      showModeToast('เกิดข้อผิดพลาด: '+t, true);
-      btn.disabled = false; btn.textContent = 'บันทึกโหมด';
-    }
-  }catch(e){
-    showModeToast('เชื่อมต่อ GAS ไม่ได้', true);
-    btn.disabled = false; btn.textContent = 'บันทึกโหมด';
-  }
+      currentRelayMode=selectedRelayMode;updateModeBadge(currentRelayMode);
+      btn.textContent='โหมดนี้ใช้งานอยู่แล้ว';
+      showModeToast('✓ บันทึกสำเร็จ — '+MODE_LABELS[currentRelayMode],false);
+    }else{showModeToast('เกิดข้อผิดพลาด: '+t,true);btn.disabled=false;btn.textContent='บันทึกโหมด';}
+  }catch(e){showModeToast('เชื่อมต่อ GAS ไม่ได้',true);btn.disabled=false;btn.textContent='บันทึกโหมด';}
 }
 
-function showModeToast(msg, isErr){
-  const t = document.getElementById('modeToast');
-  t.textContent = msg;
-  t.className = 'mode-toast' + (isErr?' err':'');
-  t.style.display = 'block';
-  setTimeout(()=>t.style.display='none', 3000);
+function showModeToast(msg,isErr){
+  const t=document.getElementById('modeToast');t.textContent=msg;
+  t.className='toast-msg'+(isErr?' err':'');t.style.display='block';
+  setTimeout(()=>t.style.display='none',3000);
 }
 
-
-/* ═══════════════════════════════════════
-   LOGIN
-═══════════════════════════════════════ */
-
-
-function doLogout(){
-  sessionStorage.removeItem('dashAuth');
-  sessionStorage.removeItem('dashUser');
-  location.reload();
-}
-
-function togglePw(){
-  const inp  = document.getElementById('loginPw');
-  const icon = document.getElementById('pwEyeIcon');
-  if(inp.type === 'password'){
-    inp.type = 'text';
-    icon.innerHTML = '<i data-lucide="eye-off"></i>';
-  } else {
-    inp.type = 'password';
-    icon.innerHTML = '<i data-lucide="eye"></i>';
-  }
-  lucide.createIcons();
-}
-
-function checkStoredLogin(){
-  const saved    = sessionStorage.getItem('dashAuth');
-  const savedUser= localStorage.getItem('dashUser') || '';
-  webAppURL = DEFAULT_URL;
-  document.getElementById('urlInp').value = DEFAULT_URL;
-  if(saved === 'ok'){
-    document.getElementById('loginOverlay').style.display = 'none';
-  } else {
-    // ไม่จำ username — ให้กรอกใหม่ทุกครั้ง
-  }
-}
-
-async function doLogin(){
-  const url  = DEFAULT_URL;
-  const user = document.getElementById('loginUser').value.trim();
-  const pw   = document.getElementById('loginPw').value.trim();
-  const err  = document.getElementById('loginErr');
-  err.style.display = 'none';
-  if(!user) { err.textContent='กรุณากรอก Username'; err.style.display='block'; return; }
-  if(!pw)   { err.textContent='กรุณากรอก Password'; err.style.display='block'; return; }
-  const btn = document.querySelector('.login-btn');
-  btn.textContent = 'กำลังเข้าสู่ระบบ...'; btn.disabled = true;
-  try{
-    const r = await fetch(url + '?sts=login&username=' + encodeURIComponent(user) + '&password=' + encodeURIComponent(pw));
-    const t = await r.text();
-    if(t.trim() === 'OK'){
-      webAppURL = DEFAULT_URL;
-      // ไม่จำ username
-      document.getElementById('urlInp').value = DEFAULT_URL;
-      sessionStorage.setItem('dashAuth','ok');
-      sessionStorage.setItem('dashUser', user);
-      document.getElementById('loginOverlay').style.display = 'none';
-      fetchAll();
-      fetchRelayMode();
-      fetchAdvSettings();
-    } else {
-      const msg = t.includes('wrong_password') ? 'Username หรือ Password ไม่ถูกต้อง'
-                : t.includes('no_users')       ? 'ยังไม่มี User ใน Sheets'
-                : t.includes('missing_fields') ? 'กรุณากรอกข้อมูลให้ครบ'
-                : 'เกิดข้อผิดพลาด: ' + t;
-      err.textContent = msg; err.style.display = 'block';
-    }
-  }catch(e){
-    err.textContent = 'เชื่อมต่อไม่ได้: ' + e.message;
-    err.style.display = 'block';
-  }
-  btn.textContent = 'เข้าสู่ระบบ'; btn.disabled = false;
-}
-
-/* ═══════════════════════════════════════
-   ADVANCED SETTINGS
-═══════════════════════════════════════ */
+/* ── Advanced Settings ── */
 async function fetchAdvSettings(){
-  if(!webAppURL) return;
+  if(!webAppURL)return;
   try{
-    const r = await fetch(webAppURL + '?sts=getsettings');
-    const t = await r.text();
-    if(!t.startsWith('OK,')) return;
-    const p = t.split(',');
-    // OK,mode,night_start,night_end,relay_timeout,poll_interval,force_relay
-    if(p[2]) document.getElementById('sNightStart').value   = p[2];
-    if(p[3]) document.getElementById('sNightEnd').value     = p[3];
-    if(p[4]) document.getElementById('sRelayTimeout').value = p[4];
-    if(p[5]) document.getElementById('sPollInterval').value = p[5];
-    const force = parseInt(p[6]||'0');
-    updateForceUI(force);
-  }catch(e){ console.warn('[Settings] fetch failed',e); }
+    const r=await fetch(webAppURL+'?sts=getsettings');const t=await r.text();
+    if(!t.startsWith('OK,'))return;
+    const p=t.split(',');
+    if(p[2])document.getElementById('sNightStart').value=p[2];
+    if(p[3])document.getElementById('sNightEnd').value=p[3];
+    if(p[4])document.getElementById('sRelayTimeout').value=p[4];
+    if(p[5])document.getElementById('sPollInterval').value=p[5];
+    const force=parseInt(p[6]||'0');updateForceUI(force);
+  }catch(e){console.warn('[Settings]',e);}
 }
 
 async function saveAdvSettings(){
-  const mode    = selectedRelayMode || currentRelayMode || 1;
-  const nStart  = document.getElementById('sNightStart').value   || '17:30';
-  const nEnd    = document.getElementById('sNightEnd').value     || '06:00';
-  const rTout   = document.getElementById('sRelayTimeout').value || '15';
-  const pInt    = document.getElementById('sPollInterval').value || '35';
-  const toast   = document.getElementById('settingsToast');
+  const mode=selectedRelayMode||currentRelayMode||1;
+  const nStart=document.getElementById('sNightStart').value||'17:30';
+  const nEnd=document.getElementById('sNightEnd').value||'06:00';
+  const rTout=document.getElementById('sRelayTimeout').value||'15';
+  const pInt=document.getElementById('sPollInterval').value||'35';
+  const toast=document.getElementById('settingsToast');
   try{
-    const url = webAppURL + '?sts=savesettings&mode=' + mode
-      + '&night_start=' + encodeURIComponent(nStart)
-      + '&night_end='   + encodeURIComponent(nEnd)
-      + '&relay_timeout=' + rTout
-      + '&poll_interval=' + pInt;
-    const r = await fetch(url);
-    const t = await r.text();
-    if(t.startsWith('OK')){
-      toast.textContent = '✓ บันทึกสำเร็จ'; toast.className = 'settings-toast';
-    } else {
-      toast.textContent = 'Error: ' + t; toast.className = 'settings-toast err';
-    }
-  }catch(e){
-    toast.textContent = 'เชื่อมต่อไม่ได้'; toast.className = 'settings-toast err';
-  }
-  toast.style.display = 'inline';
-  setTimeout(()=>toast.style.display='none', 3000);
+    const url=webAppURL+'?sts=savesettings&mode='+mode+'&night_start='+encodeURIComponent(nStart)+'&night_end='+encodeURIComponent(nEnd)+'&relay_timeout='+rTout+'&poll_interval='+pInt;
+    const r=await fetch(url);const t=await r.text();
+    if(t.startsWith('OK')){toast.textContent='✓ บันทึกสำเร็จ';toast.className='toast-msg';}
+    else{toast.textContent='Error: '+t;toast.className='toast-msg err';}
+  }catch(e){toast.textContent='เชื่อมต่อไม่ได้';toast.className='toast-msg err';}
+  toast.style.display='inline';setTimeout(()=>toast.style.display='none',3000);
 }
 
 async function setForceRelay(state){
   try{
-    const r = await fetch(webAppURL + '?sts=forcerelay&state=' + state);
-    const t = await r.text();
-    if(t.startsWith('OK')) updateForceUI(state);
-  }catch(e){ console.warn('[Force]',e); }
+    const r=await fetch(webAppURL+'?sts=forcerelay&state='+state);
+    const t=await r.text();if(t.startsWith('OK'))updateForceUI(state);
+  }catch(e){console.warn('[Force]',e);}
 }
 
 function updateForceUI(state){
-  const onBtn  = document.getElementById('forceOnBtn');
-  const offBtn = document.getElementById('forceOffBtn');
-  const status = document.getElementById('forceStatus');
-  if(!onBtn) return;
-  onBtn.classList.toggle('active',  state===1);
-  offBtn.classList.toggle('active', state===0);
-  status.textContent = state===1 ? 'สถานะ: ⚡ Force ON (Relay เปิดตลอด)' : 'สถานะ: ปกติ (ควบคุมโดย mode)';
-  status.style.color = state===1 ? 'var(--accent)' : '';
+  const onBtn=document.getElementById('forceOnBtn');
+  const offBtn=document.getElementById('forceOffBtn');
+  const status=document.getElementById('forceStatus');
+  if(!onBtn)return;
+  onBtn.classList.toggle('active',state===1);
+  offBtn.classList.toggle('active',state===0);
+  status.textContent=state===1?'สถานะ: ⚡ Force ON (Relay เปิดตลอด)':'สถานะ: ปกติ (ควบคุมโดย mode)';
+  status.style.color=state===1?'var(--accent)':'';
 }
 
+/* ── Login ── */
+function doLogout(){
+  sessionStorage.removeItem('dashAuth');sessionStorage.removeItem('dashUser');
+  location.reload();
+}
+
+function togglePw(){
+  const inp=document.getElementById('loginPw');
+  const icon=document.getElementById('pwEyeIcon');
+  if(inp.type==='password'){
+    inp.type='text';
+    icon.innerHTML='<i data-lucide="eye-off"></i>';
+  }else{
+    inp.type='password';
+    icon.innerHTML='<i data-lucide="eye"></i>';
+  }
+  if(window.lucide)lucide.createIcons();
+}
+
+function checkStoredLogin(){
+  webAppURL=DEFAULT_URL;
+  document.getElementById('urlInp').value=DEFAULT_URL;
+  if(sessionStorage.getItem('dashAuth')==='ok'){
+    document.getElementById('loginOverlay').style.display='none';
+  }
+}
+
+async function doLogin(){
+  const url=DEFAULT_URL;
+  const user=document.getElementById('loginUser').value.trim();
+  const pw=document.getElementById('loginPw').value.trim();
+  const err=document.getElementById('loginErr');
+  err.style.display='none';
+  if(!user){err.textContent='กรุณากรอก Username';err.style.display='block';return;}
+  if(!pw){err.textContent='กรุณากรอก Password';err.style.display='block';return;}
+  const btn=document.querySelector('.login-btn');
+  btn.textContent='กำลังเข้าสู่ระบบ...';btn.disabled=true;
+  try{
+    const r=await fetch(url+'?sts=login&username='+encodeURIComponent(user)+'&password='+encodeURIComponent(pw));
+    const t=await r.text();
+    if(t.trim()==='OK'){
+      webAppURL=DEFAULT_URL;
+      document.getElementById('urlInp').value=DEFAULT_URL;
+      sessionStorage.setItem('dashAuth','ok');
+      sessionStorage.setItem('dashUser',user);
+      document.getElementById('loginOverlay').style.display='none';
+      fetchAll();fetchRelayMode();fetchAdvSettings();
+    }else{
+      const msg=t.includes('wrong_password')?'Username หรือ Password ไม่ถูกต้อง'
+        :t.includes('no_users')?'ยังไม่มี User ใน Sheets'
+        :t.includes('missing_fields')?'กรุณากรอกข้อมูลให้ครบ'
+        :'เกิดข้อผิดพลาด: '+t;
+      err.textContent=msg;err.style.display='block';
+    }
+  }catch(e){err.textContent='เชื่อมต่อไม่ได้: '+e.message;err.style.display='block';}
+  btn.textContent='เข้าสู่ระบบ';btn.disabled=false;
+}
+
+/* ── Scroll spy ── */
+(function initScrollSpy(){
+  const main = document.querySelector('.main');
+  if(!main) return;
+  const sections = [
+    {id:'top', btn: document.querySelector('.sidebar .nav-item[data-tip="ภาพรวมระบบ"]')},
+    {id:'sec-floorplan', btn: document.querySelector('.sidebar .nav-item[data-tip="Floorplan"]')},
+    {id:'sec-mode', btn: document.querySelector('.sidebar .nav-item[data-tip="โหมดการทำงาน"]')},
+    {id:'sec-settings', btn: document.querySelector('.sidebar .nav-item[data-tip="ตั้งค่าขั้นสูง"]')},
+    {id:'sec-stats', btn: document.querySelector('.sidebar .nav-item[data-tip="สถิติ Detect"]')},
+    {id:'sec-log', btn: document.querySelector('.sidebar .nav-item[data-tip="Log ย้อนหลัง"]')},
+  ];
+  main.addEventListener('scroll', ()=>{
+    const scrollTop = main.scrollTop + 80;
+    let current = sections[0];
+    sections.forEach(s=>{
+      if(s.id==='top') return;
+      const el=document.getElementById(s.id);
+      if(el && el.offsetTop <= scrollTop) current = s;
+    });
+    document.querySelectorAll('.sidebar .nav-item').forEach(el=>el.classList.remove('active'));
+    if(current && current.btn) current.btn.classList.add('active');
+  });
+})();
+
+/* ── Init ── */
+if(window.lucide)lucide.createIcons();
 checkStoredLogin();
 fetchAll();
 fetchRelayMode();
