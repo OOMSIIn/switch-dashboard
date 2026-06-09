@@ -616,8 +616,19 @@ canvas{max-height:240px;}
   width:100%;background:var(--surface2);border:1px solid var(--border);
   color:var(--text);padding:8px 10px;border-radius:var(--radius);
   font-family:'IBM Plex Mono',monospace;font-size:12px;
+  -webkit-appearance:none;appearance:none;
+  box-sizing:border-box;
+}
+.field-inp[type="time"]{
+  max-width:160px;
+  display:block;
 }
 .field-inp:focus{outline:none;border-color:var(--accent);}
+@media(max-width:768px){
+  .settings-grid{grid-template-columns:1fr 1fr;}
+  .field-inp[type="time"]{max-width:100%;}
+  .field-inp[type="number"]{max-width:100%;}
+}
 .settings-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;}
 .divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
 .force-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
