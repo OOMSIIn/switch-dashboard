@@ -306,6 +306,7 @@ canvas{max-height:260px;}
     </div>
     <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
+        <button class="refresh-btn" onclick="doLogout()" style="background:transparent;border:1px solid var(--border);color:var(--muted);">⏻ ออกจากระบบ</button>
   </div>
 </header>
 
@@ -1243,6 +1244,13 @@ function showModeToast(msg, isErr){
    LOGIN
 ═══════════════════════════════════════ */
 
+
+function doLogout(){
+  sessionStorage.removeItem('dashAuth');
+  sessionStorage.removeItem('dashUser');
+  location.reload();
+}
+
 function togglePw(){
   const inp = document.getElementById('loginPw');
   const eye = document.getElementById('pwEye');
@@ -1263,7 +1271,7 @@ function checkStoredLogin(){
   if(saved === 'ok'){
     document.getElementById('loginOverlay').style.display = 'none';
   } else {
-    if(savedUser) document.getElementById('loginUser').value = savedUser;
+    // ไม่จำ username — ให้กรอกใหม่ทุกครั้ง
   }
 }
 
@@ -1282,7 +1290,7 @@ async function doLogin(){
     const t = await r.text();
     if(t.trim() === 'OK'){
       webAppURL = DEFAULT_URL;
-      localStorage.setItem('dashUser', user);
+      // ไม่จำ username
       document.getElementById('urlInp').value = DEFAULT_URL;
       sessionStorage.setItem('dashAuth','ok');
       sessionStorage.setItem('dashUser', user);
