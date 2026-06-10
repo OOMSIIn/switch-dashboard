@@ -2215,8 +2215,8 @@ async function fetchAdvSettings(){
     const r=await fetch(webAppURL+'?sts=getsettings');const t=await r.text();
     if(!t.startsWith('OK,'))return;
     const p=t.split(',');
-    if(p[2])document.getElementById('sNightStart').value=p[2];
-    if(p[3])document.getElementById('sNightEnd').value=p[3];
+    const nsEl=document.getElementById('sNightStart');if(nsEl&&p[2])nsEl.value=p[2];
+    const neEl=document.getElementById('sNightEnd');if(neEl&&p[3])neEl.value=p[3];
     if(p[4])document.getElementById('sRelayTimeout').value=p[4];
     if(p[5])document.getElementById('sPollInterval').value=p[5];
     const force=parseInt(p[6]||'0');updateForceUI(force);
@@ -2225,8 +2225,8 @@ async function fetchAdvSettings(){
 
 async function saveAdvSettings(){
   const mode=selectedRelayMode||currentRelayMode||1;
-  const nStart=document.getElementById('sNightStart').value||'17:30';
-  const nEnd=document.getElementById('sNightEnd').value||'05:30';
+  const nStart='17:30';
+  const nEnd='05:30';
   const rTout=document.getElementById('sRelayTimeout').value||'15';
   const pInt=document.getElementById('sPollInterval').value||'35';
   const toast=document.getElementById('settingsToast');
