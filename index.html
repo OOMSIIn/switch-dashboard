@@ -2068,7 +2068,15 @@ function renderBackupWifiGrid() {
   });
 
   if (!allDevices.length) {
-    grid.innerHTML = '<div class="loading-text">ไม่มีข้อมูลบอร์ด — รอโหลดข้อมูลก่อน</div>';
+    // ถ้ายังไม่มี device data ให้แสดง placeholder row แทน
+    grid.innerHTML = `<div class="wifi-card">
+      <div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:13px;">
+        <i data-lucide="wifi" style="width:28px;height:28px;stroke-width:1.5;display:block;margin:0 auto .75rem;opacity:.4"></i>
+        กำลังรอข้อมูลบอร์ด...<br>
+        <button class="btn-ghost-sm" style="margin-top:.75rem" onclick="fetchAll().then(()=>renderBackupWifiGrid())">โหลดข้อมูลบอร์ด</button>
+      </div>
+    </div>`;
+    if(window.lucide) lucide.createIcons();
     return;
   }
 
@@ -2173,6 +2181,7 @@ async function fetchAll(){
     const[history,devices]=await Promise.all([fetchHistory(),fetchDevices()]);
     allHistory=history;deviceList=devices;
     renderCards();renderSummary();destroyCharts();renderCharts();renderLog();renderFloorplan();
+    renderBackupWifiGrid();
     const t=new Date().toLocaleTimeString('th-TH');
     ['lastUpdate','lastUpdateMobile'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});
     setStatus('ok');
