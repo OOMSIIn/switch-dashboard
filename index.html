@@ -874,6 +874,20 @@ canvas{max-height:240px;}
 .btn-ghost-sm{padding:3px 10px;border-radius:5px;background:var(--bg);border:1px solid var(--border);color:var(--muted);font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .15s;}.btn-ghost-sm:hover{border-color:var(--accent);color:var(--accent);}
 .panel-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;flex-wrap:wrap;gap:.5rem;}
 .panel-title{font-size:12px;font-weight:600;color:var(--text);}
+
+/* ── Backup WiFi Panel ── */
+.wifi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius,10px);padding:1rem 1.125rem;margin-bottom:10px;}
+.wifi-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem;}
+.wifi-board-id{font-size:13px;font-weight:700;}
+.wifi-board-sub{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-top:2px;}
+.wifi-status-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;font-family:'IBM Plex Mono',monospace;}
+.wifi-primary-pill{background:rgba(46,125,82,.1);color:#2E7D52;}
+.wifi-backup-pill{background:rgba(244,123,32,.12);color:var(--accent);}
+.wifi-unknown-pill{background:var(--bg);color:var(--muted);}
+.wifi-fields{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:.75rem;}
+@media(max-width:480px){.wifi-fields{grid-template-columns:1fr;}}
+.wifi-current-row{display:flex;align-items:center;gap:6px;margin-bottom:.625rem;font-size:11px;color:var(--muted);}
+.wifi-current-val{font-family:'IBM Plex Mono',monospace;color:var(--text2);font-weight:600;}
 </style>
 </head>
 <body>
@@ -940,8 +954,8 @@ canvas{max-height:240px;}
     <div class="nav-item" onclick="mobileNavTo('sec-stats')"><i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i> สถิติ Detect</div>
     <div class="nav-item" onclick="mobileNavTo('sec-log')"><i data-lucide="scroll-text" style="width:15px;height:15px;"></i> Log ย้อนหลัง</div>
     <div class="nav-item" onclick="mobileNavTo('sec-mode')"><i data-lucide="zap" style="width:15px;height:15px;"></i> โหมดการทำงาน</div>
+    <div class="nav-item" onclick="mobileNavTo('sec-backupwifi')"><i data-lucide="wifi" style="width:15px;height:15px;"></i> WiFi สำรอง</div>
     <div class="nav-item" onclick="mobileNavTo('sec-settings')"><i data-lucide="settings-2" style="width:15px;height:15px;"></i> ตั้งค่าขั้นสูง</div>
-    <div class="nav-item" onclick="mobileNavTo('sec-wifi')"><i data-lucide="wifi" style="width:15px;height:15px;"></i> WiFi Settings</div>
   </div>
   <div style="margin-top:auto;padding:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;">
     <button class="btn-icon" style="width:auto;padding:8px 12px;gap:6px;display:flex;" onclick="toggleTheme()">
@@ -986,8 +1000,8 @@ canvas{max-height:240px;}
     <div class="nav-section">
       <div class="nav-section-label">System</div>
       <button class="nav-item" data-tip="โหมดการทำงาน" onclick="navTo('sec-mode',this)"><i data-lucide="zap"></i><span class="nav-item-text">โหมดการทำงาน</span></button>
+      <button class="nav-item" data-tip="WiFi สำรอง" onclick="navTo('sec-backupwifi',this)"><i data-lucide="wifi"></i><span class="nav-item-text">WiFi สำรอง</span></button>
       <button class="nav-item" data-tip="ตั้งค่าขั้นสูง" onclick="navTo('sec-settings',this)"><i data-lucide="settings-2"></i><span class="nav-item-text">ตั้งค่าขั้นสูง</span></button>
-      <button class="nav-item" data-tip="WiFi Settings" onclick="navTo('sec-wifi',this)"><i data-lucide="wifi"></i><span class="nav-item-text">WiFi Settings</span></button>
     </div>
 
     <div class="sidebar-footer">
@@ -1191,13 +1205,21 @@ canvas{max-height:240px;}
       </div>
 
 
-      <!-- WiFi SETTINGS -->
-      <div id="sec-wifi">
+
+
+      <!-- BACKUP WIFI -->
+      <div id="sec-backupwifi">
         <div class="section-hdr">
-          <div class="section-label">WiFi Settings</div>
-          <span style="font-size:10px;color:var(--muted);">ตั้งค่า WiFi แยกแต่ละบอร์ด — มีผลรอบ poll ถัดไป</span>
+          <div class="section-label">WiFi สำรอง</div>
+          <span style="font-size:10px;color:var(--muted);">ตั้ง WiFi สำรองแยกแต่ละบอร์ด — บอร์ดจะ poll ค่าใหม่ทุก 10 นาที</span>
         </div>
-        <div id="wifiGrid" style="display:flex;flex-direction:column;gap:12px;">
+        <div class="panel" style="margin-bottom:10px;padding:.875rem 1rem;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);">
+            <i data-lucide="info" style="width:13px;height:13px;flex-shrink:0"></i>
+            <span>WiFi หลัก (<b style="color:var(--text)">BGRIMM-GUEST</b>) hardcode อยู่ใน firmware — บอร์ดจะลอง Primary 3 ครั้ง ถ้าล้มเหลวจึงสลับมา Backup อัตโนมัติ</span>
+          </div>
+        </div>
+        <div id="backupWifiGrid">
           <div class="loading-text">กำลังโหลด...</div>
         </div>
       </div>
@@ -1832,109 +1854,6 @@ document.getElementById('logDate').addEventListener('change',renderLog);
 function renderCharts(){renderUptimeChart();renderHistChart();renderDailyChart();}
 
 
-/* ═══════════════════════════════════════
-   WiFi SETTINGS
-═══════════════════════════════════════ */
-async function fetchWifiSettings() {
-  if (!webAppURL) return;
-  const boards = getWriteBoards();
-  const grid   = document.getElementById('wifiGrid');
-  if (!grid) return;
-
-  // สร้าง card ทุก board (Write + Read แยก)
-  const allDevices = [];
-
-  // Write boards
-  boards.slice(0, 4).forEach((b, i) => {
-    if (b.mac_write) allDevices.push({ mac: b.mac_write, type: 'Write', label: boardName(i) + (getDeviceInfo(i).label ? ' · ' + getDeviceInfo(i).label : '') });
-  });
-
-  // Read boards (จาก deviceList)
-  deviceList.forEach(d => {
-    if (d.mac_read) {
-      const already = allDevices.find(x => x.mac === d.mac_read);
-      if (!already) allDevices.push({ mac: d.mac_read, type: 'Read', label: 'Read Board · ' + d.mac_read.slice(-6) });
-    }
-  });
-
-  if (allDevices.length === 0) {
-    grid.innerHTML = '<div class="loading-text">ไม่มีข้อมูลบอร์ด — โหลดข้อมูลก่อน</div>';
-    return;
-  }
-
-  // โหลด WiFi ปัจจุบันของแต่ละบอร์ด
-  grid.innerHTML = '<div class="loading-text">กำลังโหลด WiFi...</div>';
-  const results = await Promise.all(allDevices.map(async d => {
-    try {
-      const r = await fetch(webAppURL + '?sts=getwifi&mac=' + d.mac);
-      const t = await r.text();
-      const ssid = t.startsWith('OK,') ? t.split(',')[1] : '';
-      return { ...d, currentSSID: ssid };
-    } catch { return { ...d, currentSSID: '' }; }
-  }));
-
-  grid.innerHTML = results.map(d => `
-    <div class="panel" style="padding:1rem 1.25rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;flex-wrap:wrap;gap:.5rem">
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--accent)">${d.label}</div>
-          <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-top:2px">${d.mac} · ${d.type} Board</div>
-        </div>
-        <span style="font-size:10px;padding:3px 10px;border-radius:20px;background:var(--accent-dim);color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:600">
-          ${d.currentSSID ? '📶 ' + d.currentSSID : 'ยังไม่ได้ตั้ง'}
-        </span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:.75rem">
-        <div>
-          <label style="display:block;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.375rem">WiFi SSID</label>
-          <input class="field-inp" id="wifi-ssid-${d.mac}" placeholder="ชื่อ WiFi" value="${d.currentSSID || ''}"/>
-        </div>
-        <div>
-          <label style="display:block;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.375rem">Password (ว่าง = ไม่มีรหัส)</label>
-          <input class="field-inp" id="wifi-pw-${d.mac}" type="password" placeholder="รหัส WiFi"/>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:.75rem">
-        <button class="btn-primary" onclick="saveWifi('${d.mac}','${d.label}')" style="padding:7px 16px;font-size:12px">
-          <i data-lucide="save" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px"></i>บันทึก
-        </button>
-        <span id="wifi-toast-${d.mac}" style="font-size:11px;display:none"></span>
-        <div style="flex:1"></div>
-        <div style="font-size:10px;color:var(--muted);text-align:right">
-          <i data-lucide="info" style="width:10px;height:10px;vertical-align:-1px"></i>
-          บอร์ดจะรับค่าใหม่รอบ poll ถัดไป (≤10 นาที)
-        </div>
-      </div>
-    </div>
-  `).join('');
-  if (window.lucide) lucide.createIcons();
-}
-
-async function saveWifi(mac, label) {
-  const ssid = document.getElementById('wifi-ssid-' + mac).value.trim();
-  const pw   = document.getElementById('wifi-pw-'   + mac).value;
-  const toast = document.getElementById('wifi-toast-' + mac);
-  if (!ssid) { showWifiToast(toast, 'กรุณากรอก SSID', true); return; }
-  try {
-    const r = await fetch(webAppURL + '?sts=setwifi&mac=' + mac + '&ssid=' + encodeURIComponent(ssid) + '&password=' + encodeURIComponent(pw));
-    const t = await r.text();
-    if (t.startsWith('OK')) {
-      showWifiToast(toast, '✓ บันทึกแล้ว — ' + ssid, false);
-    } else {
-      showWifiToast(toast, 'Error: ' + t, true);
-    }
-  } catch(e) {
-    showWifiToast(toast, 'เชื่อมต่อไม่ได้', true);
-  }
-}
-
-function showWifiToast(el, msg, isErr) {
-  el.textContent = msg;
-  el.style.color = isErr ? 'var(--danger)' : 'var(--success)';
-  el.style.display = 'inline';
-  setTimeout(() => el.style.display = 'none', 4000);
-}
-
 
 /* ═══════════════════════════════════════
    SCHEDULE
@@ -2095,12 +2014,165 @@ async function fetchSettingsLog() {
   }
 }
 
+
+/* ═══════════════════════════════════════
+   BACKUP WIFI
+═══════════════════════════════════════ */
+let backupWifiData = {}; // mac → {ssid, password}
+
+async function fetchBackupWifi() {
+  if (!webAppURL) return;
+  const grid = document.getElementById('backupWifiGrid');
+  if (!grid) return;
+
+  // โหลด backup ที่บันทึกไว้
+  try {
+    const r = await fetch(webAppURL + '?sts=getallbackupwifi');
+    const t = await r.text();
+    const arr = JSON.parse(t);
+    arr.forEach(item => { backupWifiData[item.mac] = item; });
+  } catch(e) { console.warn('[BackupWiFi] fetch failed', e); }
+
+  renderBackupWifiGrid();
+}
+
+function renderBackupWifiGrid() {
+  const grid = document.getElementById('backupWifiGrid');
+  if (!grid) return;
+
+  const boards = getWriteBoards();
+  const allDevices = [];
+
+  // Write boards
+  boards.slice(0, 4).forEach((b, i) => {
+    if (!b.mac_write) return;
+    const dev = getDeviceInfo(i);
+    const devEntry = deviceList.find(d => d.mac_write === b.mac_write) || {};
+    const wifiStatus = devEntry.wifi_status || '';
+    allDevices.push({
+      mac: b.mac_write, type: 'Write',
+      label: boardName(i) + (dev.label ? ' · ' + dev.label : ''),
+      wifiStatus
+    });
+  });
+
+  // Read boards
+  deviceList.forEach(d => {
+    if (!d.mac_read) return;
+    const already = allDevices.find(x => x.mac === d.mac_read);
+    if (!already) allDevices.push({
+      mac: d.mac_read, type: 'Read',
+      label: 'Read Board · ' + d.mac_read.slice(-6),
+      wifiStatus: d.wifi_status || ''
+    });
+  });
+
+  if (!allDevices.length) {
+    grid.innerHTML = '<div class="loading-text">ไม่มีข้อมูลบอร์ด — รอโหลดข้อมูลก่อน</div>';
+    return;
+  }
+
+  grid.innerHTML = allDevices.map(d => {
+    const saved = backupWifiData[d.mac] || {};
+    const currentSSID = saved.ssid || '';
+
+    // แสดง WiFi สถานะปัจจุบันของบอร์ด
+    let statusHtml = '';
+    if (d.wifiStatus) {
+      const isBackup  = d.wifiStatus.includes('backup');
+      const pillClass = isBackup ? 'wifi-backup-pill' : 'wifi-primary-pill';
+      const icon      = isBackup ? 'wifi-off' : 'wifi';
+      const label     = isBackup ? 'ใช้ Backup' : 'ใช้ Primary';
+      statusHtml = `<span class="wifi-status-pill ${pillClass}">
+        <i data-lucide="${icon}" style="width:10px;height:10px;stroke-width:2.5"></i>
+        ${label}: ${d.wifiStatus.replace(' (backup)','').replace(' (primary)','')}
+      </span>`;
+    } else {
+      statusHtml = `<span class="wifi-status-pill wifi-unknown-pill">ยังไม่มีข้อมูล</span>`;
+    }
+
+    return `<div class="wifi-card">
+      <div class="wifi-card-head">
+        <div>
+          <div class="wifi-board-id">${d.label}</div>
+          <div class="wifi-board-sub">${d.mac} · ${d.type} Board</div>
+        </div>
+        ${statusHtml}
+      </div>
+      <div class="wifi-current-row">
+        <i data-lucide="hard-drive" style="width:12px;height:12px;stroke-width:2.5;flex-shrink:0"></i>
+        WiFi สำรองที่บันทึกไว้:&nbsp;
+        <span class="wifi-current-val">${currentSSID || '—'}</span>
+      </div>
+      <div class="wifi-fields">
+        <div>
+          <label style="display:block;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.375rem">SSID (ชื่อ WiFi สำรอง)</label>
+          <input class="field-inp" id="bw-ssid-${d.mac}" placeholder="ชื่อ WiFi สำรอง" value="${currentSSID}"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.375rem">Password (ว่าง = ไม่มีรหัส)</label>
+          <input class="field-inp" id="bw-pw-${d.mac}" type="password" placeholder="รหัส WiFi สำรอง"/>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="saveBackupWifi('${d.mac}')" style="padding:7px 16px;font-size:12px;">
+          <i data-lucide="save" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;stroke-width:2.5"></i>บันทึก
+        </button>
+        <button class="btn-ghost-sm" onclick="clearBackupWifi('${d.mac}')">ลบ WiFi สำรอง</button>
+        <span id="bw-toast-${d.mac}" style="font-size:11px;display:none;font-family:'IBM Plex Mono',monospace;"></span>
+      </div>
+    </div>`;
+  }).join('');
+
+  if (window.lucide) lucide.createIcons();
+}
+
+async function saveBackupWifi(mac) {
+  const ssid  = document.getElementById('bw-ssid-' + mac).value.trim();
+  const pw    = document.getElementById('bw-pw-'   + mac).value;
+  const toast = document.getElementById('bw-toast-' + mac);
+  if (!ssid) { showBwToast(toast, 'กรุณากรอก SSID', true); return; }
+  try {
+    const r = await fetch(webAppURL + '?sts=setbackupwifi&mac=' + mac
+      + '&ssid=' + encodeURIComponent(ssid)
+      + '&password=' + encodeURIComponent(pw));
+    const t = await r.text();
+    if (t.startsWith('OK')) {
+      backupWifiData[mac] = { mac, ssid, password: pw };
+      showBwToast(toast, '✓ บันทึกแล้ว — ' + ssid, false);
+      renderBackupWifiGrid();
+    } else {
+      showBwToast(toast, 'Error: ' + t, true);
+    }
+  } catch(e) { showBwToast(toast, 'เชื่อมต่อไม่ได้', true); }
+}
+
+async function clearBackupWifi(mac) {
+  const toast = document.getElementById('bw-toast-' + mac);
+  try {
+    const r = await fetch(webAppURL + '?sts=setbackupwifi&mac=' + mac + '&ssid=&password=');
+    const t = await r.text();
+    if (t.startsWith('OK')) {
+      delete backupWifiData[mac];
+      showBwToast(toast, '✓ ลบแล้ว', false);
+      renderBackupWifiGrid();
+    } else { showBwToast(toast, 'Error: ' + t, true); }
+  } catch(e) { showBwToast(toast, 'เชื่อมต่อไม่ได้', true); }
+}
+
+function showBwToast(el, msg, isErr) {
+  el.textContent = msg;
+  el.style.color = isErr ? 'var(--danger)' : 'var(--success)';
+  el.style.display = 'inline';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
 async function fetchAll(){
   try{
     showErr('');setStatus('loading');
     const[history,devices]=await Promise.all([fetchHistory(),fetchDevices()]);
     allHistory=history;deviceList=devices;
-    renderCards();renderSummary();destroyCharts();renderCharts();renderLog();renderFloorplan();fetchWifiSettings();
+    renderCards();renderSummary();destroyCharts();renderCharts();renderLog();renderFloorplan();
     const t=new Date().toLocaleTimeString('th-TH');
     ['lastUpdate','lastUpdateMobile'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});
     setStatus('ok');
@@ -2215,8 +2287,8 @@ async function fetchAdvSettings(){
     const r=await fetch(webAppURL+'?sts=getsettings');const t=await r.text();
     if(!t.startsWith('OK,'))return;
     const p=t.split(',');
-    const nsEl=document.getElementById('sNightStart');if(nsEl&&p[2])nsEl.value=p[2];
-    const neEl=document.getElementById('sNightEnd');if(neEl&&p[3])neEl.value=p[3];
+    if(p[2])document.getElementById('sNightStart').value=p[2];
+    if(p[3])document.getElementById('sNightEnd').value=p[3];
     if(p[4])document.getElementById('sRelayTimeout').value=p[4];
     if(p[5])document.getElementById('sPollInterval').value=p[5];
     const force=parseInt(p[6]||'0');updateForceUI(force);
@@ -2225,8 +2297,8 @@ async function fetchAdvSettings(){
 
 async function saveAdvSettings(){
   const mode=selectedRelayMode||currentRelayMode||1;
-  const nStart='17:30';
-  const nEnd='05:30';
+  const nStart=document.getElementById('sNightStart').value||'17:30';
+  const nEnd=document.getElementById('sNightEnd').value||'05:30';
   const rTout=document.getElementById('sRelayTimeout').value||'15';
   const pInt=document.getElementById('sPollInterval').value||'35';
   const toast=document.getElementById('settingsToast');
@@ -2323,8 +2395,8 @@ async function doLogin(){
     {id:'top', btn: document.querySelector('.sidebar .nav-item[data-tip="ภาพรวมระบบ"]')},
     {id:'sec-floorplan', btn: document.querySelector('.sidebar .nav-item[data-tip="Floorplan"]')},
     {id:'sec-mode', btn: document.querySelector('.sidebar .nav-item[data-tip="โหมดการทำงาน"]')},
+    {id:'sec-backupwifi', btn: document.querySelector('.sidebar .nav-item[data-tip="WiFi สำรอง"]')},
     {id:'sec-settings', btn: document.querySelector('.sidebar .nav-item[data-tip="ตั้งค่าขั้นสูง"]')},
-    {id:'sec-wifi', btn: document.querySelector('.sidebar .nav-item[data-tip="WiFi Settings"]')},
     {id:'sec-stats', btn: document.querySelector('.sidebar .nav-item[data-tip="สถิติ Detect"]')},
     {id:'sec-log', btn: document.querySelector('.sidebar .nav-item[data-tip="Log ย้อนหลัง"]')},
   ];
@@ -2347,7 +2419,6 @@ checkStoredLogin();
 fetchAll();
 fetchRelayMode();
 fetchAdvSettings();
-fetchWifiSettings();
 startTimer();
 </script>
 </body>
