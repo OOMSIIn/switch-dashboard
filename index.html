@@ -1150,7 +1150,19 @@ canvas{max-height:240px;}
 
         <!-- General Settings -->
         <div class="panel" style="margin-bottom:12px">
-          <div class="panel-hdr"><span class="panel-title"><i data-lucide="sliders-horizontal" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px;"></i>General</span></div>
+          <div class="panel-hdr">
+            <span class="panel-title"><i data-lucide="sliders-horizontal" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px;"></i>General</span>
+            <span style="font-size:10px;color:var(--muted);">ค่า Default Fallback</span>
+          </div>
+          <!-- info bar อธิบายการทำงาน -->
+          <div style="display:flex;align-items:flex-start;gap:7px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:var(--radius);padding:8px 12px;margin-bottom:12px;font-size:11px;line-height:1.6;">
+            <i data-lucide="info" style="width:13px;height:13px;flex-shrink:0;margin-top:2px;color:var(--accent);stroke-width:2.5;"></i>
+            <div>
+              <b style="color:var(--accent);">Mode 1 (24H)</b> และ <b style="color:var(--accent);">Mode 4 (ปิด)</b> — บอร์ดจะใช้ค่านี้เสมอ<br>
+              <b style="color:var(--accent);">Mode 2 และ 3</b> — ใช้ค่าจาก "ตารางเวลาแยกรายวัน" ด้านล่างแทน
+              <span style="color:var(--muted);"> (ถ้าวันนั้นปิดใช้งาน จะ fallback กลับมาใช้ค่านี้)</span>
+            </div>
+          </div>
           <div class="settings-grid">
             <div class="field-wrap"><label>Relay Timeout (วินาที)</label><input class="field-inp" id="sRelayTimeout" type="number" min="5" max="300" value="15"/></div>
             <div class="field-wrap"><label>Poll Interval (วินาที)</label><input class="field-inp" id="sPollInterval" type="number" min="10" max="300" value="35"/></div>
