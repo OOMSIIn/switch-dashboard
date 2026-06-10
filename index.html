@@ -1178,12 +1178,27 @@ canvas{max-height:240px;}
             <table class="sched-table" id="schedTable">
               <thead><tr>
                 <th>เปิดใช้</th><th>วัน</th>
-                <th>เริ่ม</th><th>สิ้นสุด</th><th></th>
+                <th>เริ่ม</th><th>สิ้นสุด</th>
+                <th>Relay Timeout (วิ)</th><th>Poll Interval (วิ)</th>
+                <th></th>
               </tr></thead>
               <tbody id="schedBody"></tbody>
             </table>
           </div>
-          <div class="sched-summary" id="schedSummary">กำลังโหลด...</div>
+          <!-- ตารางสรุปรายวัน -->
+          <div style="margin-top:14px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">ตารางสรุป 1 อาทิตย์</div>
+            <div style="overflow-x:auto;">
+              <table class="log-tbl" id="schedSummaryTable">
+                <thead><tr>
+                  <th>วัน</th><th>DD/MM/YYYY</th><th>เวลาเริ่ม–สิ้นสุด</th>
+                  <th>Relay Timeout</th><th>Poll Interval</th><th>สถานะ</th>
+                </tr></thead>
+                <tbody id="schedSummaryBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="sched-summary" id="schedSummary" style="display:none;">กำลังโหลด...</div>
           <div class="settings-footer" style="margin-top:.75rem">
             <button class="btn-primary" onclick="saveSchedule()"><i data-lucide="save"></i>บันทึกตาราง</button>
             <span class="toast-msg" id="schedToast"></span>
@@ -1861,13 +1876,13 @@ function renderCharts(){renderUptimeChart();renderHistChart();renderDailyChart()
 const DAY_NAMES = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสฯ','ศุกร์','เสาร์'];
 const DAY_SHORT = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
 let currentSchedule = [
-  {day:0,enabled:true, start:'00:00',end:'23:59'},
-  {day:1,enabled:true, start:'17:30',end:'05:30'},
-  {day:2,enabled:true, start:'17:30',end:'05:30'},
-  {day:3,enabled:true, start:'17:30',end:'05:30'},
-  {day:4,enabled:true, start:'17:30',end:'05:30'},
-  {day:5,enabled:true, start:'17:30',end:'05:30'},
-  {day:6,enabled:true, start:'00:00',end:'23:59'},
+  {day:0,enabled:true, start:'00:00',end:'23:59',relay_timeout:15,poll_interval:35},
+  {day:1,enabled:true, start:'17:30',end:'05:30',relay_timeout:15,poll_interval:35},
+  {day:2,enabled:true, start:'17:30',end:'05:30',relay_timeout:15,poll_interval:35},
+  {day:3,enabled:true, start:'17:30',end:'05:30',relay_timeout:15,poll_interval:35},
+  {day:4,enabled:true, start:'17:30',end:'05:30',relay_timeout:15,poll_interval:35},
+  {day:5,enabled:true, start:'17:30',end:'05:30',relay_timeout:15,poll_interval:35},
+  {day:6,enabled:true, start:'00:00',end:'23:59',relay_timeout:15,poll_interval:35},
 ];
 
 async function fetchSchedule() {
@@ -1877,11 +1892,15 @@ async function fetchSchedule() {
     const t = await r.text();
     const parsed = JSON.parse(t);
     if (Array.isArray(parsed) && parsed.length === 7) {
-      currentSchedule = parsed;
+      currentSchedule = parsed.map(d => ({
+        ...d,
+        relay_timeout: parseInt(d.relay_timeout) || 15,
+        poll_interval: parseInt(d.poll_interval) || 35
+      }));
     }
   } catch(e) { console.warn('[Schedule] fetch failed', e); }
   renderScheduleTable();
-  renderScheduleSummary();
+  renderScheduleSummaryTable();
 }
 
 function renderScheduleTable() {
@@ -1889,12 +1908,18 @@ function renderScheduleTable() {
   if (!tbody) return;
   tbody.innerHTML = currentSchedule.map(d => `
     <tr id="sched-row-${d.day}" class="${d.enabled ? '' : 'disabled-row'}">
-      <td><input type="checkbox" class="sched-chk" id="sched-en-${d.day}"
+      <td><input type="checkbox" class="sched-chk" id="sched-chk-${d.day}"
         ${d.enabled ? 'checked' : ''} onchange="onSchedToggle(${d.day})"/></td>
       <td><span class="sched-day-label">${DAY_NAMES[d.day]}</span></td>
       <td><input type="time" class="sched-time" id="sched-st-${d.day}" value="${d.start}"
         onchange="onSchedChange(${d.day})"/></td>
       <td><input type="time" class="sched-time" id="sched-en-${d.day}" value="${d.end}"
+        onchange="onSchedChange(${d.day})"/></td>
+      <td><input type="number" class="sched-time" id="sched-rt-${d.day}"
+        value="${d.relay_timeout||15}" min="5" max="300" style="width:70px"
+        onchange="onSchedChange(${d.day})"/></td>
+      <td><input type="number" class="sched-time" id="sched-pi-${d.day}"
+        value="${d.poll_interval||35}" min="10" max="300" style="width:70px"
         onchange="onSchedChange(${d.day})"/></td>
       <td>
         <button class="sched-allday-btn" onclick="setAllDay(${d.day})">ตลอดวัน</button>
@@ -1904,16 +1929,18 @@ function renderScheduleTable() {
 }
 
 function onSchedToggle(day) {
-  const checked = document.getElementById('sched-en-' + day).checked;
+  const checked = document.getElementById('sched-chk-' + day).checked;
   currentSchedule[day].enabled = checked;
   document.getElementById('sched-row-' + day).className = checked ? '' : 'disabled-row';
-  renderScheduleSummary();
+  renderScheduleSummaryTable();
 }
 
 function onSchedChange(day) {
-  currentSchedule[day].start = document.getElementById('sched-st-' + day).value || '17:30';
-  currentSchedule[day].end   = document.getElementById('sched-en-' + day).value || '05:30';
-  renderScheduleSummary();
+  currentSchedule[day].start         = document.getElementById('sched-st-' + day).value || '17:30';
+  currentSchedule[day].end           = document.getElementById('sched-en-' + day).value || '05:30';
+  currentSchedule[day].relay_timeout = parseInt(document.getElementById('sched-rt-' + day).value) || 15;
+  currentSchedule[day].poll_interval = parseInt(document.getElementById('sched-pi-' + day).value) || 35;
+  renderScheduleSummaryTable();
 }
 
 function setAllDay(day) {
@@ -1921,20 +1948,51 @@ function setAllDay(day) {
   document.getElementById('sched-en-' + day).value = '23:59';
   currentSchedule[day].start = '00:00';
   currentSchedule[day].end   = '23:59';
-  renderScheduleSummary();
+  renderScheduleSummaryTable();
+}
+
+function getNextWeekDates() {
+  // คืน array ของ Date object สำหรับ 7 วันถัดไป (อา-ส) ที่ใกล้ที่สุด
+  const today = new Date();
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay()); // ถอยไปหาวันอาทิตย์ของอาทิตย์นี้
+  return [0,1,2,3,4,5,6].map(d => {
+    const dt = new Date(startOfWeek);
+    dt.setDate(startOfWeek.getDate() + d);
+    return dt;
+  });
+}
+
+function renderScheduleSummaryTable() {
+  const tbody = document.getElementById('schedSummaryBody');
+  if (!tbody) return;
+  const weekDates = getNextWeekDates();
+  tbody.innerHTML = currentSchedule.map(d => {
+    const dt = weekDates[d.day];
+    const day = String(dt.getDate()).padStart(2,'0');
+    const month = String(dt.getMonth()+1).padStart(2,'0');
+    const year = dt.getFullYear()+543; // พ.ศ.
+    const ddmmyyyy = `${day}/${month}/${year}`;
+    const timeRange = (d.start==='00:00' && (d.end==='23:59'||d.end==='23:59'))
+      ? 'ตลอดวัน (00:00–23:59)'
+      : `${d.start} – ${d.end}`;
+    const statusBadge = d.enabled
+      ? `<span class="log-type-badge lt-schedule">เปิดใช้</span>`
+      : `<span class="log-type-badge" style="background:rgba(150,150,150,.12);color:var(--muted);">ปิด</span>`;
+    return `<tr style="${!d.enabled?'opacity:.5':''}">
+      <td><b>${DAY_NAMES[d.day]}</b></td>
+      <td style="font-family:'IBM Plex Mono',monospace;">${ddmmyyyy}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;">${timeRange}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;">${d.relay_timeout||15} วิ</td>
+      <td style="font-family:'IBM Plex Mono',monospace;">${d.poll_interval||35} วิ</td>
+      <td>${statusBadge}</td>
+    </tr>`;
+  }).join('');
 }
 
 function renderScheduleSummary() {
-  const el = document.getElementById('schedSummary');
-  if (!el) return;
-  const lines = currentSchedule.map(d => {
-    const en = d.enabled ? '✓' : '✗';
-    const time = (d.start === '00:00' && (d.end === '23:59' || d.end === '23:59'))
-      ? 'ตลอดวัน'
-      : d.start + ' – ' + d.end;
-    return `<b>${DAY_SHORT[d.day]}</b> ${en} ${time}`;
-  });
-  el.innerHTML = lines.join('&nbsp;&nbsp;·&nbsp;&nbsp;');
+  // ยังคงไว้เพื่อ backward compat แต่ใช้ table แทน
+  renderScheduleSummaryTable();
 }
 
 async function saveSchedule() {
@@ -1943,20 +2001,21 @@ async function saveSchedule() {
   currentSchedule.forEach(d => {
     const stEl = document.getElementById('sched-st-' + d.day);
     const enEl = document.getElementById('sched-en-' + d.day);
-    const chEl = document.getElementById('sched-en-' + d.day);
-    if (stEl) d.start   = stEl.value || d.start;
-    if (enEl) d.end     = enEl.value || d.end;
-    const cbEl = document.getElementById('sched-en-' + d.day);
-    // checkbox id is sched-en- too — use separate query
-    const cb = document.querySelector('#sched-row-' + d.day + ' .sched-chk');
-    if (cb) d.enabled = cb.checked;
+    const rtEl = document.getElementById('sched-rt-' + d.day);
+    const piEl = document.getElementById('sched-pi-' + d.day);
+    const cb   = document.querySelector('#sched-row-' + d.day + ' .sched-chk');
+    if (stEl) d.start         = stEl.value || d.start;
+    if (enEl) d.end           = enEl.value || d.end;
+    if (rtEl) d.relay_timeout = parseInt(rtEl.value) || 15;
+    if (piEl) d.poll_interval = parseInt(piEl.value) || 35;
+    if (cb)   d.enabled       = cb.checked;
   });
   try {
     const r = await fetch(webAppURL + '?sts=saveschedule&schedule=' + encodeURIComponent(JSON.stringify(currentSchedule)));
     const t = await r.text();
     if (t.startsWith('OK')) {
       toast.textContent = '✓ บันทึกแล้ว'; toast.style.color = 'var(--success)';
-      renderScheduleSummary();
+      renderScheduleSummaryTable();
     } else {
       toast.textContent = 'Error: ' + t; toast.style.color = 'var(--danger)';
     }
@@ -1989,7 +2048,9 @@ async function fetchSettingsLog() {
       if (type === 'schedule') {
         try {
           const arr = JSON.parse(val);
-          return arr.map(d => DAY_SHORT[d.day] + (d.enabled ? ' ' + d.start + '-' + d.end : ' ปิด')).join(' · ');
+          return arr.map(d => DAY_SHORT[d.day] + (d.enabled
+            ? ` ${d.start}-${d.end} [T:${d.relay_timeout||15}s P:${d.poll_interval||35}s]`
+            : ' ปิด')).join(' · ');
         } catch { return val; }
       }
       if (type === 'settings') {
@@ -2436,6 +2497,7 @@ checkStoredLogin();
 fetchAll();
 fetchRelayMode();
 fetchAdvSettings();
+fetchSchedule();
 startTimer();
 </script>
 </body>
