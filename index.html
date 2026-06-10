@@ -2107,10 +2107,18 @@ function renderBackupWifiGrid() {
         </div>
         ${statusHtml}
       </div>
-      <div class="wifi-current-row">
-        <i data-lucide="hard-drive" style="width:12px;height:12px;stroke-width:2.5;flex-shrink:0"></i>
-        WiFi สำรองที่บันทึกไว้:&nbsp;
-        <span class="wifi-current-val">${currentSSID || '—'}</span>
+      <div class="wifi-current-row" style="flex-wrap:wrap;gap:8px;">
+        <span style="display:inline-flex;align-items:center;gap:5px;">
+          <i data-lucide="wifi" style="width:11px;height:11px;stroke-width:2.5;color:#2E7D52"></i>
+          <span style="color:var(--muted)">WiFi หลัก:</span>
+          <span class="wifi-current-val" style="color:#2E7D52">BGRIMM-GUEST</span>
+        </span>
+        <span style="color:var(--border);font-size:10px;">|</span>
+        <span style="display:inline-flex;align-items:center;gap:5px;">
+          <i data-lucide="wifi-off" style="width:11px;height:11px;stroke-width:2.5;color:var(--accent)"></i>
+          <span style="color:var(--muted)">WiFi สำรอง:</span>
+          <span class="wifi-current-val" style="${currentSSID ? 'color:var(--accent)' : 'color:var(--muted);font-weight:400'}">${currentSSID || '—'}</span>
+        </span>
       </div>
       <div class="wifi-fields">
         <div>
