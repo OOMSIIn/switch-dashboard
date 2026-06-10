@@ -2225,8 +2225,8 @@ async function fetchAdvSettings(){
 
 async function saveAdvSettings(){
   const mode=selectedRelayMode||currentRelayMode||1;
-  const nStart='17:30';
-  const nEnd='05:30';
+  const nStart=document.getElementById('sNightStart').value||'17:30';
+  const nEnd=document.getElementById('sNightEnd').value||'05:30';
   const rTout=document.getElementById('sRelayTimeout').value||'15';
   const pInt=document.getElementById('sPollInterval').value||'35';
   const toast=document.getElementById('settingsToast');
