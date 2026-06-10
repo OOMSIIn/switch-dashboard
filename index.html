@@ -2100,7 +2100,7 @@ async function fetchAll(){
     showErr('');setStatus('loading');
     const[history,devices]=await Promise.all([fetchHistory(),fetchDevices()]);
     allHistory=history;deviceList=devices;
-    renderCards();renderSummary();destroyCharts();renderCharts();renderLog();renderFloorplan();
+    renderCards();renderSummary();destroyCharts();renderCharts();renderLog();renderFloorplan();fetchWifiSettings();
     const t=new Date().toLocaleTimeString('th-TH');
     ['lastUpdate','lastUpdateMobile'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});
     setStatus('ok');
