@@ -846,6 +846,34 @@ canvas{max-height:240px;}
   .summary-strip{grid-template-columns:1fr 1fr;}
   .mode-grid{grid-template-columns:1fr 1fr;}
 }
+
+/* ── Schedule Table ── */
+.sched-table{width:100%;border-collapse:collapse;font-size:12px;}
+.sched-table th{font-size:9px;font-family:'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);text-transform:uppercase;}
+.sched-table td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.sched-table tr:last-child td{border-bottom:none;}
+.sched-table tr.disabled-row td{opacity:.45;}
+.sched-chk{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;}
+.sched-time{width:90px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.sched-time:focus{outline:none;border-color:var(--accent);}
+.sched-day-label{font-weight:600;font-size:12px;}
+.sched-allday-btn{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);cursor:pointer;font-family:'IBM Plex Mono',monospace;}
+.sched-summary{font-size:11px;color:var(--muted);margin-top:.625rem;padding:8px 12px;background:var(--bg);border-radius:6px;line-height:1.7;font-family:'IBM Plex Mono',monospace;}
+.sched-summary b{color:var(--text);font-weight:600;}
+
+/* ── Settings Log ── */
+.log-tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.log-tbl th{font-size:9px;letter-spacing:1.5px;color:var(--muted);text-align:left;padding:5px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;font-family:'IBM Plex Mono',monospace;}
+.log-tbl td{padding:6px 10px;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--text2);}
+.log-tbl tr:last-child td{border-bottom:none;}
+.log-tbl tr:hover td{background:var(--bg);}
+.log-type-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;text-transform:uppercase;}
+.lt-settings{background:rgba(244,123,32,.1);color:var(--accent);}
+.lt-mode{background:rgba(33,150,243,.1);color:#2196f3;}
+.lt-schedule{background:rgba(76,175,80,.1);color:#4caf50;}
+.btn-ghost-sm{padding:3px 10px;border-radius:5px;background:var(--bg);border:1px solid var(--border);color:var(--muted);font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .15s;}.btn-ghost-sm:hover{border-color:var(--accent);color:var(--accent);}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;flex-wrap:wrap;gap:.5rem;}
+.panel-title{font-size:12px;font-weight:600;color:var(--text);}
 </style>
 </head>
 <body>
@@ -1105,15 +1133,16 @@ canvas{max-height:240px;}
         <div class="section-hdr">
           <div class="section-label">ตั้งค่าขั้นสูง</div>
         </div>
-        <div class="panel">
+
+        <!-- General Settings -->
+        <div class="panel" style="margin-bottom:12px">
+          <div class="panel-hdr"><span class="panel-title"><i data-lucide="sliders-horizontal" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px;"></i>General</span></div>
           <div class="settings-grid">
-            <div class="field-wrap"><label>เวลาเริ่ม Night Mode</label><input class="field-inp" id="sNightStart" type="time" value="17:30"/></div>
-            <div class="field-wrap"><label>เวลาสิ้นสุด Night Mode</label><input class="field-inp" id="sNightEnd" type="time" value="06:00"/></div>
             <div class="field-wrap"><label>Relay Timeout (วินาที)</label><input class="field-inp" id="sRelayTimeout" type="number" min="5" max="300" value="15"/></div>
             <div class="field-wrap"><label>Poll Interval (วินาที)</label><input class="field-inp" id="sPollInterval" type="number" min="10" max="300" value="35"/></div>
           </div>
-          <div class="settings-footer">
-            <button class="btn-primary" onclick="saveAdvSettings()"><i data-lucide="save"></i>บันทึกการตั้งค่า</button>
+          <div class="settings-footer" style="margin-top:.75rem">
+            <button class="btn-primary" onclick="saveAdvSettings()"><i data-lucide="save"></i>บันทึก</button>
             <span class="toast-msg" id="settingsToast"></span>
           </div>
           <div class="divider"></div>
@@ -1122,6 +1151,41 @@ canvas{max-height:240px;}
             <button class="force-on" id="forceOnBtn" onclick="setForceRelay(1)"><i data-lucide="zap" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"></i>Force ON</button>
             <button class="force-off" id="forceOffBtn" onclick="setForceRelay(0)">Force OFF</button>
             <span class="force-status" id="forceStatus">สถานะ: ปกติ</span>
+          </div>
+        </div>
+
+        <!-- Schedule Table -->
+        <div class="panel" style="margin-bottom:12px">
+          <div class="panel-hdr">
+            <span class="panel-title"><i data-lucide="calendar-clock" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px;"></i>ตารางเวลาแยกรายวัน</span>
+            <span style="font-size:10px;color:var(--muted);">ใช้กับ Mode 2 และ 3</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="sched-table" id="schedTable">
+              <thead><tr>
+                <th>เปิดใช้</th><th>วัน</th>
+                <th>เริ่ม</th><th>สิ้นสุด</th><th></th>
+              </tr></thead>
+              <tbody id="schedBody"></tbody>
+            </table>
+          </div>
+          <div class="sched-summary" id="schedSummary">กำลังโหลด...</div>
+          <div class="settings-footer" style="margin-top:.75rem">
+            <button class="btn-primary" onclick="saveSchedule()"><i data-lucide="save"></i>บันทึกตาราง</button>
+            <span class="toast-msg" id="schedToast"></span>
+          </div>
+        </div>
+
+        <!-- Settings Log -->
+        <div class="panel">
+          <div class="panel-hdr" style="margin-bottom:.875rem">
+            <span class="panel-title"><i data-lucide="history" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px;"></i>ประวัติการเปลี่ยนแปลง</span>
+            <button class="btn-ghost-sm" onclick="fetchSettingsLog()">
+              <i data-lucide="refresh-cw" style="width:11px;height:11px;vertical-align:-1px;margin-right:3px;"></i>โหลด
+            </button>
+          </div>
+          <div style="overflow-x:auto" id="settingsLogWrap">
+            <div class="loading-text">กด "โหลด" เพื่อดูประวัติ</div>
           </div>
         </div>
       </div>
@@ -1871,6 +1935,166 @@ function showWifiToast(el, msg, isErr) {
   setTimeout(() => el.style.display = 'none', 4000);
 }
 
+
+/* ═══════════════════════════════════════
+   SCHEDULE
+═══════════════════════════════════════ */
+const DAY_NAMES = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสฯ','ศุกร์','เสาร์'];
+const DAY_SHORT = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+let currentSchedule = [
+  {day:0,enabled:true, start:'00:00',end:'23:59'},
+  {day:1,enabled:true, start:'17:30',end:'05:30'},
+  {day:2,enabled:true, start:'17:30',end:'05:30'},
+  {day:3,enabled:true, start:'17:30',end:'05:30'},
+  {day:4,enabled:true, start:'17:30',end:'05:30'},
+  {day:5,enabled:true, start:'17:30',end:'05:30'},
+  {day:6,enabled:true, start:'00:00',end:'23:59'},
+];
+
+async function fetchSchedule() {
+  if (!webAppURL) return;
+  try {
+    const r = await fetch(webAppURL + '?sts=getschedule');
+    const t = await r.text();
+    const parsed = JSON.parse(t);
+    if (Array.isArray(parsed) && parsed.length === 7) {
+      currentSchedule = parsed;
+    }
+  } catch(e) { console.warn('[Schedule] fetch failed', e); }
+  renderScheduleTable();
+  renderScheduleSummary();
+}
+
+function renderScheduleTable() {
+  const tbody = document.getElementById('schedBody');
+  if (!tbody) return;
+  tbody.innerHTML = currentSchedule.map(d => `
+    <tr id="sched-row-${d.day}" class="${d.enabled ? '' : 'disabled-row'}">
+      <td><input type="checkbox" class="sched-chk" id="sched-en-${d.day}"
+        ${d.enabled ? 'checked' : ''} onchange="onSchedToggle(${d.day})"/></td>
+      <td><span class="sched-day-label">${DAY_NAMES[d.day]}</span></td>
+      <td><input type="time" class="sched-time" id="sched-st-${d.day}" value="${d.start}"
+        onchange="onSchedChange(${d.day})"/></td>
+      <td><input type="time" class="sched-time" id="sched-en-${d.day}" value="${d.end}"
+        onchange="onSchedChange(${d.day})"/></td>
+      <td>
+        <button class="sched-allday-btn" onclick="setAllDay(${d.day})">ตลอดวัน</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function onSchedToggle(day) {
+  const checked = document.getElementById('sched-en-' + day).checked;
+  currentSchedule[day].enabled = checked;
+  document.getElementById('sched-row-' + day).className = checked ? '' : 'disabled-row';
+  renderScheduleSummary();
+}
+
+function onSchedChange(day) {
+  currentSchedule[day].start = document.getElementById('sched-st-' + day).value || '17:30';
+  currentSchedule[day].end   = document.getElementById('sched-en-' + day).value || '05:30';
+  renderScheduleSummary();
+}
+
+function setAllDay(day) {
+  document.getElementById('sched-st-' + day).value = '00:00';
+  document.getElementById('sched-en-' + day).value = '23:59';
+  currentSchedule[day].start = '00:00';
+  currentSchedule[day].end   = '23:59';
+  renderScheduleSummary();
+}
+
+function renderScheduleSummary() {
+  const el = document.getElementById('schedSummary');
+  if (!el) return;
+  const lines = currentSchedule.map(d => {
+    const en = d.enabled ? '✓' : '✗';
+    const time = (d.start === '00:00' && (d.end === '23:59' || d.end === '23:59'))
+      ? 'ตลอดวัน'
+      : d.start + ' – ' + d.end;
+    return `<b>${DAY_SHORT[d.day]}</b> ${en} ${time}`;
+  });
+  el.innerHTML = lines.join('&nbsp;&nbsp;·&nbsp;&nbsp;');
+}
+
+async function saveSchedule() {
+  const toast = document.getElementById('schedToast');
+  // sync ค่าจาก input ก่อน save
+  currentSchedule.forEach(d => {
+    const stEl = document.getElementById('sched-st-' + d.day);
+    const enEl = document.getElementById('sched-en-' + d.day);
+    const chEl = document.getElementById('sched-en-' + d.day);
+    if (stEl) d.start   = stEl.value || d.start;
+    if (enEl) d.end     = enEl.value || d.end;
+    const cbEl = document.getElementById('sched-en-' + d.day);
+    // checkbox id is sched-en- too — use separate query
+    const cb = document.querySelector('#sched-row-' + d.day + ' .sched-chk');
+    if (cb) d.enabled = cb.checked;
+  });
+  try {
+    const r = await fetch(webAppURL + '?sts=saveschedule&schedule=' + encodeURIComponent(JSON.stringify(currentSchedule)));
+    const t = await r.text();
+    if (t.startsWith('OK')) {
+      toast.textContent = '✓ บันทึกแล้ว'; toast.style.color = 'var(--success)';
+      renderScheduleSummary();
+    } else {
+      toast.textContent = 'Error: ' + t; toast.style.color = 'var(--danger)';
+    }
+  } catch(e) {
+    toast.textContent = 'เชื่อมต่อไม่ได้'; toast.style.color = 'var(--danger)';
+  }
+  toast.style.display = 'inline';
+  setTimeout(() => toast.style.display = 'none', 3000);
+}
+
+/* ═══════════════════════════════════════
+   SETTINGS LOG
+═══════════════════════════════════════ */
+async function fetchSettingsLog() {
+  const wrap = document.getElementById('settingsLogWrap');
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="loading-text">กำลังโหลด...</div>';
+  try {
+    const r = await fetch(webAppURL + '?sts=getsettingslog&limit=30');
+    const t = await r.text();
+    const logs = JSON.parse(t);
+    if (!logs.length) { wrap.innerHTML = '<div class="loading-text">ยังไม่มีประวัติ</div>'; return; }
+    const typeClass = { settings: 'lt-settings', mode: 'lt-mode', schedule: 'lt-schedule' };
+    const typeLabel = { settings: 'Settings', mode: 'Mode', schedule: 'Schedule' };
+    const formatValue = (type, val) => {
+      if (type === 'mode') {
+        const modes = {1:'24H ทุกวัน', 2:'ตารางสัปดาห์', 3:'กลางคืนทุกวัน', 4:'ปิด'};
+        return 'Mode ' + val + ': ' + (modes[val] || val);
+      }
+      if (type === 'schedule') {
+        try {
+          const arr = JSON.parse(val);
+          return arr.map(d => DAY_SHORT[d.day] + (d.enabled ? ' ' + d.start + '-' + d.end : ' ปิด')).join(' · ');
+        } catch { return val; }
+      }
+      if (type === 'settings') {
+        try {
+          const obj = JSON.parse(val);
+          return `timeout:${obj.relay_timeout}s · poll:${obj.poll_interval}s`;
+        } catch { return val; }
+      }
+      return val;
+    };
+    wrap.innerHTML = `<table class="log-tbl">
+      <thead><tr><th>เวลา</th><th>ประเภท</th><th>รายละเอียด</th></tr></thead>
+      <tbody>${logs.map(l => `
+        <tr>
+          <td>${l.timestamp}</td>
+          <td><span class="log-type-badge ${typeClass[l.type]||''}">${typeLabel[l.type]||l.type}</span></td>
+          <td style="max-width:340px;word-break:break-word;">${formatValue(l.type, l.value)}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  } catch(e) {
+    wrap.innerHTML = '<div class="loading-text" style="color:var(--danger)">โหลดไม่ได้: ' + e.message + '</div>';
+  }
+}
+
 async function fetchAll(){
   try{
     showErr('');setStatus('loading');
@@ -2001,8 +2225,8 @@ async function fetchAdvSettings(){
 
 async function saveAdvSettings(){
   const mode=selectedRelayMode||currentRelayMode||1;
-  const nStart=document.getElementById('sNightStart').value||'17:30';
-  const nEnd=document.getElementById('sNightEnd').value||'06:00';
+  const nStart='17:30';
+  const nEnd='05:30';
   const rTout=document.getElementById('sRelayTimeout').value||'15';
   const pInt=document.getElementById('sPollInterval').value||'35';
   const toast=document.getElementById('settingsToast');
