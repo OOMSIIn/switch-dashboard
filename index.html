@@ -1894,6 +1894,8 @@ async function fetchSchedule() {
     if (Array.isArray(parsed) && parsed.length === 7) {
       currentSchedule = parsed.map(d => ({
         ...d,
+        start:         toHHMM(d.start),
+        end:           toHHMM(d.end),
         relay_timeout: parseInt(d.relay_timeout) || 15,
         poll_interval: parseInt(d.poll_interval) || 35
       }));
@@ -1963,6 +1965,23 @@ function getNextWeekDates() {
   });
 }
 
+function toHHMM(val) {
+  // รับได้ทั้ง "17:30", "17:30:00", หรือ Date object จาก GAS
+  if (!val) return '00:00';
+  const s = String(val);
+  // ถ้าเป็น "HH:MM" หรือ "HH:MM:SS" ตรงๆ
+  const m = s.match(/(\d{1,2}):(\d{2})/);
+  if (m) return String(m[1]).padStart(2,'0') + ':' + m[2];
+  // ถ้าเป็น full Date string → parse แล้วดึง HH:MM ตาม timezone ไทย
+  try {
+    const dt = new Date(s);
+    if (!isNaN(dt)) {
+      return dt.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'Asia/Bangkok'});
+    }
+  } catch(e) {}
+  return s.slice(0,5);
+}
+
 function renderScheduleSummaryTable() {
   const tbody = document.getElementById('schedSummaryBody');
   if (!tbody) return;
@@ -1973,9 +1992,11 @@ function renderScheduleSummaryTable() {
     const month = String(dt.getMonth()+1).padStart(2,'0');
     const year = dt.getFullYear()+543; // พ.ศ.
     const ddmmyyyy = `${day}/${month}/${year}`;
-    const timeRange = (d.start==='00:00' && (d.end==='23:59'||d.end==='23:59'))
+    const startStr = toHHMM(d.start);
+    const endStr   = toHHMM(d.end);
+    const timeRange = (startStr==='00:00' && endStr==='23:59')
       ? 'ตลอดวัน (00:00–23:59)'
-      : `${d.start} – ${d.end}`;
+      : `${startStr} – ${endStr}`;
     const statusBadge = d.enabled
       ? `<span class="log-type-badge lt-schedule">เปิดใช้</span>`
       : `<span class="log-type-badge" style="background:rgba(150,150,150,.12);color:var(--muted);">ปิด</span>`;
