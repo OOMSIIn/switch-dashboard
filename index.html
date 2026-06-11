@@ -2616,7 +2616,7 @@ async function doLogin(){
   try{
     const r=await fetch(url+'?sts=login&username='+encodeURIComponent(user)+'&password='+encodeURIComponent(pw));
     const t=await r.text();
-    if(t.trim()==='OK'){
+    if(t.trim().startsWith('OK')){
       webAppURL=DEFAULT_URL;
       document.getElementById('urlInp').value=DEFAULT_URL;
       const parts = t.trim().split(',');
