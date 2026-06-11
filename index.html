@@ -927,14 +927,14 @@ body.role-viewer #sec-settings { display: none !important; }
 
     <div class="login-field">
       <label class="login-label">Username</label>
-      <input class="login-inp" id="loginUser" placeholder="username" autocomplete="username"
+      <input class="login-inp" id="loginUser" placeholder="Username" autocomplete="off"
              onkeydown="if(event.key==='Enter')document.getElementById('loginPw').focus()"/>
     </div>
     <div class="login-field">
       <label class="login-label">Password</label>
       <div class="pw-wrap">
-        <input class="login-inp" type="password" id="loginPw" placeholder="••••••••"
-               autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <input class="login-inp" type="password" id="loginPw" placeholder="Password"
+               autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"/>
         <button class="pw-eye" type="button" onclick="togglePw()" id="pwEye">
           <span id="pwEyeIcon"><i data-lucide="eye"></i></span>
         </button>
