@@ -900,6 +900,16 @@ canvas{max-height:240px;}
 @media(max-width:480px){.wifi-fields{grid-template-columns:1fr;}}
 .wifi-current-row{display:flex;align-items:center;gap:6px;margin-bottom:.625rem;font-size:11px;color:var(--muted);}
 .wifi-current-val{font-family:'IBM Plex Mono',monospace;color:var(--text2);font-weight:600;}
+
+/* ── Viewer role — ซ่อน System section ── */
+body.role-viewer .system-nav-section { display: none !important; }
+body.role-viewer .edit-action { display: none !important; }
+body.role-viewer #sec-mode,
+body.role-viewer #sec-backupwifi,
+body.role-viewer #sec-settings { display: none !important; }
+.role-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.5px;}
+.role-admin  {background:rgba(244,123,32,.12);color:var(--accent);}
+.role-viewer {background:var(--surface2);color:var(--muted);}
 </style>
 </head>
 <body>
@@ -965,9 +975,9 @@ canvas{max-height:240px;}
     <div class="nav-item" onclick="mobileNavTo('sec-floorplan')"><i data-lucide="map" style="width:15px;height:15px;"></i> Floorplan</div>
     <div class="nav-item" onclick="mobileNavTo('sec-stats')"><i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i> สถิติ Detect</div>
     <div class="nav-item" onclick="mobileNavTo('sec-log')"><i data-lucide="scroll-text" style="width:15px;height:15px;"></i> Log ย้อนหลัง</div>
-    <div class="nav-item" onclick="mobileGoPage('mode')"><i data-lucide="zap" style="width:15px;height:15px;"></i> โหมดการทำงาน</div>
-    <div class="nav-item" onclick="mobileGoPage('wifi')"><i data-lucide="wifi" style="width:15px;height:15px;"></i> WiFi สำรอง</div>
-    <div class="nav-item" onclick="mobileGoPage('settings')"><i data-lucide="settings-2" style="width:15px;height:15px;"></i> ตั้งค่าขั้นสูง</div>
+    <div class="nav-item system-nav-section" onclick="mobileGoPage('mode')"><i data-lucide="zap" style="width:15px;height:15px;"></i> โหมดการทำงาน</div>
+    <div class="nav-item system-nav-section" onclick="mobileGoPage('wifi')"><i data-lucide="wifi" style="width:15px;height:15px;"></i> WiFi สำรอง</div>
+    <div class="nav-item system-nav-section" onclick="mobileGoPage('settings')"><i data-lucide="settings-2" style="width:15px;height:15px;"></i> ตั้งค่าขั้นสูง</div>
   </div>
   <div style="margin-top:auto;padding:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;">
     <button class="btn-icon" style="width:auto;padding:8px 12px;gap:6px;display:flex;" onclick="toggleTheme()">
@@ -2559,7 +2569,37 @@ function checkStoredLogin(){
   webAppURL=DEFAULT_URL;
   document.getElementById('urlInp').value=DEFAULT_URL;
   if(sessionStorage.getItem('dashAuth')==='ok'){
+    const savedRole = sessionStorage.getItem('dashRole') || 'admin';
+    applyRole(savedRole);
     document.getElementById('loginOverlay').style.display='none';
+  }
+}
+
+
+/* ═══════════════════════════════════════
+   ROLE SYSTEM
+═══════════════════════════════════════ */
+function applyRole(role) {
+  const body  = document.body;
+  const badge = document.getElementById('roleBadge');
+
+  // Reset
+  body.classList.remove('role-admin', 'role-viewer');
+  body.classList.add('role-' + role);
+
+  if (badge) {
+    badge.textContent = role === 'admin' ? '⚙ Admin' : '👁 Viewer';
+    badge.className   = 'role-badge role-' + role;
+  }
+
+  // ถ้า viewer และกำลังอยู่หน้า System → กลับหน้าแรก
+  if (role === 'viewer') {
+    const systemPages = ['mode', 'wifi', 'settings'];
+    const currentPage = sessionStorage.getItem('currentPage') || '';
+    if (systemPages.includes(currentPage)) {
+      const firstBtn = document.querySelector('.nav-item[data-tip="ภาพรวมระบบ"]');
+      if (firstBtn) firstBtn.click();
+    }
   }
 }
 
@@ -2579,8 +2619,12 @@ async function doLogin(){
     if(t.trim()==='OK'){
       webAppURL=DEFAULT_URL;
       document.getElementById('urlInp').value=DEFAULT_URL;
+      const parts = t.trim().split(',');
+      const role  = parts[1] || 'admin';
       sessionStorage.setItem('dashAuth','ok');
       sessionStorage.setItem('dashUser',user);
+      sessionStorage.setItem('dashRole', role);
+      applyRole(role);
       document.getElementById('loginOverlay').style.display='none';
       fetchAll();fetchRelayMode();fetchAdvSettings();
     }else{
