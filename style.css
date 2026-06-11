@@ -28,18 +28,18 @@
   --radius-lg:10px;
 }
 [data-theme="dark"]{
-  --bg:#111010;
-  --surface:#1A1917;
-  --surface2:#211F1C;
-  --border:#2E2C28;
-  --border2:#403D37;
+  --bg:#0F1117;
+  --surface:#161B22;
+  --surface2:#1C2128;
+  --border:#30363D;
+  --border2:#444C56;
   --accent:#F47B20;
-  --accent-dim:#261910;
+  --accent-dim:#1E1208;
   --accent-dark:#FF9240;
-  --text:#F0EDE8;
-  --text2:#A09C96;
-  --muted:#615E59;
-  --off:#3A3733;
+  --text:#E6EDF3;
+  --text2:#8B949E;
+  --muted:#484F58;
+  --off:#21262D;
   --success:#3DB870;
   --danger:#E85F4A;
   --info:#5096E0;
@@ -522,7 +522,7 @@ canvas{max-height:240px;}
 /* ── Floorplan ── */
 .fp-map{position:relative;width:100%;overflow:hidden;border-radius:6px;border:1px solid var(--border);}
 .fp-map img{width:100%;height:auto;display:block;}
-[data-theme="dark"] .fp-map img{filter:invert(1) hue-rotate(180deg);opacity:.75;}
+[data-theme="dark"] .fp-map img{filter:invert(1) hue-rotate(180deg) brightness(0.85);opacity:.80;}
 .fp-zone{position:absolute;border-radius:3px;pointer-events:none;}
 .fp-z1{border:2px solid #F47B20;background:transparent;}
 .fp-z1.fp-on{background:rgba(244,123,32,.15);animation:fp-pulse 1.5s ease-in-out infinite;}
