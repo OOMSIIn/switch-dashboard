@@ -1195,7 +1195,7 @@ function applyRole(role) {
 
 async function doLogin(){
   const url=DEFAULT_URL;
-  const user=document.getElementById('loginUser').value.trim();
+  const user=document.getElementById('loginUser').value.trim().toLowerCase(); // case-insensitive
   const pw=document.getElementById('loginPw').value.trim();
   const err=document.getElementById('loginErr');
   err.style.display='none';
