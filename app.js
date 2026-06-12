@@ -126,6 +126,46 @@ function mobileGoPage(page) {
   setTimeout(() => goPage(page), 220);
 }
 
+// Navigate to a dashboard section from mobile drawer
+function mobileNavTo(sectionId) {
+  closeDrawer();
+  setTimeout(() => {
+    // ถ้าอยู่หน้าอื่นอยู่ ให้ switch กลับ dashboard ก่อน
+    if (currentPage !== 'dashboard') {
+      document.querySelectorAll('.page-view').forEach(el => {
+        el.style.display = 'none';
+        el.classList.remove('active', 'fade-in');
+      });
+      const dashEl = document.getElementById('page-dashboard');
+      if (dashEl) { dashEl.style.display = 'block'; dashEl.classList.add('active'); }
+      currentPage = 'dashboard';
+      const cfg = PAGE_CONFIG.dashboard;
+      const titleEl = document.getElementById('topbarTitle');
+      const subEl   = document.getElementById('topbarSub');
+      const refreshBtn = document.getElementById('topbarRefreshBtn');
+      if (titleEl) titleEl.textContent = cfg.title;
+      if (subEl)   subEl.textContent   = cfg.sub;
+      if (refreshBtn) refreshBtn.style.display = '';
+    }
+    // mark drawer nav active
+    document.querySelectorAll('.mobile-drawer .nav-item').forEach(el => el.classList.remove('active'));
+    const idx = ['top','sec-floorplan','sec-stats','sec-log'].indexOf(sectionId);
+    const items = document.querySelectorAll('.mobile-drawer .nav-item');
+    if (idx >= 0 && items[idx]) items[idx].classList.add('active');
+
+    // scroll ไปหา section
+    const main = document.querySelector('.main');
+    if (!main) return;
+    if (sectionId === 'top') { main.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    const el = document.getElementById(sectionId);
+    if (!el) return;
+    const topbar = document.querySelector('.topbar');
+    const mobileHeader = document.querySelector('.mobile-header');
+    const offset = (topbar ? topbar.offsetHeight : 0) + (mobileHeader ? mobileHeader.offsetHeight : 0) + 8;
+    main.scrollTo({ top: el.offsetTop - offset, behavior: 'smooth' });
+  }, 250);
+}
+
 // override navTo สำหรับ dashboard sections (scroll เหมือนเดิม)
 function navTo(sectionId, btn) {
   // ถ้าไม่ได้อยู่หน้า dashboard ให้ไปที่ dashboard ก่อน
@@ -1195,7 +1235,7 @@ function applyRole(role) {
 
 async function doLogin(){
   const url=DEFAULT_URL;
-  const user=document.getElementById('loginUser').value.trim().toLowerCase(); // case-insensitive
+  const user=document.getElementById('loginUser').value.trim();
   const pw=document.getElementById('loginPw').value.trim();
   const err=document.getElementById('loginErr');
   err.style.display='none';
